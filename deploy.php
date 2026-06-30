@@ -83,38 +83,18 @@ function run(string $command, bool $print = true): int
         flushOutput();
     }
 
-    $descriptors = [
-        0 => ['pipe', 'r'],
-        1 => ['pipe', 'w'],
-        2 => ['pipe', 'w'],
-    ];
+    $output = [];
+    $exitCode = 0;
 
-    $process = proc_open($command, $descriptors, $pipes);
-    if (! is_resource($process)) {
-        echo "<div class=\"error-box\">Gagal menjalankan perintah.</div>";
-        return 1;
+    exec($command . ' 2>&1', $output, $exitCode);
+
+    foreach ($output as $line) {
+        echo '<pre class="' . ($exitCode !== 0 ? 'err' : 'out') . '">' . htmlspecialchars($line) . '</pre>';
     }
 
-    fclose($pipes[0]);
+    flushOutput();
 
-    while (! feof($pipes[1]) || ! feof($pipes[2])) {
-        $stdout = feof($pipes[1]) ? '' : fgets($pipes[1]);
-        $stderr = feof($pipes[2]) ? '' : fgets($pipes[2]);
-
-        if ($stdout !== false && $stdout !== '') {
-            echo '<pre class="out">' . htmlspecialchars($stdout) . '</pre>';
-            flushOutput();
-        }
-        if ($stderr !== false && $stderr !== '') {
-            echo '<pre class="err">' . htmlspecialchars($stderr) . '</pre>';
-            flushOutput();
-        }
-    }
-
-    fclose($pipes[1]);
-    fclose($pipes[2]);
-
-    return proc_close($process);
+    return $exitCode;
 }
 
 function flushOutput(): void
