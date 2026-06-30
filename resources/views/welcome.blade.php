@@ -287,8 +287,72 @@
                 </div>
                 
                 <div class="col-lg-6 text-center" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
-                    <!-- SVG Illustration from unDraw (Theme: Mobile app / Dashboard) -->
-                    <img src="https://undraw.co/api/illustrations/svg/undraw_building_websites_i78t" alt="SaaS Dashboard" class="hero-illustration">
+                    <!-- Pure HTML/CSS Dashboard Illustration -->
+                    <div class="hero-illustration position-relative mt-4 mt-lg-0">
+                        <!-- Main Dashboard Card -->
+                        <div class="bg-white rounded-4 shadow-lg p-4 position-relative text-start" style="z-index: 2; border: 1px solid rgba(0,0,0,0.05); width: 100%; max-width: 450px; margin: 0 auto;">
+                            <!-- Header Mockup -->
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle" style="width: 45px; height: 45px; background: linear-gradient(135deg, var(--primary-color), #00d2ff);"></div>
+                                    <div class="ms-3">
+                                        <div class="rounded bg-secondary opacity-25 mb-2" style="width: 100px; height: 10px;"></div>
+                                        <div class="rounded bg-secondary opacity-25" style="width: 60px; height: 8px;"></div>
+                                    </div>
+                                </div>
+                                <div class="rounded-pill bg-primary bg-opacity-10 text-primary px-3 py-1" style="font-size: 0.8rem; font-weight: 600;">Admin RT</div>
+                            </div>
+                            
+                            <!-- Charts Mockup -->
+                            <div class="row g-3 mb-4">
+                                <div class="col-6">
+                                    <div class="rounded-3 p-3 h-100" style="background: rgba(0,97,255,0.05);">
+                                        <div class="rounded bg-primary opacity-25 mb-2" style="width: 50px; height: 8px;"></div>
+                                        <div class="fs-3 fw-bold text-dark">156</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="rounded-3 p-3 h-100" style="background: rgba(96,239,255,0.1);">
+                                        <div class="rounded bg-info opacity-50 mb-2" style="width: 50px; height: 8px;"></div>
+                                        <div class="fs-3 fw-bold text-dark">42</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- List Mockup -->
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-person-circle fs-3 text-muted opacity-50"></i>
+                                <div class="ms-3 w-100">
+                                    <div class="rounded bg-secondary opacity-25 mb-2 w-75" style="height: 8px;"></div>
+                                    <div class="rounded bg-secondary opacity-25 w-50" style="height: 6px;"></div>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-person-circle fs-3 text-muted opacity-50"></i>
+                                <div class="ms-3 w-100">
+                                    <div class="rounded bg-secondary opacity-25 mb-2 w-50" style="height: 8px;"></div>
+                                    <div class="rounded bg-secondary opacity-25 w-25" style="height: 6px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Floating Badge 1 -->
+                        <div class="bg-white rounded-pill shadow-sm py-2 px-3 position-absolute d-flex align-items-center" style="top: -20px; right: -10px; z-index: 1; animation: floating 6s ease-in-out infinite alternate;">
+                            <i class="bi bi-check-circle-fill text-success fs-5 me-2"></i>
+                            <span class="fw-bold text-dark" style="font-size: 0.9rem;">Sistem Aman</span>
+                        </div>
+
+                        <!-- Floating Badge 2 -->
+                        <div class="bg-white rounded-3 shadow py-2 px-3 position-absolute d-flex align-items-center gap-2" style="bottom: -20px; left: -20px; z-index: 3; animation: floating 4s ease-in-out infinite alternate-reverse;">
+                            <div class="rounded d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; background: rgba(0,97,255,0.1); color: var(--primary-color);">
+                                <i class="bi bi-people-fill fs-5"></i>
+                            </div>
+                            <div class="text-start">
+                                <div class="fw-bold text-dark" style="font-size: 0.9rem; line-height: 1;">Data Warga</div>
+                                <div class="text-muted" style="font-size: 0.75rem;">Otomatis Sinkron</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
