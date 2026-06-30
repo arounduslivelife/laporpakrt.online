@@ -74,6 +74,11 @@
             100% { transform: translateY(0px) rotate(0deg); }
         }
 
+        /* Village Animations */
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes slideRight { 0% { transform: translateX(-50px); } 100% { transform: translateX(900px); } }
+        @keyframes slideLeft { 0% { transform: translateX(50px) scaleX(-1); } 100% { transform: translateX(-900px) scaleX(-1); } }
+
         .hero-illustration {
             animation: floating 4s ease-in-out infinite;
             max-width: 100%;
@@ -354,6 +359,61 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Animated Village Section -->
+    <section class="py-5 bg-light overflow-hidden position-relative">
+        <div class="container text-center mb-5 position-relative z-2" data-aos="fade-up">
+            <span class="text-primary fw-bold text-uppercase tracking-wider">Ekosistem Digital</span>
+            <h2 class="fw-bold mt-2 mb-3 display-6">Lingkungan RT Yang Hidup</h2>
+            <p class="text-muted mx-auto" style="max-width: 600px;">Bayangkan semua warga, rumah, dan aktivitas di RT Anda saling terhubung dalam satu sistem yang rapi dan aman.</p>
+        </div>
+        
+        <div class="village-scene mx-auto position-relative" style="height: 250px; max-width: 800px; border-bottom: 4px solid var(--text-dark);">
+            <!-- Sun -->
+            <div class="position-absolute text-warning" style="top: 20px; right: 10%; animation: spin 10s linear infinite;">
+                <i class="bi bi-brightness-high-fill" style="font-size: 3rem;"></i>
+            </div>
+            
+            <!-- Clouds -->
+            <div class="position-absolute text-secondary opacity-50" style="top: 30px; left: -100px; animation: slideRight 20s linear infinite;">
+                <i class="bi bi-cloud-fill" style="font-size: 4rem;"></i>
+            </div>
+            <div class="position-absolute text-secondary opacity-25" style="top: 60px; left: -150px; animation: slideRight 25s linear infinite 5s;">
+                <i class="bi bi-cloud-fill" style="font-size: 3rem;"></i>
+            </div>
+
+            <!-- Buildings/Houses -->
+            <div class="position-absolute" style="bottom: -15px; left: 10%; z-index: 2;">
+                <i class="bi bi-house-door-fill" style="font-size: 5rem; color: var(--primary-color);"></i>
+            </div>
+            <div class="position-absolute" style="bottom: -22px; left: 30%; z-index: 1;">
+                <i class="bi bi-building-fill" style="font-size: 8rem; color: var(--secondary-color);"></i>
+            </div>
+            <div class="position-absolute" style="bottom: -10px; left: 60%; z-index: 2;">
+                <i class="bi bi-shop" style="font-size: 4rem; color: #ff6b6b;"></i>
+            </div>
+            <div class="position-absolute" style="bottom: -15px; right: 15%; z-index: 1;">
+                <i class="bi bi-house-fill" style="font-size: 6rem; color: var(--text-dark);"></i>
+            </div>
+
+            <!-- Trees -->
+            <div class="position-absolute" style="bottom: -5px; left: 25%; z-index: 3;">
+                <i class="bi bi-tree-fill text-success" style="font-size: 3rem;"></i>
+            </div>
+            <div class="position-absolute" style="bottom: -10px; right: 35%; z-index: 3;">
+                <i class="bi bi-tree-fill text-success" style="font-size: 4rem;"></i>
+            </div>
+
+            <!-- Animated Person Walking -->
+            <div class="position-absolute" style="bottom: -5px; left: -50px; z-index: 4; animation: slideRight 15s linear infinite;">
+                <i class="bi bi-person-walking text-dark" style="font-size: 2rem;"></i>
+            </div>
+            <!-- Animated Bicycle -->
+            <div class="position-absolute" style="bottom: -5px; right: -50px; z-index: 4; animation: slideLeft 12s linear infinite;">
+                <i class="bi bi-bicycle text-primary" style="font-size: 2rem;"></i>
             </div>
         </div>
     </section>
