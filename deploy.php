@@ -24,7 +24,7 @@ $dbHost = '127.0.0.1';
 $dbPort = '3306';
 $dbName = 'laporpakrtonline';
 $dbUser = 'laporpakrtonline';
-$dbPass = '4b353085af87f8';
+$dbPass = ''; // GANTI: isi password database MariaDB Anda di sini sebelum upload
 
 $phpBin = '/usr/bin/php';
 $composerBin = '/usr/local/bin/composer';
