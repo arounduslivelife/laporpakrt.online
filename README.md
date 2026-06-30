@@ -1,3 +1,87 @@
+# LaporPakRT
+
+Aplikasi manajemen lingkungan RT/RW berbasis web untuk pencatatan warga, buku tamu, surat-menyurat, kas RT, dan scan KTP dengan OCR.
+
+## Fitur Utama
+
+- **Manajemen Warga** — data lengkap warga RT dengan foto dan KTP
+- **Buku Tamu** — pencatatan tamu masuk dengan geolokasi dan foto
+- **Scan KTP (OCR)** — otomatis mengisi NIK, nama, alamat, jenis kelamin, tempat/tanggal lahir dari foto KTP
+- **Surat & Dokumen** — pembuatan surat pengantar dan dokumen RT
+- **Kas RT** — pencatatan pemasukan/pengeluaran kas RT
+- **Manajemen Akses** — role rt_admin, security, dan warga
+
+## Teknologi
+
+- Laravel 13
+- PHP 8.3
+- Livewire 3
+- AdminLTE + Bootstrap 5
+- MySQL
+- Tesseract OCR + Intervention Image
+
+## Instalasi Lokal
+
+```bash
+composer update
+```
+
+Copy file environment:
+
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+Sesuaikan konfigurasi database di `.env`, lalu:
+
+```bash
+php artisan migrate
+php artisan db:seed
+php artisan storage:link
+```
+
+### Install Tesseract OCR (Windows)
+
+1. Download installer: https://github.com/UB-Mannheim/tesseract/wiki
+2. Install ke `C:\Program Files\Tesseract-OCR\`
+3. Centang bahasa **Indonesian**
+
+### Install Tesseract OCR (Linux / aaPanel VPS)
+
+```bash
+sudo apt install tesseract-ocr tesseract-ocr-ind -y
+```
+
+## Penggunaan Scan KTP
+
+1. Buka menu **Data Warga** atau **Buku Tamu**
+2. Klik **Tambah Warga** / **Input Tamu Baru**
+3. Upload **Foto KTP**
+4. Klik tombol **Scan KTP**
+5. Data akan terisi otomatis
+
+Untuk uji coba scan tanpa menyimpan data, gunakan menu **Test OCR KTP**.
+
+## Deployment ke aaPanel VPS
+
+1. Pull repository
+2. Install Tesseract OCR
+3. Jalankan:
+
+```bash
+composer update --no-dev
+php artisan migrate
+php artisan storage:link
+php artisan config:cache
+chmod -R 775 storage bootstrap/cache
+```
+
+4. Sesuaikan `APP_URL` dan konfigurasi database di `.env`
+
+## License
+
+MIT
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
