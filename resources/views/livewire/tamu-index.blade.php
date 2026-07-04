@@ -45,7 +45,7 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label>Foto Wajah (Opsional)</label>
-                                <input type="file" class="form-control" wire:model="file_wajah">
+                                <input type="file" class="form-control" wire:model="file_wajah" accept="image/*" capture="environment">
                                 <div wire:loading wire:target="file_wajah" class="text-info small mt-1">Mengunggah...</div>
                                 @if ($file_wajah)
                                     <img src="{{ $file_wajah->temporaryUrl() }}" class="img-thumbnail mt-2" style="max-height: 100px;">
@@ -55,7 +55,7 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label>Foto KTP (Opsional)</label>
-                                <input type="file" class="form-control" wire:model="file_ktp" accept="image/*">
+                                <input type="file" class="form-control" wire:model="file_ktp" accept="image/*" capture="environment">
                                 <div wire:loading wire:target="file_ktp" class="text-info small mt-1">Mengunggah...</div>
                                 @if ($file_ktp)
                                     <div class="mt-2">
@@ -110,8 +110,7 @@
                                 <th>Waktu Lapor</th>
                                 <th>Nama Tamu</th>
                                 <th>Tujuan</th>
-                                <th>Lama</th>
-                                <th>Lokasi Lapor</th>
+                                <th>Status Kunjungan</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -119,19 +118,40 @@
                             @forelse($tamus as $tamu)
                             <tr>
                                 <td>{{ $tamu->created_at->format('d/m/Y H:i') }}</td>
-                                <td><strong>{{ $tamu->name }}</strong><br><small class="text-muted">{{ $tamu->nik ?? '-' }}{{ $tamu->alamat ? ' • ' . $tamu->alamat : '' }}</small></td>
-                                <td>{{ $tamu->tujuan }}</td>
-                                <td>{{ $tamu->lama_kunjungan_hari }} Hari</td>
                                 <td>
-                                    @if($tamu->lat && $tamu->lng)
-                                        <a href="https://maps.google.com/?q={{ $tamu->lat }},{{ $tamu->lng }}" target="_blank" class="badge bg-info text-decoration-none">Lihat Peta</a>
+                                    <div class="d-flex align-items-center">
+                                        @if($tamu->foto_wajah)
+                                            <img src="{{ Storage::url($tamu->foto_wajah) }}" class="rounded me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                        @else
+                                            <div class="bg-secondary rounded d-flex justify-content-center align-items-center text-white me-2" style="width: 40px; height: 40px;">
+                                                <i class="bi bi-person"></i>
+                                            </div>
+                                        @endif
+                                        <div>
+                                            <strong class="d-block">{{ $tamu->name }}</strong>
+                                            <small class="text-muted">{{ $tamu->alamat ?? 'Tanpa Alamat' }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ $tamu->tujuan }}<br><small class="text-muted">{{ $tamu->lama_kunjungan_hari }} Hari</small></td>
+                                <td>
+                                    @if($tamu->waktu_keluar)
+                                        <span class="badge bg-secondary"><i class="bi bi-door-closed"></i> Selesai ({{ \Carbon\Carbon::parse($tamu->waktu_keluar)->format('H:i') }})</span>
+                                    @elseif($tamu->waktu_masuk)
+                                        <span class="badge bg-success pulse"><i class="bi bi-person-bounding-box"></i> Di Dalam (Sejak {{ \Carbon\Carbon::parse($tamu->waktu_masuk)->format('H:i') }})</span>
                                     @else
-                                        <span class="text-muted small">Tanpa Lokasi</span>
+                                        <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split"></i> Belum Masuk</span>
                                     @endif
                                 </td>
                                 <td>
-                                    <button wire:click="edit({{ $tamu->id }})" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></button>
-                                    <button wire:click="delete({{ $tamu->id }})" class="btn btn-sm btn-danger" onclick="confirm('Yakin ingin menghapus data tamu ini?') || event.stopImmediatePropagation()"><i class="bi bi-trash"></i></button>
+                                    @if(!$tamu->waktu_masuk)
+                                        <button wire:click="checkIn({{ $tamu->id }})" class="btn btn-sm btn-success mb-1" title="Check-In"><i class="bi bi-box-arrow-in-right"></i> Masuk</button>
+                                    @elseif(!$tamu->waktu_keluar)
+                                        <button wire:click="checkOut({{ $tamu->id }})" class="btn btn-sm btn-danger mb-1" title="Check-Out"><i class="bi bi-box-arrow-left"></i> Keluar</button>
+                                    @endif
+                                    
+                                    <button wire:click="edit({{ $tamu->id }})" class="btn btn-sm btn-warning mb-1" title="Edit"><i class="bi bi-pencil"></i></button>
+                                    <button wire:click="delete({{ $tamu->id }})" class="btn btn-sm btn-outline-danger mb-1" onclick="confirm('Yakin ingin menghapus data tamu ini?') || event.stopImmediatePropagation()"><i class="bi bi-trash"></i></button>
                                 </td>
                             </tr>
                             @empty

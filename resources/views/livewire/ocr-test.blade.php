@@ -23,25 +23,50 @@
                             <i class="bi bi-upload"></i> Upload Foto KTP
                         </div>
                         <div class="card-body">
-                            <form wire:submit.prevent="scan">
-                                <div class="mb-3">
-                                    <input type="file" class="form-control" wire:model="image" accept="image/*" required>
-                                    <div wire:loading wire:target="image" class="text-info small mt-1">Mengunggah...</div>
-                                    @error('image') <span class="text-danger small">{{ $message }}</span> @enderror
+                            <!-- Include Cropper.js -->
+                            <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+                            <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+                            
+                            <div x-data="{ cropper: null, imageUrl: null, uploading: false }" class="mb-3">
+                                <input type="file" id="ktpImage" class="form-control" accept="image/*" capture="environment" 
+                                    x-on:change="
+                                        const file = $event.target.files[0];
+                                        if (file) {
+                                            imageUrl = URL.createObjectURL(file);
+                                            if (cropper) cropper.destroy();
+                                            setTimeout(() => {
+                                                const imageElement = document.getElementById('cropperImage');
+                                                cropper = new Cropper(imageElement, {
+                                                    viewMode: 1,
+                                                    autoCropArea: 0.9,
+                                                });
+                                            }, 100);
+                                        }
+                                    ">
+                                @error('image') <span class="text-danger small">{{ $message }}</span> @enderror
+
+                                <div x-show="imageUrl" class="mt-3" style="width: 100%; max-height: 400px; display:none;">
+                                    <img id="cropperImage" :src="imageUrl" style="max-width: 100%;">
                                 </div>
 
-                                @if ($image)
-                                    <div class="mb-3">
-                                        <img src="{{ $image->temporaryUrl() }}" class="img-fluid img-thumbnail" style="max-height: 220px;">
-                                    </div>
-                                @endif
-
-                                <button type="submit" class="btn btn-primary" wire:loading.attr="disabled" wire:target="scan">
-                                    <span wire:loading.remove wire:target="scan"><i class="bi bi-upc-scan"></i> Scan KTP</span>
-                                    <span wire:loading wire:target="scan"><i class="bi bi-arrow-repeat spin"></i> Membaca...</span>
-                                </button>
-                                <button type="button" class="btn btn-secondary" wire:click="resetTest">Reset</button>
-                            </form>
+                                <div x-show="imageUrl" style="display:none;" class="mt-3">
+                                    <button type="button" class="btn btn-success" x-bind:disabled="uploading"
+                                        x-on:click="
+                                            uploading = true;
+                                            cropper.getCroppedCanvas({ maxWidth: 1600, maxHeight: 1600 }).toBlob((blob) => {
+                                                @this.upload('image', blob, (uploadedFilename) => {
+                                                    uploading = false;
+                                                    @this.scan();
+                                                }, () => { uploading = false; }, (event) => {});
+                                            }, 'image/jpeg', 0.85);
+                                        ">
+                                        <span x-show="!uploading"><i class="bi bi-crop"></i> Crop & Scan KTP</span>
+                                        <span x-show="uploading"><i class="bi bi-arrow-repeat spin"></i> Sedang Memproses...</span>
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" x-on:click="imageUrl = null; if(cropper) cropper.destroy(); @this.resetTest();">Reset</button>
+                                </div>
+                                <div wire:loading wire:target="scan" class="text-info mt-2"><i class="bi bi-arrow-repeat spin"></i> OCR Sedang Membaca Gambar...</div>
+                            </div>
 
                             @if ($hasError)
                                 <div class="alert alert-danger mt-3 mb-0">

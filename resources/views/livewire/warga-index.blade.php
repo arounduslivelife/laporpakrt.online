@@ -143,20 +143,32 @@
                             @forelse($wargas as $index => $warga)
                             <tr>
                                 <td>{{ $index + 1 }}</td>
-                                <td>{{ $warga->name }}</td>
-                                <td>{{ $warga->nik ?? '-' }}</td>
-                                <td>{{ $warga->no_kk ?? '-' }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        @if($warga->foto_path)
+                                            <img src="{{ Storage::url($warga->foto_path) }}" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                        @else
+                                            <div class="bg-secondary rounded-circle d-flex justify-content-center align-items-center text-white me-2" style="width: 40px; height: 40px;">
+                                                {{ substr($warga->name, 0, 1) }}
+                                            </div>
+                                        @endif
+                                        <div class="fw-bold">{{ $warga->name }}</div>
+                                    </div>
+                                </td>
+                                <td>{{ $warga->nik ? substr($warga->nik, 0, 4) . '********' . substr($warga->nik, -4) : '-' }}</td>
+                                <td>{{ $warga->no_kk ? substr($warga->no_kk, 0, 4) . '********' . substr($warga->no_kk, -4) : '-' }}</td>
                                 <td>{{ $warga->jenis_kelamin ?? '-' }}</td>
                                 <td>
                                     @if($warga->status_domisili == 'Tetap')
-                                        <span class="badge bg-primary">Tetap</span>
+                                        <span class="badge bg-success"><i class="bi bi-house-check"></i> Tetap</span>
                                     @else
-                                        <span class="badge bg-warning">Kontrak</span>
+                                        <span class="badge text-bg-warning"><i class="bi bi-house-dash"></i> Kontrak</span>
                                     @endif
                                 </td>
                                 <td>
-                                    <button wire:click="edit({{ $warga->id }})" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></button>
-                                    <button wire:click="delete({{ $warga->id }})" class="btn btn-sm btn-danger" onclick="confirm('Yakin ingin menghapus warga ini?') || event.stopImmediatePropagation()"><i class="bi bi-trash"></i></button>
+                                    <button wire:click="view({{ $warga->id }})" class="btn btn-sm btn-info text-white" title="Lihat Detail"><i class="bi bi-eye"></i></button>
+                                    <button wire:click="edit({{ $warga->id }})" class="btn btn-sm btn-warning" title="Edit"><i class="bi bi-pencil"></i></button>
+                                    <button wire:click="delete({{ $warga->id }})" class="btn btn-sm btn-danger" onclick="confirm('Yakin ingin menghapus warga ini?') || event.stopImmediatePropagation()" title="Hapus"><i class="bi bi-trash"></i></button>
                                 </td>
                             </tr>
                             @empty
@@ -174,4 +186,74 @@
 
         </div>
     </div>
+
+    <!-- View Modal -->
+    @if($viewWarga)
+    <div class="modal fade show" tabindex="-1" style="display: block; background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detail Warga: {{ $viewWarga->name }}</h5>
+                    <button type="button" class="btn-close" wire:click="closeView"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center mb-3">
+                            @if($viewWarga->foto_path)
+                                <img src="{{ Storage::url($viewWarga->foto_path) }}" class="img-fluid rounded border shadow-sm" alt="Foto Wajah">
+                            @else
+                                <div class="bg-secondary rounded d-flex justify-content-center align-items-center text-white mx-auto shadow-sm" style="width: 150px; height: 150px; font-size: 4rem;">
+                                    {{ substr($viewWarga->name, 0, 1) }}
+                                </div>
+                            @endif
+                            <div class="mt-3">
+                                @if($viewWarga->status_domisili == 'Tetap')
+                                    <span class="badge bg-success"><i class="bi bi-house-check"></i> Warga Tetap</span>
+                                @else
+                                    <span class="badge bg-warning text-dark"><i class="bi bi-house-dash"></i> Warga Kontrak</span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th style="width: 35%;">NIK</th>
+                                        <td>{{ $viewWarga->nik ?? '-' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>No. Kartu Keluarga</th>
+                                        <td>{{ $viewWarga->no_kk ?? '-' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Jenis Kelamin</th>
+                                        <td>{{ $viewWarga->jenis_kelamin ?? '-' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Tempat, Tanggal Lahir</th>
+                                        <td>{{ $viewWarga->tempat_lahir ?? '-' }}, {{ $viewWarga->tanggal_lahir ? \Carbon\Carbon::parse($viewWarga->tanggal_lahir)->format('d-m-Y') : '-' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Alamat</th>
+                                        <td>{{ $viewWarga->alamat ?? '-' }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            @if($viewWarga->ktp_path)
+                            <div class="mt-3">
+                                <h6>Foto KTP:</h6>
+                                <img src="{{ Storage::url($viewWarga->ktp_path) }}" class="img-fluid rounded border shadow-sm" alt="Foto KTP" style="max-height: 200px;">
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" wire:click="closeView">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 </div>

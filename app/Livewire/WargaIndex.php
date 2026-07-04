@@ -40,6 +40,18 @@ class WargaIndex extends Component
         $this->showForm = true;
     }
 
+    public $viewWarga = null;
+
+    public function view($id)
+    {
+        $this->viewWarga = Warga::where('rt_id', auth()->user()->rt_id)->findOrFail($id);
+    }
+
+    public function closeView()
+    {
+        $this->viewWarga = null;
+    }
+
     public function delete($id)
     {
         Warga::where('rt_id', auth()->user()->rt_id)->findOrFail($id)->delete();

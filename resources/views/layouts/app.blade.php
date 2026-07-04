@@ -115,7 +115,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('surat.index') }}" class="nav-link {{ request()->is('surat*') ? 'active' : '' }}">
+                            <a href="#" onclick="alert('Mohon maaf, menu ini sedang dalam pengembangan'); return false;" class="nav-link text-muted" style="opacity: 0.6; cursor: not-allowed;">
                                 <i class="nav-icon bi bi-file-earmark-text"></i>
                                 <p>Surat & Dokumen</p>
                             </a>

@@ -25,7 +25,7 @@ class OcrTest extends Component
     public function scan()
     {
         $this->validate([
-            'image' => 'required|image|max:2048',
+            'image' => 'required|image|max:8192',
         ]);
 
         $this->isScanning = true;
