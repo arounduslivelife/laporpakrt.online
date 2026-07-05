@@ -204,6 +204,39 @@
             </div>
             @endif
 
+            <!-- Duplicate NIK Warning Modal -->
+            @if($showDuplicateWarning)
+            <div class="modal fade show" tabindex="-1" style="display: block; background-color: rgba(0,0,0,0.5);">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0 shadow">
+                        <div class="modal-header bg-warning">
+                            <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle me-2"></i>Peringatan Duplikasi NIK</h5>
+                            <button type="button" class="btn-close" wire:click="$set('showDuplicateWarning', false)"></button>
+                        </div>
+                        <div class="modal-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="bi bi-person-exclamation text-warning" style="font-size: 3rem;"></i>
+                            </div>
+                            <h5 class="fw-bold mb-3">NIK Sudah Terdaftar!</h5>
+                            <p class="mb-1">Sistem mendeteksi NIK <strong>{{ $nik }}</strong> sudah terdaftar atas nama:</p>
+                            <h6 class="fw-bold text-primary">{{ $duplicateInfo['name'] ?? '-' }}</h6>
+                            <p class="mb-3">di wilayah <strong>{{ $duplicateInfo['rt'] ?? '-' }}</strong>.</p>
+                            
+                            <div class="alert alert-light border small text-start">
+                                <i class="bi bi-info-circle me-1"></i> Data mungkin belum diperbarui oleh RT asal. Jika Anda yakin ini adalah warga Anda (misal baru pindah), Anda dapat melanjutkan.
+                            </div>
+                        </div>
+                        <div class="modal-footer justify-content-center bg-light">
+                            <button type="button" class="btn btn-secondary px-4" wire:click="$set('showDuplicateWarning', false)">Batal</button>
+                            <button type="button" class="btn btn-warning px-4 fw-bold" wire:click="confirmSave">
+                                <i class="bi bi-check-circle me-1"></i> Tetap Tambahkan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <div class="card">
                 <div class="card-header">
                     <div class="row g-2">

@@ -61,7 +61,7 @@ class WargaIndex extends Component
 
     public function resetForm()
     {
-        $this->reset(['nik', 'no_kk', 'name', 'alamat', 'status_domisili', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 'editMode', 'editId', 'showForm', 'foto_wajah', 'foto_ktp', 'foto_path', 'ktp_path']);
+        $this->reset(['nik', 'no_kk', 'name', 'alamat', 'status_domisili', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 'editMode', 'editId', 'showForm', 'foto_wajah', 'foto_ktp', 'foto_path', 'ktp_path', 'forceSave', 'showDuplicateWarning', 'duplicateInfo']);
         $this->status_domisili = 'Tetap';
     }
 
@@ -109,6 +109,16 @@ class WargaIndex extends Component
         }
     }
 
+    public $forceSave = false;
+    public $showDuplicateWarning = false;
+    public $duplicateInfo = null;
+
+    public function confirmSave()
+    {
+        $this->forceSave = true;
+        $this->save();
+    }
+
     public function save()
     {
         $this->validate([
@@ -123,6 +133,28 @@ class WargaIndex extends Component
             'foto_wajah' => 'nullable|image|max:8192',
             'foto_ktp' => 'nullable|image|max:8192',
         ]);
+
+        if (!empty($this->nik) && !$this->forceSave) {
+            $query = Warga::where('nik', $this->nik);
+            if ($this->editMode) {
+                $query->where('id', '!=', $this->editId);
+            }
+            $duplicate = $query->with('rt')->first();
+
+            if ($duplicate) {
+                if ($duplicate->rt_id == auth()->user()->rt_id) {
+                    $this->addError('nik', 'NIK ini sudah terdaftar di RT Anda.');
+                    return;
+                } else {
+                    $this->showDuplicateWarning = true;
+                    $this->duplicateInfo = [
+                        'name' => $duplicate->name,
+                        'rt' => $duplicate->rt ? "RT " . $duplicate->rt->rt . " / RW " . $duplicate->rt->rw : 'Tidak diketahui'
+                    ];
+                    return;
+                }
+            }
+        }
 
         $fotoPath = $this->foto_wajah ? $this->foto_wajah->store('warga/foto', 'public') : null;
         $ktpPath = $this->foto_ktp ? $this->foto_ktp->store('warga/ktp', 'public') : null;

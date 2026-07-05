@@ -194,6 +194,38 @@
                 </button>
             </form>
         </div>
+
+        <!-- Duplicate NIK Warning Bottom Sheet -->
+        @if($showDuplicateWarning)
+        <div class="position-fixed top-0 start-0 w-100 h-100" style="background: rgba(0,0,0,0.5); z-index: 1050;" wire:click="$set('showDuplicateWarning', false)"></div>
+        <div class="position-fixed bottom-0 start-0 w-100 bg-white" style="z-index: 1060; border-radius: 24px 24px 0 0; max-height: 85vh; overflow-y: auto; padding: 24px; transition: transform 0.3s ease-out;">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold mb-0 text-warning-emphasis"><i class="bi bi-exclamation-triangle me-2"></i> Peringatan Duplikasi</h6>
+                <button class="btn-close" wire:click="$set('showDuplicateWarning', false)"></button>
+            </div>
+            
+            <div class="text-center mb-4 mt-3">
+                <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex justify-content-center align-items-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="bi bi-person-exclamation text-warning" style="font-size: 2.5rem;"></i>
+                </div>
+                <h6 class="fw-bold text-dark">NIK Sudah Terdaftar</h6>
+                <p class="text-muted small mb-0">Sistem mendeteksi NIK <strong>{{ $nik }}</strong> terdaftar atas nama:</p>
+                <h6 class="fw-bold text-primary mt-2">{{ $duplicateInfo['name'] ?? '-' }}</h6>
+                <p class="text-muted small">Di wilayah: <strong>{{ $duplicateInfo['rt'] ?? '-' }}</strong></p>
+                
+                <div class="alert alert-light border small text-start mt-3" style="border-radius: 12px;">
+                    Data mungkin belum dihapus oleh RT asal. Jika Anda yakin ini warga Anda (misal baru pindah), Anda dapat melanjutkan.
+                </div>
+            </div>
+            
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-light flex-fill py-3 fw-bold" style="border-radius: 16px;" wire:click="$set('showDuplicateWarning', false)">Batal</button>
+                <button type="button" class="btn btn-warning flex-fill py-3 fw-bold text-dark" style="border-radius: 16px;" wire:click="confirmSave">
+                    Tetap Tambahkan
+                </button>
+            </div>
+        </div>
+        @endif
     @endif
 
     <!-- OCR Loading Overlay -->
