@@ -27,6 +27,11 @@ class User extends Authenticatable
 
     public function rt() { return $this->belongsTo(Rt::class); }
 
+    public function isSuperadmin()
+    {
+        return $this->email === 'aroundus.livelife@gmail.com';
+    }
+
     /**
      * Get the attributes that should be cast.
      *

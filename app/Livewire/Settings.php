@@ -11,7 +11,7 @@ class Settings extends Component
 
     public function mount()
     {
-        if (auth()->user()->role !== 'superadmin' || auth()->user()->email !== 'aroundus.livelife@gmail.com') {
+        if (!auth()->user()->isSuperadmin()) {
             abort(403, 'Unauthorized action. Superadmin only.');
         }
 
@@ -21,7 +21,7 @@ class Settings extends Component
 
     public function save()
     {
-        if (auth()->user()->role !== 'superadmin' || auth()->user()->email !== 'aroundus.livelife@gmail.com') {
+        if (!auth()->user()->isSuperadmin()) {
             abort(403, 'Unauthorized action. Superadmin only.');
         }
 

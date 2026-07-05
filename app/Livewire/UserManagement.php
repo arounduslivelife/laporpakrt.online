@@ -14,14 +14,14 @@ class UserManagement extends Component
     
     public function mount()
     {
-        if (auth()->user()->role !== 'superadmin' || auth()->user()->email !== 'aroundus.livelife@gmail.com') {
+        if (!auth()->user()->isSuperadmin()) {
             abort(403, 'Unauthorized action. Superadmin only.');
         }
     }
     
     public function save()
     {
-        if (auth()->user()->role !== 'superadmin' || auth()->user()->email !== 'aroundus.livelife@gmail.com') {
+        if (!auth()->user()->isSuperadmin()) {
             abort(403, 'Unauthorized action. Superadmin only.');
         }
 
@@ -54,7 +54,7 @@ class UserManagement extends Component
     
     public function delete($id)
     {
-        if (auth()->user()->role !== 'superadmin' || auth()->user()->email !== 'aroundus.livelife@gmail.com') {
+        if (!auth()->user()->isSuperadmin()) {
             abort(403, 'Unauthorized action. Superadmin only.');
         }
         User::where('id', '!=', auth()->id())->findOrFail($id)->delete();
