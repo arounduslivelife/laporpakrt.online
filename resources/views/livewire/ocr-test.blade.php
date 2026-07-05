@@ -1,6 +1,4 @@
 <div>
-    {{-- Assets - SELALU di-load --}}
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
     <style>
         .ocr-hero { background: linear-gradient(135deg, #1e3a5f 0%, #0d47a1 100%); color: #fff; border-radius: 1rem; padding: 2rem; margin-bottom: 1.5rem; }
         .ocr-upload-zone {
@@ -10,19 +8,6 @@
         }
         .ocr-upload-zone:hover { border-color: #1565c0; background: linear-gradient(135deg, #bbdefb 0%, #90caf9 100%); transform: translateY(-3px); box-shadow: 0 12px 30px rgba(21,101,192,.2); }
         .ocr-upload-zone .zone-icon { font-size: 3.5rem; color: #1565c0; }
-        .crop-overlay{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:9999;display:none;flex-direction:column}
-        .crop-header{padding:.75rem 1rem;background:#1e1e2e;color:#fff;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-        .crop-body{flex:1;overflow:hidden;background:#0a0a14;position:relative;width:100%;height:100%}
-        .crop-container{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
-        .crop-container img{display:block;max-width:100%;max-height:100%}
-        .crop-footer{padding:.75rem 1rem;background:#1e1e2e;display:flex;gap:.75rem;justify-content:center;flex-shrink:0}
-        .crop-footer .btn{min-width:120px;padding:.6rem 1.25rem;font-weight:600;font-size:.95rem}
-        @media(max-width:576px){
-            .crop-header{padding:.6rem .75rem}
-            .crop-header h6{font-size:.9rem}
-            .crop-footer{padding:.6rem .75rem;gap:.5rem}
-            .crop-footer .btn{min-width:100px;padding:.55rem 1rem;font-size:.85rem}
-        }
         .result-item { display: flex; align-items: center; padding: .65rem 1rem; border-bottom: 1px solid #f0f0f0; transition: background .2s; }
         .result-item:last-child { border-bottom: none; }
         .result-item:hover { background: #f8f9fa; }
@@ -36,6 +21,22 @@
         .fade-up { animation: fadeUp .5s ease forwards; }
         .spin { animation: spin-anim 1s linear infinite; }
         @keyframes spin-anim { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+
+        /* === WEBCAM OVERLAY === */
+        .webcam-overlay{position:fixed;inset:0;background:#000;z-index:9999;display:none;flex-direction:column}
+        .webcam-header{padding:1rem;background:#1a1a2e;color:#fff;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+        .webcam-body{flex:1;position:relative;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center}
+        .webcam-body video{min-width:100%;min-height:100%;object-fit:cover;position:absolute;inset:0;z-index:1}
+        .ktp-guide{position:absolute;width:90%;aspect-ratio:1.58;border:2px solid rgba(255,255,255,0.7);box-shadow:0 0 0 3000px rgba(0,0,0,0.6);z-index:10;border-radius:8px}
+        @media (min-aspect-ratio: 1/1) { .ktp-guide { width: 50%; } }
+        .guide-corner{position:absolute;width:30px;height:30px;border-color:#42a5f5;border-style:solid;z-index:11}
+        .guide-corner.top-left{top:-2px;left:-2px;border-width:4px 0 0 4px;border-top-left-radius:8px}
+        .guide-corner.top-right{top:-2px;right:-2px;border-width:4px 4px 0 0;border-top-right-radius:8px}
+        .guide-corner.bottom-left{bottom:-2px;left:-2px;border-width:0 0 4px 4px;border-bottom-left-radius:8px}
+        .guide-corner.bottom-right{bottom:-2px;right:-2px;border-width:0 4px 4px 0;border-bottom-right-radius:8px}
+        .guide-text{position:absolute;top:-30px;left:0;right:0;text-align:center;color:#fff;font-size:14px;font-weight:600;text-shadow:1px 1px 3px #000}
+        .webcam-footer{padding:1.5rem 1rem;background:#1a1a2e;display:flex;gap:1rem;justify-content:center;flex-shrink:0;z-index:10}
+        .webcam-footer .btn{min-width:130px;padding:.8rem 1.5rem;font-weight:600;border-radius:2rem;font-size:1rem}
     </style>
 
     <div class="app-content-header">
@@ -60,7 +61,7 @@
                 <div class="row align-items-center">
                     <div class="col-md-8">
                         <h3><i class="bi bi-cpu me-2"></i>Ekstrak Data KTP Otomatis</h3>
-                        <p class="mb-0 opacity-75">Upload atau foto KTP, lalu potong (crop) area KTP. AI akan membaca NIK, Nama, Alamat, dan data lainnya secara otomatis.</p>
+                        <p class="mb-0 opacity-75">Buka kamera dan arahkan ke KTP. Gambar otomatis di-crop dan diproses AI. Sangat cepat dan mudah.</p>
                     </div>
                     <div class="col-md-4 text-end d-none d-md-block">
                         <i class="bi bi-person-vcard" style="font-size: 4rem; opacity: .3;"></i>
@@ -71,16 +72,11 @@
             <div class="row">
                 <div class="col-lg-5 mb-4">
                     <div id="ocrUploadArea">
-                        <div class="ocr-upload-zone" onclick="document.getElementById('ocrFileInput').click()">
-                            <div class="zone-icon"><i class="bi bi-cloud-arrow-up"></i></div>
-                            <h5 class="fw-bold mt-2 mb-1">Klik untuk Foto / Upload KTP</h5>
-                            <p class="text-muted mb-2">Kamera akan terbuka otomatis di HP</p>
-                            <span class="badge bg-white text-dark border shadow-sm px-3 py-2">
-                                <i class="bi bi-image me-1"></i> JPG, PNG &bull; Maks 8MB
-                            </span>
+                        <div class="ocr-upload-zone" onclick="window._ocrOpenCam()">
+                            <div class="zone-icon"><i class="bi bi-camera"></i></div>
+                            <h5 class="fw-bold mt-2 mb-1">Buka Kamera Pemindai</h5>
+                            <p class="text-muted mb-2">Menggunakan WebRTC in-app camera</p>
                         </div>
-                        <input type="file" id="ocrFileInput" accept="image/*" capture="environment" class="d-none"
-                            onchange="window._ocrOpenCropper(this)">
                     </div>
 
                     <div id="ocrStatusArea" style="display:none;" class="fade-up">
@@ -89,6 +85,9 @@
                                 <i class="bi bi-cpu text-primary spin" style="font-size: 2.5rem;"></i>
                                 <h5 class="fw-bold mt-3">AI Sedang Membaca KTP...</h5>
                                 <p class="text-muted small mb-3">Mengekstrak NIK, Nama, Alamat, dan data lainnya</p>
+                                <div class="mt-3 mb-4">
+                                    <img id="ktp-preview-img" src="" class="img-thumbnail rounded" style="max-height: 120px; display: none; margin: 0 auto;">
+                                </div>
                                 <div class="scan-shimmer mx-auto" style="max-width: 250px;">
                                     <div class="scan-shimmer-bar"></div>
                                 </div>
@@ -105,8 +104,6 @@
                             <div class="alert alert-danger mb-0">
                                 <h6 class="alert-heading"><i class="bi bi-exclamation-triangle me-1"></i> Gagal Scan</h6>
                                 <p class="mb-2">{{ $errorMessage }}</p>
-                                <hr>
-                                <p class="mb-0 small">Pastikan Tesseract OCR sudah terinstall di server.</p>
                             </div>
                         </div>
                     </div>
@@ -119,7 +116,7 @@
                         <div class="card-body d-flex flex-column align-items-center justify-content-center p-5 text-center">
                             <div style="font-size: 5rem; opacity: .08;"><i class="bi bi-person-vcard"></i></div>
                             <h5 class="text-muted fw-light mt-2">Hasil OCR akan muncul di sini</h5>
-                            <p class="text-muted small">Upload dan crop foto KTP terlebih dahulu</p>
+                            <p class="text-muted small">Ambil gambar KTP dengan kamera pemindai terlebih dahulu</p>
                         </div>
                     </div>
                     @elseif(!empty($parsed))
@@ -178,101 +175,138 @@
     </div>
 
     {{-- ============================================================ --}}
-    {{-- Cropper Overlay & Scripts - DI LUAR conditional blocks --}}
+    {{-- WEBCAM OVERLAY --}}
     {{-- ============================================================ --}}
-    <div id="ocrCropOverlay" class="crop-overlay">
-        <div class="crop-header">
-            <h6 class="mb-0"><i class="bi bi-crop me-2"></i>Potong Area KTP</h6>
-            <button type="button" class="btn btn-sm btn-outline-light" onclick="window._ocrCloseCropper()"><i class="bi bi-x-lg"></i></button>
+    <div id="ocrCamOverlay" class="webcam-overlay">
+        <div class="webcam-header">
+            <h6 class="mb-0"><i class="bi bi-camera me-2"></i>Scan KTP</h6>
+            <button type="button" class="btn btn-sm btn-outline-light" onclick="window._ocrCloseCam()"><i class="bi bi-x-lg"></i></button>
         </div>
-        <div class="px-3 py-2 text-center" style="background:#252540; color:#adb5bd;">
-            <small><i class="bi bi-info-circle me-1"></i>Seret & perbesar kotak biru agar membingkai KTP fisik saja.</small>
-        </div>
-        <div class="crop-body">
-            <div class="crop-container">
-                <img id="ocrCropImage" src="" alt="KTP">
+        <div class="webcam-body">
+            <video id="ocrVideo" autoplay playsinline></video>
+            <div id="ocrGuide" class="ktp-guide">
+                <div class="guide-text">Posisikan KTP di dalam kotak ini</div>
+                <div class="guide-corner top-left"></div>
+                <div class="guide-corner top-right"></div>
+                <div class="guide-corner bottom-left"></div>
+                <div class="guide-corner bottom-right"></div>
             </div>
         </div>
-        <div class="crop-footer">
-            <button type="button" class="btn btn-outline-light px-4" onclick="window._ocrCloseCropper()">Batal</button>
-            <button type="button" class="btn btn-primary px-4" id="btnOcrCropScan" onclick="window._ocrDoCrop()">
-                <i class="bi bi-upc-scan me-1"></i> Crop & Scan KTP
+        <div class="webcam-footer">
+            <button type="button" class="btn btn-outline-light" onclick="window._ocrCloseCam()">Batal</button>
+            <button type="button" class="btn btn-primary" id="btnTakeOcrPic" onclick="window._ocrTakePic()">
+                <i class="bi bi-camera-fill me-1"></i> Ambil Foto
             </button>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <canvas id="ocrCanvas" style="display:none;"></canvas>
+
     <script>
         (function() {
-            var cropper = null;
+            var stream = null;
 
-            window._ocrOpenCropper = function(input) {
-                var file = input.files[0];
-                if (!file) return;
-                if (file.size > 8 * 1024 * 1024) { alert('File terlalu besar. Maks 8MB.'); input.value = ''; return; }
-
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    var img = document.getElementById('ocrCropImage');
-                    img.src = e.target.result;
-                    document.getElementById('ocrCropOverlay').style.display = 'flex';
-
-                    setTimeout(function() {
-                        if (cropper) cropper.destroy();
-                        cropper = new Cropper(img, {
-                            viewMode: 1,
-                            autoCropArea: 0.85,
-                            responsive: true,
-                            background: true,
-                        });
-                    }, 300);
-                };
-                reader.readAsDataURL(file);
+            window._ocrOpenCam = function() {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    alert('Browser Anda tidak mendukung fitur Web Camera. Gunakan Chrome atau Safari terbaru.');
+                    return;
+                }
+                document.getElementById('ocrCamOverlay').style.display = 'flex';
+                navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
+                    audio: false
+                }).then(function(s) {
+                    stream = s;
+                    var video = document.getElementById('ocrVideo');
+                    video.srcObject = stream;
+                    video.play();
+                }).catch(function(err) {
+                    console.error(err);
+                    alert('Gagal mengakses kamera: ' + err.message);
+                    window._ocrCloseCam();
+                });
             };
 
-            window._ocrCloseCropper = function() {
-                document.getElementById('ocrCropOverlay').style.display = 'none';
-                if (cropper) { cropper.destroy(); cropper = null; }
+            window._ocrCloseCam = function() {
+                document.getElementById('ocrCamOverlay').style.display = 'none';
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                    stream = null;
+                }
             };
 
-            window._ocrDoCrop = function() {
-                if (!cropper) return;
-                var btn = document.getElementById('btnOcrCropScan');
+            window._ocrTakePic = function() {
+                var btn = document.getElementById('btnTakeOcrPic');
                 btn.disabled = true;
                 btn.innerHTML = '<i class="bi bi-arrow-repeat spin me-1"></i> Memproses...';
 
-                cropper.getCroppedCanvas({ maxWidth: 1600, maxHeight: 1600 }).toBlob(function(blob) {
+                var video = document.getElementById('ocrVideo');
+                var guide = document.getElementById('ocrGuide');
+                var canvas = document.getElementById('ocrCanvas');
+                var ctx = canvas.getContext('2d');
+
+                var vw = video.videoWidth;
+                var vh = video.videoHeight;
+                var cw = video.clientWidth;
+                var ch = video.clientHeight;
+                var vRatio = vw / vh;
+                var cRatio = cw / ch;
+
+                var renderW, renderH;
+                if (cRatio > vRatio) { renderW = cw; renderH = cw / vRatio; } 
+                else { renderH = ch; renderW = ch * vRatio; }
+                
+                var offsetX = (renderW - cw) / 2;
+                var offsetY = (renderH - ch) / 2;
+                var guideRect = guide.getBoundingClientRect();
+                var containerRect = video.parentElement.getBoundingClientRect();
+                var gX = guideRect.left - containerRect.left;
+                var gY = guideRect.top - containerRect.top;
+                
+                var scale = vw / renderW;
+                var cropX = (gX + offsetX) * scale;
+                var cropY = (gY + offsetY) * scale;
+                var cropW = guideRect.width * scale;
+                var cropH = guideRect.height * scale;
+
+                canvas.width = cropW;
+                canvas.height = cropH;
+                ctx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+
+                canvas.toBlob(function(blob) {
                     if (!blob) {
-                        btn.disabled = false;
-                        btn.innerHTML = '<i class="bi bi-upc-scan me-1"></i> Crop & Scan KTP';
-                        alert('Gagal crop.');
-                        return;
+                        btn.disabled = false; btn.innerHTML = '<i class="bi bi-camera-fill me-1"></i> Ambil Foto';
+                        alert('Gagal mengambil gambar.'); return;
                     }
-                    var croppedFile = new File([blob], 'ktp_cropped.jpg', { type: 'image/jpeg' });
+                    var file = new File([blob], 'scan_ktp.jpg', { type: 'image/jpeg' });
+                    
+                    var previewUrl = URL.createObjectURL(blob);
+                    var imgPreview = document.getElementById('ktp-preview-img');
+                    if (imgPreview) { imgPreview.src = previewUrl; imgPreview.style.display = 'block'; }
 
                     var component = Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id'));
-                    component.upload('image', croppedFile, function() {
-                        window._ocrCloseCropper();
-                        btn.disabled = false;
-                        btn.innerHTML = '<i class="bi bi-upc-scan me-1"></i> Crop & Scan KTP';
-
+                    component.upload('image', file, function() {
+                        window._ocrCloseCam();
+                        btn.disabled = false; btn.innerHTML = '<i class="bi bi-camera-fill me-1"></i> Ambil Foto';
+                        
                         document.getElementById('ocrUploadArea').style.display = 'none';
                         document.getElementById('ocrStatusArea').style.display = 'block';
-
+                        
                         component.call('scan');
                     }, function(error) {
-                        btn.disabled = false;
-                        btn.innerHTML = '<i class="bi bi-upc-scan me-1"></i> Crop & Scan KTP';
-                        console.error(error);
-                        alert('Upload gagal. Cek koneksi internet.');
+                        btn.disabled = false; btn.innerHTML = '<i class="bi bi-camera-fill me-1"></i> Ambil Foto';
+                        alert('Upload gagal. Cek koneksi.');
                     }, function() {});
-                }, 'image/jpeg', 0.85);
+                }, 'image/jpeg', 0.9);
             };
 
             window._ocrReset = function() {
-                document.getElementById('ocrUploadArea').style.display = 'block';
-                document.getElementById('ocrStatusArea').style.display = 'none';
-                document.getElementById('ocrFileInput').value = '';
+                var dz = document.getElementById('ocrUploadArea');
+                var sc = document.getElementById('ocrStatusArea');
+                var imgPreview = document.getElementById('ktp-preview-img');
+                if (dz) dz.style.display = 'block';
+                if (sc) sc.style.display = 'none';
+                if (imgPreview) { imgPreview.src = ''; imgPreview.style.display = 'none'; }
                 var component = Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id'));
                 component.call('resetTest');
             };
