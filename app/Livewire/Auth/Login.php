@@ -4,9 +4,12 @@ namespace App\Livewire\Auth;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use App\Traits\DetectsMobile;
 
 class Login extends Component
 {
+    use DetectsMobile;
+
     public $email;
     public $password;
 
@@ -27,6 +30,10 @@ class Login extends Component
 
     public function render()
     {
+        if ($this->isMobile()) {
+            return view('livewire.mobile.auth.login')->layout('layouts.mobile-auth', ['title' => 'Login - LaporPakRT']);
+        }
+
         return view('livewire.auth.login')->layout('layouts.auth');
     }
 }

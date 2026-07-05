@@ -8,9 +8,12 @@ use App\Models\Rt;
 use App\Models\Region;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use App\Traits\DetectsMobile;
 
 class Register extends Component
 {
+    use DetectsMobile;
+
     public $name, $email, $password, $password_confirmation;
     public $province_id, $regency_id, $district_id, $village_id;
     public $rw, $rt;
@@ -87,6 +90,10 @@ class Register extends Component
 
     public function render()
     {
+        if ($this->isMobile()) {
+            return view('livewire.mobile.auth.register')->layout('layouts.mobile-auth', ['title' => 'Daftar - LaporPakRT']);
+        }
+
         return view('livewire.auth.register')->layout('layouts.auth');
     }
 }
