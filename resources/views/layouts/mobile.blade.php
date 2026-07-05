@@ -31,7 +31,8 @@
         }
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-color);
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f0fdf4 100%);
+            background-attachment: fixed;
             color: var(--text-main);
             padding-bottom: calc(85px + env(safe-area-inset-bottom));
             -webkit-font-smoothing: antialiased;
@@ -164,34 +165,84 @@
 
     <nav class="mobile-bottom-nav">
         <a href="{{ route('dashboard') }}" class="nav-item {{ request()->is('dashboard') ? 'active' : '' }}">
-            <i class="bi bi-house{{ request()->is('dashboard') ? '-fill' : '' }}"></i>
+            <i class="bi bi-house{{ request()->is('dashboard') ? '-fill' : '' }} text-primary"></i>
             <span>Beranda</span>
         </a>
         
         @if(auth()->user() && (auth()->user()->role == 'rt_admin' || auth()->user()->isSuperadmin()))
         <a href="{{ route('warga.index') }}" class="nav-item {{ request()->is('warga*') ? 'active' : '' }}">
-            <i class="bi bi-people{{ request()->is('warga*') ? '-fill' : '' }}"></i>
+            <i class="bi bi-people{{ request()->is('warga*') ? '-fill' : '' }} text-info"></i>
             <span>Warga</span>
-        </a>
-        <a href="{{ route('kas.index') }}" class="nav-item {{ request()->is('kas*') ? 'active' : '' }}">
-            <i class="bi bi-wallet2"></i>
-            <span>Kas RT</span>
         </a>
         @endif
         
         @if(auth()->user() && (auth()->user()->role == 'rt_admin' || auth()->user()->isSuperadmin() || auth()->user()->role == 'security'))
         <a href="{{ route('tamu.index') }}" class="nav-item {{ request()->is('tamu*') ? 'active' : '' }}">
-            <i class="bi bi-book{{ request()->is('tamu*') ? '-fill' : '' }}"></i>
+            <i class="bi bi-book{{ request()->is('tamu*') ? '-fill' : '' }} text-success"></i>
             <span>Tamu</span>
         </a>
         @endif
         
-        <form action="{{ route('logout') }}" method="POST" id="logout-form-mobile" class="d-none">@csrf</form>
-        <a href="#" class="nav-item text-danger opacity-75" onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();">
-            <i class="bi bi-box-arrow-right"></i>
-            <span>Keluar</span>
+        <a href="#" class="nav-item text-secondary" data-bs-toggle="offcanvas" data-bs-target="#masterMenu" aria-controls="masterMenu">
+            <i class="bi bi-grid-fill text-warning"></i>
+            <span>Menu</span>
         </a>
     </nav>
+
+    <!-- Master Menu Offcanvas -->
+    <div class="offcanvas offcanvas-bottom" tabindex="-1" id="masterMenu" aria-labelledby="masterMenuLabel" style="border-radius: 24px 24px 0 0; min-height: 40vh; max-height: 80vh;">
+        <div class="offcanvas-header pb-0 border-0">
+            <h6 class="offcanvas-title fw-bold text-dark" id="masterMenuLabel">Menu Utama</h6>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body pt-3 pb-5">
+            <div class="row g-3">
+                @if(auth()->user() && (auth()->user()->role == 'rt_admin' || auth()->user()->isSuperadmin()))
+                <div class="col-4 text-center">
+                    <a href="{{ route('kas.index') }}" class="text-decoration-none d-block">
+                        <div class="bg-success bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 56px; height: 56px;">
+                            <i class="bi bi-wallet2 text-success fs-3"></i>
+                        </div>
+                        <span class="text-dark small fw-medium">Kas RT</span>
+                    </a>
+                </div>
+                <div class="col-4 text-center">
+                    <a href="#" class="text-decoration-none d-block">
+                        <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 56px; height: 56px;">
+                            <i class="bi bi-envelope-paper text-primary fs-3"></i>
+                        </div>
+                        <span class="text-dark small fw-medium">Surat</span>
+                    </a>
+                </div>
+                <div class="col-4 text-center">
+                    <a href="#" class="text-decoration-none d-block">
+                        <div class="bg-secondary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 56px; height: 56px;">
+                            <i class="bi bi-gear text-secondary fs-3"></i>
+                        </div>
+                        <span class="text-dark small fw-medium">Pengaturan</span>
+                    </a>
+                </div>
+                @endif
+                <div class="col-4 text-center">
+                    <a href="#" class="text-decoration-none d-block">
+                        <div class="bg-info bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 56px; height: 56px;">
+                            <i class="bi bi-person-badge text-info fs-3"></i>
+                        </div>
+                        <span class="text-dark small fw-medium">Profil Saya</span>
+                    </a>
+                </div>
+                <div class="col-4 text-center">
+                    <form action="{{ route('logout') }}" method="POST" id="logout-form-offcanvas" class="d-none">@csrf</form>
+                    <a href="#" class="text-decoration-none d-block" onclick="event.preventDefault(); document.getElementById('logout-form-offcanvas').submit();">
+                        <div class="bg-danger bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 56px; height: 56px;">
+                            <i class="bi bi-box-arrow-right text-danger fs-3"></i>
+                        </div>
+                        <span class="text-danger small fw-medium">Keluar</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     @livewireScripts

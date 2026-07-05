@@ -37,32 +37,62 @@
         </div>
     </div>
 
-    <!-- Quick Actions -->
-    <h6 class="fw-bold mb-3 mt-4 text-muted small text-uppercase">Akses Cepat</h6>
-    <div class="row g-3 mb-5">
-        <div class="col-4">
-            <a href="{{ route('warga.index') }}" class="text-decoration-none">
-                <div class="soft-card text-center p-3 h-100 d-flex flex-column align-items-center justify-content-center">
-                    <i class="bi bi-person-plus text-primary fs-2 mb-1"></i>
-                    <span class="text-dark fw-semibold" style="font-size: 0.75rem;">Warga Baru</span>
-                </div>
-            </a>
-        </div>
-        <div class="col-4">
-            <a href="{{ route('tamu.index') }}" class="text-decoration-none">
-                <div class="soft-card text-center p-3 h-100 d-flex flex-column align-items-center justify-content-center">
-                    <i class="bi bi-book text-success fs-2 mb-1"></i>
-                    <span class="text-dark fw-semibold" style="font-size: 0.75rem;">Buku Tamu</span>
-                </div>
-            </a>
-        </div>
-        <div class="col-4">
-            <a href="{{ route('kas.index') }}" class="text-decoration-none">
-                <div class="soft-card text-center p-3 h-100 d-flex flex-column align-items-center justify-content-center">
-                    <i class="bi bi-cash-coin text-warning fs-2 mb-1"></i>
-                    <span class="text-dark fw-semibold" style="font-size: 0.75rem;">Kas RT</span>
-                </div>
-            </a>
-        </div>
+    <!-- Chart Section -->
+    <h6 class="fw-bold mb-3 mt-4 text-muted small text-uppercase">Statistik Keuangan</h6>
+    <div class="soft-card mb-5 p-3">
+        <div id="mobileKasChart" style="min-height: 250px;"></div>
     </div>
 </div>
+
+@script
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+    document.addEventListener('livewire:initialized', () => {
+        var options = {
+            series: [{
+                name: 'Pemasukan',
+                data: @json($chartPemasukan)
+            }, {
+                name: 'Pengeluaran',
+                data: @json($chartPengeluaran)
+            }],
+            chart: {
+                type: 'bar',
+                height: 280,
+                toolbar: { show: false }
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '60%',
+                    borderRadius: 4
+                },
+            },
+            dataLabels: { enabled: false },
+            stroke: { show: true, width: 2, colors: ['transparent'] },
+            xaxis: {
+                categories: @json($chartBulan),
+                labels: { style: { fontSize: '10px' } }
+            },
+            yaxis: {
+                labels: {
+                    style: { fontSize: '10px' },
+                    formatter: function (val) {
+                        return "Rp " + (val / 1000) + "K"
+                    }
+                }
+            },
+            fill: { opacity: 1 },
+            colors: ['#10b981', '#ef4444'], // green and red that matches the mobile theme
+            legend: {
+                position: 'top',
+                horizontalAlign: 'center',
+                fontSize: '12px'
+            }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#mobileKasChart"), options);
+        chart.render();
+    });
+</script>
+@endscript
