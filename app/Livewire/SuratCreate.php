@@ -7,6 +7,7 @@ use App\Models\Warga;
 use App\Models\Surat;
 use Illuminate\Support\Str;
 use App\Traits\DetectsMobile;
+use Illuminate\Validation\Rule;
 
 class SuratCreate extends Component
 {
@@ -22,7 +23,10 @@ class SuratCreate extends Component
     public function save()
     {
         $this->validate([
-            'warga_id' => 'required|exists:wargas,id',
+            'warga_id' => [
+                'required',
+                Rule::exists('wargas', 'id')->where('rt_id', auth()->user()->rt_id)
+            ],
             'jenis' => 'required|string',
             'keperluan' => 'required|string',
         ]);

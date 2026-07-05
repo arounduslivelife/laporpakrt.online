@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Warga;
 use Illuminate\Support\Facades\Hash;
 use App\Traits\DetectsMobile;
+use Illuminate\Validation\Rule;
 
 class UserManagement extends Component
 {
@@ -26,7 +27,12 @@ class UserManagement extends Component
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6',
             'role' => 'required|in:warga,security',
-            'warga_id' => 'required_if:role,warga',
+            'warga_id' => [
+                'required_if:role,warga',
+                Rule::exists('wargas', 'id')->where(function ($query) {
+                    return $query->where('rt_id', auth()->user()->rt_id);
+                }),
+            ],
             'name' => 'required_if:role,security',
         ]);
 

@@ -6,6 +6,7 @@ use Livewire\WithPagination;
 use App\Models\KasTransaction;
 use App\Models\Warga;
 use App\Traits\DetectsMobile;
+use Illuminate\Validation\Rule;
 
 class KasIndex extends Component
 {
@@ -40,7 +41,10 @@ class KasIndex extends Component
             'jumlah' => 'required|numeric|min:1',
             'kategori' => 'required|string|max:255',
             'keterangan' => 'nullable|string',
-            'warga_id' => 'nullable|exists:wargas,id',
+            'warga_id' => [
+                'nullable',
+                Rule::exists('wargas', 'id')->where('rt_id', auth()->user()->rt_id)
+            ],
             'periode_bulan' => 'nullable|date_format:Y-m',
         ]);
 
