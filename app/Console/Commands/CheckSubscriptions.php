@@ -24,14 +24,28 @@ class CheckSubscriptions extends Command
 
         foreach ($expiredSubscriptions as $sub) {
             $rt = \App\Models\Rt::find($sub->rt_id);
+            
+            // Bypass RT 000
+            if ($rt && $rt->rt == '000' && $rt->rw == '000') {
+                continue;
+            }
+
             if ($rt) {
-                // Delete related data (assuming relationships have cascade deletes, if not, delete manually)
-                // Warga, Tamu, Kas, Surat, Users
-                \App\Models\User::where('rt_id', $rt->id)->delete();
-                \App\Models\Warga::where('rt_id', $rt->id)->delete();
-                \App\Models\Tamu::where('rt_id', $rt->id)->delete();
-                \App\Models\Kas::where('rt_id', $rt->id)->delete();
-                \App\Models\Surat::where('rt_id', $rt->id)->delete();
+                // Delete related data with loop to trigger deleting events for files
+                $users = \App\Models\User::where('rt_id', $rt->id)->get();
+                foreach($users as $user) { $user->delete(); }
+                
+                $wargas = \App\Models\Warga::where('rt_id', $rt->id)->get();
+                foreach($wargas as $warga) { $warga->delete(); }
+                
+                $tamus = \App\Models\Tamu::where('rt_id', $rt->id)->get();
+                foreach($tamus as $tamu) { $tamu->delete(); }
+                
+                $kasTransactions = \App\Models\KasTransaction::where('rt_id', $rt->id)->get();
+                foreach($kasTransactions as $kas) { $kas->delete(); }
+                
+                $surats = \App\Models\Surat::where('rt_id', $rt->id)->get();
+                foreach($surats as $surat) { $surat->delete(); }
                 
                 // Finally delete subscription and RT
                 $sub->delete();

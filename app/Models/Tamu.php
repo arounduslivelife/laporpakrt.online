@@ -13,4 +13,16 @@ class Tamu extends Model
 {
     public function rt()       { return $this->belongsTo(Rt::class); }
     public function creator()  { return $this->belongsTo(User::class, 'created_by'); }
+
+    protected static function booted()
+    {
+        static::deleting(function ($tamu) {
+            if ($tamu->foto_wajah) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($tamu->foto_wajah);
+            }
+            if ($tamu->foto_ktp) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($tamu->foto_ktp);
+            }
+        });
+    }
 }
