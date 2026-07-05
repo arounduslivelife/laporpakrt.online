@@ -10,8 +10,14 @@ use App\Livewire\WargaIndex;
 use App\Livewire\TamuIndex;
 use App\Livewire\OcrTest;
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', function (\Illuminate\Http\Request $request) {
+    $ip = $request->ip();
+    if ($ip) {
+        \App\Models\Visitor::firstOrCreate(['ip_address' => $ip]);
+    }
+    $visitorCount = \App\Models\Visitor::count();
+    
+    return view('welcome', compact('visitorCount'));
 });
 
 Route::any('/testpath', function () {

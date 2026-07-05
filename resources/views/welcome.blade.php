@@ -477,6 +477,9 @@
                     <small class="text-muted">Pencatatan RT lebih mudah dan modern.</small>
                 </div>
                 <div class="text-center text-md-end text-muted small">
+                    <div class="mb-2">
+                        <span class="badge bg-light text-dark border"><i class="bi bi-eye text-primary me-1"></i> {{ number_format($visitorCount ?? 0) }} Pengunjung Unik</span>
+                    </div>
                     &copy; {{ date('Y') }} LaporPakRT.online<br>
                     All rights reserved.
                 </div>
