@@ -175,6 +175,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="{{ route('subscriptions.index') }}" class="nav-link {{ request()->is('subscriptions*') ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-diagram-3"></i>
+                                <p>Langganan RT</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="{{ route('settings.index') }}" class="nav-link {{ request()->is('settings*') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-gear"></i>
                                 <p>Pengaturan Sistem</p>

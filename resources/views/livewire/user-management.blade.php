@@ -65,6 +65,15 @@
             @endif
 
             <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Daftar Pengguna</h5>
+                    <div style="width: 250px;">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control" placeholder="Cari nama/email..." wire:model.live.debounce.300ms="search">
+                        </div>
+                    </div>
+                </div>
                 <div class="card-body p-0 table-responsive">
                     <table class="table table-striped table-hover mb-0">
                         <thead>
@@ -72,6 +81,7 @@
                                 <th>Nama Lengkap</th>
                                 <th>Email</th>
                                 <th>Role</th>
+                                <th>Wilayah RT</th>
                                 <th>Terhubung Dengan</th>
                                 <th>Aksi</th>
                             </tr>
@@ -86,8 +96,18 @@
                                         <span class="badge bg-info">Warga</span>
                                     @elseif($user->role == 'security')
                                         <span class="badge bg-secondary">Satpam</span>
+                                    @elseif($user->role == 'superadmin')
+                                        <span class="badge bg-dark">Superadmin</span>
                                     @else
                                         <span class="badge bg-primary">Admin RT</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($user->rt)
+                                        RT {{ $user->rt->rt }} / RW {{ $user->rt->rw }} <br>
+                                        <small class="text-muted">{{ $user->rt->village->name ?? '-' }}</small>
+                                    @else
+                                        -
                                     @endif
                                 </td>
                                 <td>
@@ -102,7 +122,7 @@
                                 </td>
                             </tr>
                             @empty
-                            <tr><td colspan="5" class="text-center text-muted">Belum ada akun tambahan.</td></tr>
+                            <tr><td colspan="6" class="text-center text-muted py-4">Belum ada data pengguna.</td></tr>
                             @endforelse
                         </tbody>
                     </table>

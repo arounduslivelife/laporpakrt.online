@@ -37,6 +37,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/surat/{id}/pdf', [\App\Http\Controllers\SuratController::class, 'pdf'])->name('surat.pdf');
     Route::get('/kas', \App\Livewire\KasIndex::class)->name('kas.index');
     Route::get('/users', \App\Livewire\UserManagement::class)->name('users.index');
+    Route::get('/subscriptions', \App\Livewire\SubscriptionManagement::class)->name('subscriptions.index');
     Route::get('/settings', \App\Livewire\Settings::class)->name('settings.index');
     Route::post('/logout', function() { \Illuminate\Support\Facades\Auth::logout(); session()->regenerateToken(); return redirect('/'); })->name('logout');
 });

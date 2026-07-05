@@ -232,6 +232,14 @@
                         <span class="text-dark small fw-medium">Manajemen</span>
                     </a>
                 </div>
+                <div class="col-4 text-center">
+                    <a href="{{ route('subscriptions.index') }}" class="text-decoration-none d-block">
+                        <div class="bg-dark bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 56px; height: 56px;">
+                            <i class="bi bi-diagram-3 text-dark fs-3"></i>
+                        </div>
+                        <span class="text-dark small fw-medium">Langganan</span>
+                    </a>
+                </div>
                 @else
                 <div class="col-4 text-center">
                     <a href="#" class="text-decoration-none d-block">

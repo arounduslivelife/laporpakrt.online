@@ -59,11 +59,29 @@ class UserManagement extends Component
         User::where('id', '!=', auth()->id())->findOrFail($id)->delete();
     }
 
+    public $search = '';
+
     public function render()
     {
-        // Superadmin sees all users
-        $users = User::where('id', '!=', auth()->id())->get();
-        $wargas = Warga::all();
+        // Superadmin sees all users, RT Admin sees their own RT
+        $query = User::with('rt.village')->where('id', '!=', auth()->id());
+        
+        if (!auth()->user()->isSuperadmin()) {
+            $query->where('rt_id', auth()->user()->rt_id);
+        }
+
+        if (!empty($this->search)) {
+            $query->where(function($q) {
+                $q->where('name', 'like', '%' . $this->search . '%')
+                  ->orWhere('email', 'like', '%' . $this->search . '%')
+                  ->orWhereHas('rt', function($q) {
+                      $q->where('rt', 'like', '%' . $this->search . '%');
+                  });
+            });
+        }
+        
+        $users = $query->get();
+        $wargas = Warga::where('rt_id', auth()->user()->rt_id)->get();
         
         if ($this->isMobile()) {
             return view('livewire.mobile.user-management', compact('users', 'wargas'))
