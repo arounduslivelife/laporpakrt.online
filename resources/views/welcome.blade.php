@@ -479,7 +479,7 @@
                     <div class="mb-2">
                         <span class="badge bg-light text-dark border fs-6">{{ number_format($visitorCount ?? 0) }} <i class="bi bi-eye text-primary ms-1"></i></span>
                     </div>
-                    &copy; {{ date('Y') }} LaporPakRT.online<br>
+                    &copy; {{ date('Y') }} LaporPakRT.online oleh <a href="https://home.agungds.web.id" target="_blank" class="text-decoration-none">agungds</a><br>
                     All rights reserved.
                 </div>
             </div>

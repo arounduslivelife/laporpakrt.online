@@ -15,6 +15,11 @@
 <body class="login-page bg-body-secondary">
     {{ $slot }}
     
+    <div class="text-center text-muted small mt-4 mb-4">
+        &copy; {{ date('Y') }} LaporPakRT.online oleh <a href="https://home.agungds.web.id" target="_blank" class="text-decoration-none">agungds</a><br>
+        All rights reserved.
+    </div>
+    
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/adminlte.min.js') }}"></script>
     @livewireScripts

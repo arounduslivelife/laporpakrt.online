@@ -87,8 +87,13 @@
 </head>
 <body>
     
-    <div class="container px-4 d-flex justify-content-center">
+    <div class="container px-4 d-flex justify-content-center flex-column align-items-center">
         {{ $slot }}
+
+        <div class="text-center text-muted small mt-4" style="position: absolute; bottom: 20px; left: 0; right: 0;">
+            &copy; {{ date('Y') }} LaporPakRT.online oleh <a href="https://home.agungds.web.id" target="_blank" class="text-decoration-none">agungds</a><br>
+            All rights reserved.
+        </div>
     </div>
 
     @livewireScripts

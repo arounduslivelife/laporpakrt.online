@@ -227,6 +227,11 @@
         <main class="app-main">
             {{ $slot }}
         </main>
+
+        <footer class="app-footer text-center text-muted small py-3 mt-auto">
+            &copy; {{ date('Y') }} LaporPakRT.online oleh <a href="https://home.agungds.web.id" target="_blank" class="text-decoration-none">agungds</a><br>
+            All rights reserved.
+        </footer>
     </div>
     
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>

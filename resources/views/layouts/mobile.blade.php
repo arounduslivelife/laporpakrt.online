@@ -161,6 +161,11 @@
 
     <main class="container-fluid px-3 py-4">
         {{ $slot }}
+
+        <div class="text-center text-muted small mt-5 mb-4" style="padding-bottom: 70px;">
+            &copy; {{ date('Y') }} LaporPakRT.online oleh <a href="https://home.agungds.web.id" target="_blank" class="text-decoration-none">agungds</a><br>
+            All rights reserved.
+        </div>
     </main>
 
     <nav class="mobile-bottom-nav">
