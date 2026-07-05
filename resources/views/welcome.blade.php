@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LaporPakRT - Digitalisasi RT Modern</title>
+    <title>LaporPakRT - Pencatatan RT Lebih Mudah</title>
     
-    <!-- Google Fonts: Poppins -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Bootstrap CSS & Icons -->
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
@@ -19,242 +19,281 @@
 
     <style>
         :root {
-            --primary-color: #0061ff;
-            --secondary-color: #60efff;
-            --text-dark: #1e293b;
-            --text-light: #64748b;
+            --primary: #0ea5e9;
+            --primary-hover: #0284c7;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --bg-light: #f8fafc;
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Inter', sans-serif;
             color: var(--text-dark);
+            background-color: white;
             overflow-x: hidden;
-            background-color: #f8fafc;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Glassmorphism Navbar */
-        .navbar-glass {
-            background: rgba(255, 255, 255, 0.85) !important;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        h1, h2, h3, h4, h5, h6 {
+            letter-spacing: -0.02em;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #f1f5f9;
+            padding: 1.25rem 0;
             transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            padding: 0.75rem 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
         }
 
         .navbar-brand {
             font-weight: 800;
-            font-size: 1.5rem;
-            background: linear-gradient(135deg, var(--primary-color), #00d2ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-size: 1.4rem;
+            color: var(--text-dark) !important;
         }
 
         .nav-link {
             font-weight: 500;
-            color: var(--text-dark) !important;
-            transition: color 0.3s;
+            color: var(--text-muted) !important;
+            margin: 0 0.5rem;
+            transition: color 0.2s ease;
         }
 
         .nav-link:hover {
-            color: var(--primary-color) !important;
+            color: var(--primary) !important;
         }
 
-        /* Hero Section with Mesh Gradient */
-        .hero-section {
-            position: relative;
-            padding: 140px 0 100px;
-            background: radial-gradient(circle at 10% 20%, rgba(96, 239, 255, 0.1) 0%, rgba(0, 97, 255, 0.05) 90.2%);
-            overflow: hidden;
-        }
-
-        /* Floating Animation */
-        @keyframes floating {
-            0% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(2deg); }
-            100% { transform: translateY(0px) rotate(0deg); }
-        }
-
-        /* Village Animations */
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        @keyframes slideRight { 0% { transform: translateX(-50px); } 100% { transform: translateX(900px); } }
-        @keyframes slideLeft { 0% { transform: translateX(50px) scaleX(-1); } 100% { transform: translateX(-900px) scaleX(-1); } }
-
-        .hero-illustration {
-            animation: floating 4s ease-in-out infinite;
-            max-width: 100%;
-            height: auto;
-            filter: drop-shadow(0 20px 30px rgba(0,97,255,0.15));
-        }
-
-        .hero-title {
-            font-weight: 800;
-            font-size: 3.5rem;
-            line-height: 1.2;
-            margin-bottom: 1.5rem;
-            color: var(--text-dark);
-        }
-
-        .hero-title span {
-            color: var(--primary-color);
-        }
-
-        .btn-custom {
-            padding: 0.8rem 2rem;
+        /* Buttons */
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
             font-weight: 600;
+            padding: 0.75rem 1.75rem;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 14px rgba(14, 165, 233, 0.25);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            border-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.35);
+        }
+        
+        .btn-outline {
+            border: 2px solid #e2e8f0;
+            background: white;
+            color: var(--text-dark);
+            font-weight: 600;
+            padding: 0.75rem 1.75rem;
             border-radius: 50px;
             transition: all 0.3s ease;
         }
-
-        .btn-primary-custom {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #00d2ff 100%);
-            border: none;
-            color: white;
-            box-shadow: 0 10px 20px rgba(0, 97, 255, 0.3);
+        
+        .btn-outline:hover {
+            border-color: var(--text-dark);
+            transform: translateY(-2px);
         }
 
-        .btn-primary-custom:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 25px rgba(0, 97, 255, 0.4);
-            color: white;
+        /* Hero Section */
+        .hero-section {
+            padding: 180px 0 100px;
+            background: radial-gradient(circle at top right, rgba(14, 165, 233, 0.05) 0%, rgba(255,255,255,0) 60%);
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
         }
 
-        /* Features Section */
+        .hero-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            line-height: 1.15;
+            color: var(--text-dark);
+        }
+        
+        .hero-title .highlight {
+            color: var(--primary);
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Hero Graphics Animation */
+        .hero-graphics {
+            position: relative;
+            height: 400px;
+        }
+
+        .graphic-card {
+            background: white;
+            border: 1px solid #f1f5f9;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.05);
+            padding: 24px;
+            position: absolute;
+            transition: transform 0.5s ease;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .card-main {
+            width: 80%;
+            top: 20px;
+            right: 0;
+            z-index: 2;
+        }
+
+        .card-sub {
+            width: 60%;
+            bottom: 40px;
+            left: 0;
+            z-index: 3;
+            animation-delay: -3s;
+            box-shadow: 0 20px 40px rgba(14, 165, 233, 0.1);
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Feature Section */
+        .section-header {
+            max-width: 600px;
+            margin: 0 auto 4rem auto;
+            text-align: center;
+        }
+
         .feature-card {
             background: white;
+            border: 1px solid #f1f5f9;
             border-radius: 20px;
             padding: 2.5rem;
-            border: 1px solid rgba(0,0,0,0.05);
-            transition: all 0.4s ease;
             height: 100%;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            transition: all 0.3s ease;
         }
 
         .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-            border-color: rgba(0,97,255,0.1);
+            border-color: #e0f2fe;
+            box-shadow: 0 20px 40px rgba(14, 165, 233, 0.08);
+            transform: translateY(-8px);
         }
 
-        .icon-box {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, rgba(0,97,255,0.1) 0%, rgba(96,239,255,0.1) 100%);
-            border-radius: 20px;
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            background: #f0f9ff;
+            color: var(--primary);
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
-            color: var(--primary-color);
+            font-size: 1.8rem;
             margin-bottom: 1.5rem;
             transition: all 0.3s ease;
         }
 
-        .feature-card:hover .icon-box {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #00d2ff 100%);
+        .feature-card:hover .feature-icon {
+            background: var(--primary);
             color: white;
-            transform: scale(1.1) rotate(-5deg);
+            transform: scale(1.05) rotate(-5deg);
         }
 
         /* Pricing Section */
         .pricing-section {
-            background-color: white;
-            position: relative;
+            background-color: var(--bg-light);
+            padding: 100px 0;
+            border-top: 1px solid #f1f5f9;
+            border-bottom: 1px solid #f1f5f9;
         }
 
         .pricing-card {
-            border-radius: 24px;
-            border: 1px solid #e2e8f0;
             background: white;
-            transition: all 0.4s ease;
+            border: 1px solid #e2e8f0;
+            border-radius: 24px;
+            padding: 3rem;
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .pricing-card.premium {
+            border: 2px solid var(--primary);
+            box-shadow: 0 20px 40px rgba(14, 165, 233, 0.15);
             position: relative;
-            z-index: 1;
+            transform: scale(1.02);
         }
 
         .pricing-card:hover {
             transform: translateY(-10px);
         }
-
-        .pricing-card.pro {
-            border: 2px solid var(--primary-color);
-            box-shadow: 0 20px 40px rgba(0,97,255,0.15);
-            transform: scale(1.05);
-            z-index: 2;
+        
+        .pricing-card.premium:hover {
+            transform: scale(1.02) translateY(-10px);
         }
 
-        .pricing-card.pro:hover {
-            transform: scale(1.05) translateY(-10px);
-        }
-
-        .badge-popular {
+        .badge-premium {
             position: absolute;
             top: -15px;
             left: 50%;
             transform: translateX(-50%);
-            background: linear-gradient(135deg, #ff6b6b, #ff8e8b);
+            background: var(--primary);
             color: white;
-            padding: 5px 20px;
-            border-radius: 20px;
-            font-weight: 600;
             font-size: 0.85rem;
-            box-shadow: 0 5px 15px rgba(255,107,107,0.3);
+            font-weight: 700;
+            padding: 6px 20px;
+            border-radius: 20px;
         }
 
-        .price-text {
-            font-size: 3.5rem;
-            font-weight: 800;
+        .pricing-list li {
+            padding: 0.75rem 0;
             color: var(--text-dark);
-        }
-
-        .feature-list li {
-            padding: 10px 0;
-            color: var(--text-light);
             display: flex;
-            align-items: center;
+            align-items: flex-start;
         }
-
-        .feature-list i {
-            margin-right: 10px;
+        
+        .pricing-list i {
+            margin-right: 12px;
+            margin-top: 2px;
             font-size: 1.2rem;
         }
 
         /* Footer */
         footer {
-            background: var(--text-dark);
-            color: white;
+            background: white;
+            padding: 3rem 0;
         }
     </style>
 </head>
-<body oncontextmenu="return false;" onkeydown="if(event.keyCode==123) return false;">
-    <!-- Anti-Inspect Script -->
-    <script>
-        document.addEventListener('contextmenu', event => event.preventDefault());
-        document.onkeydown = function(e) {
-            if(e.keyCode == 123) { return false; } 
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; }
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; }
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { return false; }
-            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; }
-        }
-    </script>
+<body>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light navbar-glass fixed-top">
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="#">
-                <i class="bi bi-shield-fill-check me-2 fs-3 text-primary"></i> LaporPakRT
+                <i class="bi bi-shield-check text-primary me-2"></i> LaporPakRT
             </a>
             <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
+                <i class="bi bi-list fs-1 text-dark"></i>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mx-auto">
                     <li class="nav-item"><a class="nav-link" href="#beranda">Beranda</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#fitur">Fitur</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#kemudahan">Kemudahan</a></li>
                     <li class="nav-item"><a class="nav-link" href="#harga">Harga</a></li>
                 </ul>
-                <div class="d-flex mt-3 mt-lg-0">
-                    <a href="{{ route('login') }}" class="btn btn-link text-decoration-none text-dark fw-bold me-3">Masuk</a>
-                    <a href="{{ route('register') }}" class="btn btn-custom btn-primary-custom">Daftar RT</a>
+                <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
+                    <a href="{{ route('login') }}" class="text-dark text-decoration-none fw-semibold">Masuk</a>
+                    <a href="{{ route('register') }}" class="btn btn-primary btn-sm px-4 py-2">Daftar</a>
                 </div>
             </div>
         </div>
@@ -264,97 +303,67 @@
     <section id="beranda" class="hero-section">
         <div class="container">
             <div class="row align-items-center">
-                <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-right" data-aos-duration="1000">
-                    <div class="d-inline-block mb-3 px-3 py-1 rounded-pill" style="background: rgba(0,97,255,0.1); color: var(--primary-color); font-weight: 600; font-size: 0.9rem;">
-                        <i class="bi bi-star-fill me-1"></i> Platform SaaS RT #1 di Indonesia
-                    </div>
-                    <h1 class="hero-title">Digitalisasi RT Anda Kini Makin <span>Mudah & Modern</span></h1>
-                    <p class="lead mb-4 text-muted" style="font-size: 1.1rem; line-height: 1.8;">
-                        Tinggalkan cara manual! Kelola data warga, catat buku tamu, dan atur kas RT dalam satu genggaman. Cepat, aman, dan bisa diakses kapan saja.
-                    </p>
-                    <div class="d-flex gap-3">
-                        <a href="{{ route('register') }}" class="btn btn-custom btn-primary-custom d-flex align-items-center">
-                            Mulai Gratis <i class="bi bi-arrow-right ms-2"></i>
-                        </a>
-                        <a href="#fitur" class="btn btn-custom btn-outline-secondary bg-white text-dark border-0 shadow-sm d-flex align-items-center">
-                            Pelajari Fitur
-                        </a>
+                <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-up" data-aos-duration="1000">
+                    <div class="d-inline-flex align-items-center mb-3 px-3 py-1 rounded-pill bg-light border">
+                        <span class="d-block rounded-circle bg-success me-2" style="width: 8px; height: 8px;"></span>
+                        <span class="fw-semibold text-muted" style="font-size: 0.85rem;">Sistem Pencatatan RT 2.0</span>
                     </div>
                     
-                    <div class="mt-5 d-flex align-items-center gap-4 text-muted">
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-check-circle-fill text-success fs-5 me-2"></i> Gratis Selamanya
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-check-circle-fill text-success fs-5 me-2"></i> Offline Support
-                        </div>
+                    <h1 class="hero-title mb-4">
+                        Pencatatan RT lebih mudah dengan <br>
+                        <span class="highlight">LaporPakRT.online</span>
+                    </h1>
+                    
+                    <p class="hero-subtitle mb-5">
+                        Tinggalkan buku catatan manual. Kelola data warga, tamu, dan keuangan RT dalam satu aplikasi berbasis web yang bersih dan cepat.
+                    </p>
+                    
+                    <div class="d-flex flex-column flex-sm-row gap-3">
+                        <a href="{{ route('register') }}" class="btn btn-primary d-inline-flex align-items-center justify-content-center">
+                            Mulai Gunakan <i class="bi bi-arrow-right ms-2"></i>
+                        </a>
+                        <a href="#harga" class="btn btn-outline d-inline-flex align-items-center justify-content-center text-decoration-none">
+                            Lihat Harga
+                        </a>
                     </div>
                 </div>
                 
-                <div class="col-lg-6 text-center" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
-                    <!-- Pure HTML/CSS Dashboard Illustration -->
-                    <div class="hero-illustration position-relative mt-4 mt-lg-0">
-                        <!-- Main Dashboard Card -->
-                        <div class="bg-white rounded-4 shadow-lg p-4 position-relative text-start" style="z-index: 2; border: 1px solid rgba(0,0,0,0.05); width: 100%; max-width: 450px; margin: 0 auto;">
-                            <!-- Header Mockup -->
+                <div class="col-lg-6" data-aos="fade-left" data-aos-duration="1200" data-aos-delay="200">
+                    <div class="hero-graphics d-none d-md-block">
+                        <!-- Abstract Graphic Card 1 -->
+                        <div class="graphic-card card-main">
                             <div class="d-flex justify-content-between align-items-center mb-4">
-                                <div class="d-flex align-items-center">
-                                    <div class="rounded-circle" style="width: 45px; height: 45px; background: linear-gradient(135deg, var(--primary-color), #00d2ff);"></div>
-                                    <div class="ms-3">
-                                        <div class="rounded bg-secondary opacity-25 mb-2" style="width: 100px; height: 10px;"></div>
-                                        <div class="rounded bg-secondary opacity-25" style="width: 60px; height: 8px;"></div>
-                                    </div>
-                                </div>
-                                <div class="rounded-pill bg-primary bg-opacity-10 text-primary px-3 py-1" style="font-size: 0.8rem; font-weight: 600;">Admin RT</div>
+                                <h6 class="fw-bold mb-0">Total Kas Bulan Ini</h6>
+                                <i class="bi bi-wallet2 text-primary fs-4"></i>
                             </div>
+                            <h2 class="fw-bold text-dark mb-1">Rp 4.500.000</h2>
+                            <p class="text-success small fw-semibold"><i class="bi bi-arrow-up-short"></i> +12% dari bulan lalu</p>
                             
-                            <!-- Charts Mockup -->
-                            <div class="row g-3 mb-4">
-                                <div class="col-6">
-                                    <div class="rounded-3 p-3 h-100" style="background: rgba(0,97,255,0.05);">
-                                        <div class="rounded bg-primary opacity-25 mb-2" style="width: 50px; height: 8px;"></div>
-                                        <div class="fs-3 fw-bold text-dark">156</div>
-                                    </div>
+                            <div class="mt-4">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="small text-muted">Target Iuran</span>
+                                    <span class="small fw-bold">85%</span>
                                 </div>
-                                <div class="col-6">
-                                    <div class="rounded-3 p-3 h-100" style="background: rgba(96,239,255,0.1);">
-                                        <div class="rounded bg-info opacity-50 mb-2" style="width: 50px; height: 8px;"></div>
-                                        <div class="fs-3 fw-bold text-dark">42</div>
-                                    </div>
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar bg-primary" style="width: 85%"></div>
                                 </div>
                             </div>
-                            
-                            <!-- List Mockup -->
-                            <div class="d-flex align-items-center mb-3">
-                                <i class="bi bi-person-circle fs-3 text-muted opacity-50"></i>
-                                <div class="ms-3 w-100">
-                                    <div class="rounded bg-secondary opacity-25 mb-2 w-75" style="height: 8px;"></div>
-                                    <div class="rounded bg-secondary opacity-25 w-50" style="height: 6px;"></div>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-person-circle fs-3 text-muted opacity-50"></i>
-                                <div class="ms-3 w-100">
-                                    <div class="rounded bg-secondary opacity-25 mb-2 w-50" style="height: 8px;"></div>
-                                    <div class="rounded bg-secondary opacity-25 w-25" style="height: 6px;"></div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Floating Badge 1 -->
-                        <div class="bg-white rounded-pill shadow-sm py-2 px-3 position-absolute d-flex align-items-center" style="top: -20px; right: -10px; z-index: 1; animation: floating 6s ease-in-out infinite alternate;">
-                            <i class="bi bi-check-circle-fill text-success fs-5 me-2"></i>
-                            <span class="fw-bold text-dark" style="font-size: 0.9rem;">Sistem Aman</span>
                         </div>
 
-                        <!-- Floating Badge 2 -->
-                        <div class="bg-white rounded-3 shadow py-2 px-3 position-absolute d-flex align-items-center gap-2" style="bottom: -20px; left: -20px; z-index: 3; animation: floating 4s ease-in-out infinite alternate-reverse;">
-                            <div class="rounded d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; background: rgba(0,97,255,0.1); color: var(--primary-color);">
-                                <i class="bi bi-people-fill fs-5"></i>
+                        <!-- Abstract Graphic Card 2 -->
+                        <div class="graphic-card card-sub">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-2 me-3">
+                                    <i class="bi bi-upc-scan fs-5"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-0">Tamu Terdaftar</h6>
+                                    <small class="text-muted">Baru saja masuk</small>
+                                </div>
                             </div>
-                            <div class="text-start">
-                                <div class="fw-bold text-dark" style="font-size: 0.9rem; line-height: 1;">Data Warga</div>
-                                <div class="text-muted" style="font-size: 0.75rem;">Otomatis Sinkron</div>
+                            <div class="bg-light rounded p-3 text-center border">
+                                <span class="fw-bold">Ahmad Fauzi</span><br>
+                                <span class="text-muted small">Mengunjungi Blok B/12</span>
                             </div>
                         </div>
                     </div>
@@ -363,197 +372,113 @@
         </div>
     </section>
 
-    <!-- Animated Village Section -->
-    <section class="py-5 bg-light overflow-hidden position-relative">
-        <div class="container text-center mb-5 position-relative z-2" data-aos="fade-up">
-            <span class="text-primary fw-bold text-uppercase tracking-wider">Ekosistem Digital</span>
-            <h2 class="fw-bold mt-2 mb-3 display-6">Lingkungan RT Yang Hidup</h2>
-            <p class="text-muted mx-auto" style="max-width: 600px;">Bayangkan semua warga, rumah, dan aktivitas di RT Anda saling terhubung dalam satu sistem yang rapi dan aman.</p>
-        </div>
-        
-        <div class="village-scene mx-auto position-relative" style="height: 250px; max-width: 800px; border-bottom: 4px solid var(--text-dark);">
-            <!-- Sun -->
-            <div class="position-absolute text-warning" style="top: 20px; right: 10%; animation: spin 10s linear infinite;">
-                <i class="bi bi-brightness-high-fill" style="font-size: 3rem;"></i>
-            </div>
-            
-            <!-- Clouds -->
-            <div class="position-absolute text-secondary opacity-50" style="top: 30px; left: -100px; animation: slideRight 20s linear infinite;">
-                <i class="bi bi-cloud-fill" style="font-size: 4rem;"></i>
-            </div>
-            <div class="position-absolute text-secondary opacity-25" style="top: 60px; left: -150px; animation: slideRight 25s linear infinite 5s;">
-                <i class="bi bi-cloud-fill" style="font-size: 3rem;"></i>
-            </div>
-
-            <!-- Buildings/Houses -->
-            <div class="position-absolute" style="bottom: -15px; left: 10%; z-index: 2;">
-                <i class="bi bi-house-door-fill" style="font-size: 5rem; color: var(--primary-color);"></i>
-            </div>
-            <div class="position-absolute" style="bottom: -22px; left: 30%; z-index: 1;">
-                <i class="bi bi-building-fill" style="font-size: 8rem; color: var(--secondary-color);"></i>
-            </div>
-            <div class="position-absolute" style="bottom: -10px; left: 60%; z-index: 2;">
-                <i class="bi bi-shop" style="font-size: 4rem; color: #ff6b6b;"></i>
-            </div>
-            <div class="position-absolute" style="bottom: -15px; right: 15%; z-index: 1;">
-                <i class="bi bi-house-fill" style="font-size: 6rem; color: var(--text-dark);"></i>
-            </div>
-
-            <!-- Trees -->
-            <div class="position-absolute" style="bottom: -5px; left: 25%; z-index: 3;">
-                <i class="bi bi-tree-fill text-success" style="font-size: 3rem;"></i>
-            </div>
-            <div class="position-absolute" style="bottom: -10px; right: 35%; z-index: 3;">
-                <i class="bi bi-tree-fill text-success" style="font-size: 4rem;"></i>
-            </div>
-
-            <!-- Animated Person Walking -->
-            <div class="position-absolute" style="bottom: -5px; left: -50px; z-index: 4; animation: slideRight 15s linear infinite;">
-                <i class="bi bi-person-walking text-dark" style="font-size: 2rem;"></i>
-            </div>
-            <!-- Animated Bicycle -->
-            <div class="position-absolute" style="bottom: -5px; right: -50px; z-index: 4; animation: slideLeft 12s linear infinite;">
-                <i class="bi bi-bicycle text-primary" style="font-size: 2rem;"></i>
-            </div>
-        </div>
-    </section>
-
-    <!-- Features Section -->
-    <section id="fitur" class="py-5 my-5">
+    <!-- Kemudahan Section -->
+    <section id="kemudahan" class="py-5 my-5">
         <div class="container">
-            <div class="text-center mb-5" data-aos="fade-up">
-                <span class="text-primary fw-bold text-uppercase tracking-wider">FITUR UNGGULAN</span>
-                <h2 class="fw-bold mt-2 mb-3 display-6">Semua Yang Anda Butuhkan</h2>
-                <p class="text-muted mx-auto" style="max-width: 600px;">Kami mendesain fitur yang benar-benar mempermudah tugas pengurus RT sehari-hari.</p>
+            <div class="section-header" data-aos="fade-up">
+                <h2 class="fw-bold mb-3">Kemudahan Yang Kami Berikan</h2>
+                <p class="text-muted">Desain antarmuka yang tidak membingungkan, dirancang khusus agar pengurus RT dan Keamanan dapat langsung bekerja tanpa perlu buku panduan.</p>
             </div>
 
             <div class="row g-4">
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
                     <div class="feature-card">
-                        <div class="icon-box"><i class="bi bi-people-fill"></i></div>
+                        <div class="feature-icon"><i class="bi bi-people"></i></div>
                         <h4 class="fw-bold mb-3">Database Warga</h4>
-                        <p class="text-muted">Kelola data KK, NIK, dan demografi warga secara digital. Pencarian super cepat dan data tersimpan aman di cloud.</p>
+                        <p class="text-muted">Data kependudukan (KK & NIK) tersimpan rapi. Pencarian nama dan blok rumah warga sangat cepat.</p>
                     </div>
                 </div>
+                
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
                     <div class="feature-card">
-                        <div class="icon-box"><i class="bi bi-clipboard2-check-fill"></i></div>
-                        <h4 class="fw-bold mb-3">Buku Tamu Digital</h4>
-                        <p class="text-muted">Security dapat mencatat kunjungan tamu real-time, lengkap dengan foto wajah/KTP dan titik geolokasi GPS.</p>
+                        <div class="feature-icon"><i class="bi bi-journal-text"></i></div>
+                        <h4 class="fw-bold mb-3">Pencatatan Tamu AI</h4>
+                        <p class="text-muted">Satpam hanya perlu memfoto KTP tamu. AI kami akan mengekstrak Nama dan NIK secara otomatis ke dalam sistem.</p>
                     </div>
                 </div>
+                
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
                     <div class="feature-card">
-                        <div class="icon-box"><i class="bi bi-envelope-paper-fill"></i></div>
-                        <h4 class="fw-bold mb-3">Surat Pengantar</h4>
-                        <p class="text-muted">Warga bisa mengajukan surat pengantar mandiri secara online dan RT tinggal melakukan approval.</p>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
-                    <div class="feature-card">
-                        <div class="icon-box"><i class="bi bi-wallet2"></i></div>
-                        <h4 class="fw-bold mb-3">Keuangan & Kas</h4>
-                        <p class="text-muted">Catat pemasukan dan pengeluaran kas RT dengan transparan. Laporan bulanan dapat diunduh kapan saja.</p>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="500">
-                    <div class="feature-card">
-                        <div class="icon-box"><i class="bi bi-wifi-off"></i></div>
-                        <h4 class="fw-bold mb-3">Offline-First (PWA)</h4>
-                        <p class="text-muted">Tidak ada sinyal? Tidak masalah. Aplikasi tetap bisa digunakan dan akan sinkronisasi otomatis saat online.</p>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="600">
-                    <div class="feature-card">
-                        <div class="icon-box"><i class="bi bi-shield-lock-fill"></i></div>
-                        <h4 class="fw-bold mb-3">Keamanan Data</h4>
-                        <p class="text-muted">Sistem keamanan enkripsi standar industri memastikan privasi data warga Anda terlindungi dengan baik.</p>
+                        <div class="feature-icon"><i class="bi bi-bar-chart"></i></div>
+                        <h4 class="fw-bold mb-3">Rekap Kas Transparan</h4>
+                        <p class="text-muted">Catat uang masuk dan keluar dengan mudah. Sistem akan menghitung saldo akhir otomatis tanpa salah hitung.</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Pricing Section -->
-    <section id="harga" class="pricing-section py-5 my-5">
+    <!-- Harga Section -->
+    <section id="harga" class="pricing-section">
         <div class="container">
-            <div class="text-center mb-5" data-aos="fade-up">
-                <span class="text-primary fw-bold text-uppercase tracking-wider">HARGA TRANSPARAN</span>
-                <h2 class="fw-bold mt-2 mb-3 display-6">Pilih Paket Sesuai Kebutuhan</h2>
-                <p class="text-muted mx-auto" style="max-width: 600px;">Mulai digitalisasi RT Anda secara gratis, dan tingkatkan sesuai pertumbuhan lingkungan Anda.</p>
+            <div class="section-header" data-aos="fade-up">
+                <h2 class="fw-bold mb-3">Harga Sederhana</h2>
+                <p class="text-muted">Tidak ada biaya tersembunyi. Gunakan gratis selama seminggu, lalu berlangganan jika aplikasi ini terbukti mempermudah tugas Anda.</p>
             </div>
 
-            <div class="row g-4 justify-content-center align-items-center mt-4">
-                <!-- Basic Plan -->
-                <div class="col-lg-4 col-md-6" data-aos="fade-right" data-aos-delay="100">
-                    <div class="pricing-card p-5">
-                        <h4 class="fw-bold text-muted mb-2">Paket Basic</h4>
-                        <p class="text-muted mb-4">Cocok untuk RT berskala kecil.</p>
+            <div class="row g-4 justify-content-center">
+                <!-- Paket Gratis -->
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="pricing-card">
+                        <h4 class="fw-bold mb-1">Paket Gratis</h4>
+                        <p class="text-muted mb-4 pb-2 border-bottom">Masa aktif 7 Hari.</p>
+                        
                         <div class="mb-4">
-                            <span class="price-text">Rp 0</span>
-                            <span class="text-muted">/selamanya</span>
+                            <span class="display-5 fw-bold text-dark">Rp 0</span>
                         </div>
-                        <ul class="list-unstyled feature-list text-start mb-5">
-                            <li><i class="bi bi-check-circle-fill text-success"></i> Maksimal 50 Kepala Keluarga</li>
-                            <li><i class="bi bi-check-circle-fill text-success"></i> Buku Tamu (Tanpa Foto/GPS)</li>
-                            <li><i class="bi bi-check-circle-fill text-success"></i> Manajemen Kas Sederhana</li>
-                            <li class="opacity-50"><i class="bi bi-x-circle-fill text-danger"></i> Surat Pengantar Online</li>
-                            <li class="opacity-50"><i class="bi bi-x-circle-fill text-danger"></i> Dukungan Prioritas</li>
+                        
+                        <ul class="list-unstyled pricing-list mb-5">
+                            <li><i class="bi bi-check-circle-fill text-success"></i> Akses Manajemen Warga</li>
+                            <li><i class="bi bi-check-circle-fill text-success"></i> Akses Pencatatan Tamu</li>
+                            <li><i class="bi bi-check-circle-fill text-success"></i> Akses Laporan Kas</li>
+                            <li><i class="bi bi-check-circle-fill text-success"></i> Uji Coba Penuh</li>
                         </ul>
-                        <a href="{{ route('register') }}" class="btn btn-custom btn-outline-primary w-100 fw-bold bg-light">Mulai Gratis</a>
+                        
+                        <a href="{{ route('register') }}" class="btn btn-outline w-100 text-center text-decoration-none">Daftar Sekarang</a>
                     </div>
                 </div>
 
-                <!-- Pro Plan -->
+                <!-- Paket Berlangganan -->
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                    <div class="pricing-card pro p-5">
-                        <div class="badge-popular">PALING DIMINATI</div>
-                        <h4 class="fw-bold text-primary mb-2">Paket Pro</h4>
-                        <p class="text-muted mb-4">Fitur lengkap untuk RT modern.</p>
+                    <div class="pricing-card premium">
+                        <div class="badge-premium">BERLANGGANAN</div>
+                        <h4 class="fw-bold mb-1 text-primary">Paket Aktif</h4>
+                        <p class="text-muted mb-4 pb-2 border-bottom">Masa aktif 30 Hari.</p>
+                        
                         <div class="mb-4">
-                            <span class="price-text">Rp 99K</span>
-                            <span class="text-muted">/bulan</span>
+                            <span class="display-5 fw-bold text-dark">Bebas</span>
+                            <small class="text-muted fw-semibold"> / bulan</small>
                         </div>
-                        <ul class="list-unstyled feature-list text-start mb-5">
-                            <li><i class="bi bi-check-circle-fill text-success"></i> <b>Tak Terbatas</b> Kepala Keluarga</li>
-                            <li><i class="bi bi-check-circle-fill text-success"></i> Buku Tamu (Dengan Foto & GPS)</li>
-                            <li><i class="bi bi-check-circle-fill text-success"></i> Laporan Keuangan Export Excel</li>
-                            <li><i class="bi bi-check-circle-fill text-success"></i> Pengajuan Surat Online Warga</li>
-                            <li><i class="bi bi-check-circle-fill text-success"></i> WhatsApp Notifikasi (Segera)</li>
-                            <li><i class="bi bi-check-circle-fill text-success"></i> Customer Support 24/7</li>
+                        
+                        <ul class="list-unstyled pricing-list mb-5">
+                            <li><i class="bi bi-check-circle-fill text-primary"></i> Perpanjangan Masa Aktif 30 Hari</li>
+                            <li><i class="bi bi-check-circle-fill text-primary"></i> Data Tidak Terhapus (Aman)</li>
+                            <li><i class="bi bi-check-circle-fill text-primary"></i> Fitur Export Laporan Lengkap</li>
+                            <li><i class="bi bi-check-circle-fill text-primary"></i> Dukungan Bantuan Teknis</li>
                         </ul>
-                        <a href="{{ route('register') }}" class="btn btn-custom btn-primary-custom w-100">Berlangganan Pro</a>
+                        
+                        <a href="{{ route('register') }}" class="btn btn-primary w-100 text-center text-decoration-none">Perpanjang Akses</a>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <!-- Call to Action -->
-    <section class="py-5 mb-5">
-        <div class="container">
-            <div class="p-5 text-center text-white rounded-5 position-relative overflow-hidden" style="background: linear-gradient(135deg, var(--primary-color) 0%, #00d2ff 100%);" data-aos="zoom-in">
-                <!-- Decorative Circles -->
-                <div class="position-absolute rounded-circle" style="width: 200px; height: 200px; background: rgba(255,255,255,0.1); top: -50px; right: -50px;"></div>
-                <div class="position-absolute rounded-circle" style="width: 150px; height: 150px; background: rgba(255,255,255,0.1); bottom: -50px; left: -50px;"></div>
-                
-                <h2 class="fw-bold mb-3 position-relative z-1">Siap Mendigitalisasi RT Anda?</h2>
-                <p class="lead mb-4 opacity-75 position-relative z-1">Bergabunglah dengan ratusan pengurus RT lainnya yang sudah menikmati kemudahan LaporPakRT.</p>
-                <a href="{{ route('register') }}" class="btn btn-light btn-custom text-primary px-5 fw-bold position-relative z-1">Daftar Sekarang</a>
+            
+            <div class="text-center mt-5" data-aos="fade-up" data-aos-delay="300">
+                <p class="text-muted small mb-0"><i class="bi bi-info-circle me-1"></i> Aturan Keamanan: Jika RT tidak memperpanjang masa aktif melebihi batas toleransi (+2 hari dari jatuh tempo), data akan <strong>dihapus permanen</strong> untuk perlindungan privasi.</p>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="pt-5 pb-4">
+    <footer class="border-top">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                    <h5 class="fw-bold mb-2"><i class="bi bi-shield-fill-check text-primary"></i> LaporPakRT</h5>
-                    <p class="text-muted small mb-0">Platform Digitalisasi Rukun Tetangga #1 di Indonesia.</p>
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+                <div class="mb-3 mb-md-0 text-center text-md-start">
+                    <div class="fw-bold text-dark fs-5 mb-1"><i class="bi bi-shield-check text-primary me-1"></i> LaporPakRT</div>
+                    <small class="text-muted">Pencatatan RT lebih mudah dan modern.</small>
                 </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <p class="text-muted small mb-0">&copy; {{ date('Y') }} LaporPakRT. All rights reserved.</p>
+                <div class="text-center text-md-end text-muted small">
+                    &copy; {{ date('Y') }} LaporPakRT.online<br>
+                    All rights reserved.
                 </div>
             </div>
         </div>
@@ -565,20 +490,15 @@
     <!-- AOS Animation -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // Initialize AOS
-        AOS.init({
-            once: true, // Animasi hanya berjalan sekali
-            offset: 50, // Trigger animasi 50px sebelum elemen terlihat
-        });
+        AOS.init({ once: true, offset: 50 });
 
-        // Navbar blur on scroll
+        // Navbar Shadow on Scroll
         window.addEventListener('scroll', function() {
+            var navbar = document.getElementById('mainNav');
             if (window.scrollY > 50) {
-                document.querySelector('.navbar-glass').style.background = 'rgba(255, 255, 255, 0.95)';
-                document.querySelector('.navbar-glass').style.boxShadow = '0 4px 30px rgba(0, 0, 0, 0.05)';
+                navbar.classList.add('scrolled');
             } else {
-                document.querySelector('.navbar-glass').style.background = 'rgba(255, 255, 255, 0.85)';
-                document.querySelector('.navbar-glass').style.boxShadow = 'none';
+                navbar.classList.remove('scrolled');
             }
         });
     </script>
