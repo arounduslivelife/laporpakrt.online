@@ -11,6 +11,53 @@
     
     <div class="app-content">
         <div class="container-fluid">
+            
+            @if($showPlanModal)
+            <div class="card mb-4 border-primary shadow-sm">
+                <div class="card-header text-bg-primary">Edit Paket Langganan</div>
+                <div class="card-body">
+                    <form wire:submit.prevent="updatePlan">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label>Nama Paket</label>
+                                <input type="text" class="form-control" wire:model="planName" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label>Harga (Rp)</label>
+                                <input type="number" class="form-control" wire:model="planPrice" required min="0">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label>Durasi (Hari)</label>
+                                <input type="number" class="form-control" wire:model="planDuration" required min="1">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success">Simpan Perubahan</button>
+                        <button type="button" class="btn btn-secondary" wire:click="$set('showPlanModal', false)">Batal</button>
+                    </form>
+                </div>
+            </div>
+            @endif
+
+            <div class="row mb-4">
+                @foreach($plans as $plan)
+                <div class="col-md-6">
+                    <div class="card border-{{ $plan->price == 0 ? 'secondary' : 'primary' }} h-100">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-1 fw-bold">{{ $plan->name }}</h5>
+                                <p class="mb-0 text-muted">
+                                    Rp {{ number_format($plan->price, 0, ',', '.') }} / {{ $plan->duration_days }} Hari
+                                </p>
+                            </div>
+                            <button class="btn btn-outline-{{ $plan->price == 0 ? 'secondary' : 'primary' }} btn-sm" wire:click="editPlan({{ $plan->id }})">
+                                <i class="bi bi-pencil"></i> Edit Harga
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+
             <div class="card mb-4 border-info">
                 <div class="card-body">
                     <h6 class="fw-bold"><i class="bi bi-info-circle text-info me-2"></i>Informasi Langganan</h6>

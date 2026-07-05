@@ -1,8 +1,53 @@
 <div>
     <div class="mb-4">
         <h5 class="fw-bold mb-1">Langganan RT</h5>
-        <p class="text-muted small">Status & Jatuh Tempo</p>
+        <p class="text-muted small mb-3">Status & Jatuh Tempo</p>
+        
+        <div class="row g-2 mb-2">
+            @foreach($plans as $plan)
+            <div class="col-6">
+                <div class="soft-card p-2 border-{{ $plan->price == 0 ? 'secondary' : 'primary' }}" style="border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; cursor: pointer;" wire:click="editPlan({{ $plan->id }})">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="fw-bold text-dark" style="font-size: 0.8rem;">{{ $plan->name }}</span>
+                        <i class="bi bi-pencil-square text-muted" style="font-size: 0.7rem;"></i>
+                    </div>
+                    <span class="text-primary fw-bold d-block" style="font-size: 0.75rem;">Rp {{ number_format($plan->price, 0, ',', '.') }}</span>
+                    <span class="text-muted" style="font-size: 0.65rem;">/ {{ $plan->duration_days }} Hari</span>
+                </div>
+            </div>
+            @endforeach
+        </div>
     </div>
+
+    <!-- Bottom Sheet Form for Edit Plan -->
+    @if($showPlanModal)
+    <div class="position-fixed top-0 start-0 w-100 h-100" style="background: rgba(0,0,0,0.5); z-index: 1050;" wire:click="$set('showPlanModal', false)"></div>
+    <div class="position-fixed bottom-0 start-0 w-100 bg-white" style="z-index: 1060; border-radius: 24px 24px 0 0; max-height: 85vh; overflow-y: auto; padding: 24px; transition: transform 0.3s ease-out;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="fw-bold mb-0">Edit Paket Langganan</h6>
+            <button class="btn-close" wire:click="$set('showPlanModal', false)"></button>
+        </div>
+        
+        <form wire:submit.prevent="updatePlan">
+            <div class="mb-3">
+                <label class="form-label small fw-bold text-muted ms-1">Nama Paket</label>
+                <input type="text" class="form-control form-control-lg" wire:model="planName" style="border-radius: 12px; font-size: 0.95rem; border: 1px solid #e2e8f0; background-color: #f8fafc;" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label small fw-bold text-muted ms-1">Harga Langganan (Rp)</label>
+                <input type="number" class="form-control form-control-lg" wire:model="planPrice" style="border-radius: 12px; font-size: 0.95rem; border: 1px solid #e2e8f0; background-color: #f8fafc;" required min="0">
+            </div>
+            <div class="mb-4">
+                <label class="form-label small fw-bold text-muted ms-1">Durasi (Hari)</label>
+                <input type="number" class="form-control form-control-lg" wire:model="planDuration" style="border-radius: 12px; font-size: 0.95rem; border: 1px solid #e2e8f0; background-color: #f8fafc;" required min="1">
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-100 py-3 fw-bold mb-4" style="border-radius: 16px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border: none;">
+                Simpan Perubahan
+            </button>
+        </form>
+    </div>
+    @endif
 
     <div class="alert alert-info alert-dismissible fade show border-0 d-flex align-items-center" role="alert" style="border-radius: 16px; background-color: #e0f2fe; color: #0284c7;">
         <i class="bi bi-info-circle-fill me-2 fs-5"></i>
