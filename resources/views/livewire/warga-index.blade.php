@@ -67,7 +67,7 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label>Foto Wajah</label>
-                                <input type="file" class="form-control" wire:model="foto_wajah">
+                                <input type="file" class="form-control" wire:model="foto_wajah" accept="image/*" capture="environment">
                                 <div wire:loading wire:target="foto_wajah" class="text-info small mt-1">Mengunggah...</div>
                                 @if ($foto_wajah)
                                     <img src="{{ $foto_wajah->temporaryUrl() }}" class="img-thumbnail mt-2" style="max-height: 100px;">
@@ -76,21 +76,59 @@
                                 @endif
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label>Foto KTP</label>
-                                <input type="file" class="form-control" wire:model="foto_ktp" accept="image/*">
-                                <div wire:loading wire:target="foto_ktp" class="text-info small mt-1">Mengunggah...</div>
-                                @if ($foto_ktp)
-                                    <div class="mt-2">
-                                        <img src="{{ $foto_ktp->temporaryUrl() }}" class="img-thumbnail" style="max-height: 100px;">
-                                        <button type="button" class="btn btn-info btn-sm ms-2" wire:click="scanKtp" wire:loading.attr="disabled" wire:target="scanKtp">
-                                            <span wire:loading.remove wire:target="scanKtp"><i class="bi bi-upc-scan"></i> Scan KTP</span>
-                                            <span wire:loading wire:target="scanKtp"><i class="bi bi-arrow-repeat spin"></i> Membaca...</span>
-                                        </button>
+                                <label>Foto KTP (Scan OCR)</label>
+                                <!-- Include Cropper.js -->
+                                <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+                                <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+                                
+                                <div x-data="{ cropper: null, imageUrl: null, uploading: false }">
+                                    <input type="file" id="ktpImageWarga" class="form-control" accept="image/*" capture="environment" 
+                                        x-on:change="
+                                            const file = $event.target.files[0];
+                                            if (file) {
+                                                imageUrl = URL.createObjectURL(file);
+                                                if (cropper) cropper.destroy();
+                                                setTimeout(() => {
+                                                    const imageElement = document.getElementById('cropperImageWarga');
+                                                    cropper = new Cropper(imageElement, {
+                                                        viewMode: 1,
+                                                        autoCropArea: 0.9,
+                                                    });
+                                                }, 100);
+                                            }
+                                        ">
+                                    @error('foto_ktp') <span class="text-danger small">{{ $message }}</span> @enderror
+
+                                    <div x-show="imageUrl" class="mt-3" style="width: 100%; max-height: 300px; display:none;">
+                                        <img id="cropperImageWarga" :src="imageUrl" style="max-width: 100%;">
                                     </div>
-                                @elseif ($editMode && $ktp_path)
-                                    <img src="{{ Storage::url($ktp_path) }}" class="img-thumbnail mt-2" style="max-height: 100px;">
-                                @endif
-                                @error('foto_ktp') <span class="text-danger small">{{ $message }}</span> @enderror
+
+                                    <div x-show="imageUrl" style="display:none;" class="mt-3">
+                                        <button type="button" class="btn btn-success btn-sm" x-bind:disabled="uploading"
+                                            x-on:click="
+                                                uploading = true;
+                                                cropper.getCroppedCanvas({ maxWidth: 1600, maxHeight: 1600 }).toBlob((blob) => {
+                                                    @this.upload('foto_ktp', blob, (uploadedFilename) => {
+                                                        uploading = false;
+                                                        imageUrl = null;
+                                                        if (cropper) cropper.destroy();
+                                                        @this.scanKtp();
+                                                    }, () => { uploading = false; }, (event) => {});
+                                                }, 'image/jpeg', 0.85);
+                                            ">
+                                            <span x-show="!uploading"><i class="bi bi-crop"></i> Crop & Scan OCR</span>
+                                            <span x-show="uploading"><i class="bi bi-arrow-repeat spin"></i> Memproses...</span>
+                                        </button>
+                                        <button type="button" class="btn btn-secondary btn-sm" x-on:click="imageUrl = null; if(cropper) cropper.destroy(); document.getElementById('ktpImageWarga').value = '';">Batal</button>
+                                    </div>
+                                    <div wire:loading wire:target="scanKtp" class="text-info mt-2"><i class="bi bi-arrow-repeat spin"></i> Mengekstrak data KTP...</div>
+                                    
+                                    @if ($foto_ktp && !$editMode)
+                                        <div class="mt-2 text-success small" wire:loading.remove wire:target="scanKtp"><i class="bi bi-check-circle"></i> KTP siap disimpan.</div>
+                                    @elseif ($editMode && $ktp_path && !$foto_ktp)
+                                        <img src="{{ Storage::url($ktp_path) }}" class="img-thumbnail mt-2" style="max-height: 100px;">
+                                    @endif
+                                </div>
                             </div>
                         </div>
                         <button type="submit" class="btn btn-success">Simpan Data</button>

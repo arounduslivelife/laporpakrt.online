@@ -66,7 +66,7 @@ class WargaIndex extends Component
     public function scanKtp()
     {
         $this->validate([
-            'foto_ktp' => 'required|image|max:2048',
+            'foto_ktp' => 'required|image|max:8192',
         ]);
 
         try {
@@ -118,8 +118,8 @@ class WargaIndex extends Component
             'jenis_kelamin' => 'nullable|in:LAKI-LAKI,PEREMPUAN',
             'tempat_lahir' => 'nullable|string|max:255',
             'tanggal_lahir' => 'nullable|date',
-            'foto_wajah' => 'nullable|image|max:2048',
-            'foto_ktp' => 'nullable|image|max:2048',
+            'foto_wajah' => 'nullable|image|max:8192',
+            'foto_ktp' => 'nullable|image|max:8192',
         ]);
 
         $fotoPath = $this->foto_wajah ? $this->foto_wajah->store('warga/foto', 'public') : null;
