@@ -108,9 +108,14 @@
                     </div>
                 </div>
                 
-                <button class="btn btn-outline-primary w-100 fw-bold" style="border-radius: 12px; font-size: 0.85rem;" wire:click="activateSubscription({{ $sub->id }})" wire:confirm="Perpanjang paket {{ $sub->plan->name }} untuk RT ini?">
-                    <i class="bi bi-arrow-repeat me-1"></i> Perpanjang Manual
-                </button>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-info text-white fw-bold flex-fill" style="border-radius: 12px; font-size: 0.85rem;" wire:click="showRtDetails({{ $sub->rt_id }})">
+                        <i class="bi bi-bar-chart-line me-1"></i> Statistik
+                    </button>
+                    <button class="btn btn-outline-primary fw-bold flex-fill" style="border-radius: 12px; font-size: 0.85rem;" wire:click="activateSubscription({{ $sub->id }})" wire:confirm="Perpanjang paket {{ $sub->plan->name }} untuk RT ini?">
+                        <i class="bi bi-arrow-repeat me-1"></i> Perpanjang
+                    </button>
+                </div>
             </div>
         @empty
             <div class="text-center py-5">
@@ -121,4 +126,62 @@
             </div>
         @endforelse
     </div>
+
+    <!-- Bottom Sheet Form for RT Details -->
+    @if($showRtModal && $rtDetails)
+    <div class="position-fixed top-0 start-0 w-100 h-100" style="background: rgba(0,0,0,0.5); z-index: 1050;" wire:click="closeRtDetails()"></div>
+    <div class="position-fixed bottom-0 start-0 w-100 bg-white" style="z-index: 1060; border-radius: 24px 24px 0 0; max-height: 85vh; overflow-y: auto; padding: 24px; transition: transform 0.3s ease-out;">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <h6 class="fw-bold mb-0 text-info"><i class="bi bi-bar-chart-line me-1"></i> Statistik {{ $rtDetails['rt_rw'] }}</h6>
+            <button class="btn-close" wire:click="closeRtDetails()"></button>
+        </div>
+        <p class="text-muted small mb-4">{{ $rtDetails['village'] }}</p>
+        
+        <div class="row g-2 mb-3">
+            <div class="col-6">
+                <div class="p-3 text-center rounded-4 h-100" style="background-color: #f0fdf4; border: 1px solid #bbf7d0;">
+                    <i class="bi bi-people fs-2 text-success mb-1"></i>
+                    <h4 class="fw-bold text-dark mb-0">{{ $rtDetails['total_warga'] }}</h4>
+                    <small class="text-muted" style="font-size: 0.7rem;">Warga</small>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="p-3 text-center rounded-4 h-100" style="background-color: #eff6ff; border: 1px solid #bfdbfe;">
+                    <i class="bi bi-person-badge fs-2 text-primary mb-1"></i>
+                    <h4 class="fw-bold text-dark mb-0">{{ $rtDetails['total_tamu'] }}</h4>
+                    <small class="text-muted" style="font-size: 0.7rem;">Tamu ({{ $rtDetails['tamu_bulan_ini'] }} bln ini)</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <div class="d-flex align-items-center p-3 rounded-4" style="background-color: #fefce8; border: 1px solid #fef08a;">
+                <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background-color: #facc15; color: white;">
+                    <i class="bi bi-wallet2 fs-5"></i>
+                </div>
+                <div>
+                    <span class="d-block text-muted" style="font-size: 0.75rem;">Saldo Kas RT</span>
+                    <span class="fw-bold text-dark fs-6">Rp {{ number_format($rtDetails['saldo_kas'], 0, ',', '.') }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <div class="d-flex align-items-center p-3 rounded-4 bg-light" style="border: 1px solid #e5e7eb;">
+                <div class="rounded-circle d-flex align-items-center justify-content-center me-3 bg-secondary text-white" style="width: 40px; height: 40px;">
+                    <i class="bi bi-clock-history fs-5"></i>
+                </div>
+                <div>
+                    <span class="d-block text-muted" style="font-size: 0.75rem;">Terakhir Aktif</span>
+                    <span class="fw-bold text-dark fs-6">{{ $rtDetails['last_online'] }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <button type="button" class="btn btn-secondary w-100 py-3 fw-bold mb-4" style="border-radius: 16px;" wire:click="closeRtDetails()">
+            Tutup
+        </button>
+    </div>
+    @endif
 </div>
+

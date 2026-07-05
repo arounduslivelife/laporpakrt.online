@@ -7,6 +7,7 @@ use App\Models\Subscription;
 use App\Models\Rt;
 use App\Traits\DetectsMobile;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class SubscriptionManagement extends Component
 {
@@ -20,6 +21,9 @@ class SubscriptionManagement extends Component
     public $planName;
     public $planPrice;
     public $planDuration;
+
+    public $showRtModal = false;
+    public $rtDetails = null;
 
     public function mount()
     {
@@ -69,6 +73,46 @@ class SubscriptionManagement extends Component
         ]);
         
         $this->dispatch('notify', ['type' => 'success', 'message' => 'Langganan berhasil diaktifkan/diperpanjang.']);
+    }
+
+    public function showRtDetails($rtId)
+    {
+        $rt = Rt::with('village.parent.parent')->findOrFail($rtId);
+        
+        $totalWarga = \App\Models\Warga::where('rt_id', $rtId)->count();
+        $totalTamu = \App\Models\Tamu::where('rt_id', $rtId)->count();
+        $tamuBulanIni = \App\Models\Tamu::where('rt_id', $rtId)->whereMonth('created_at', date('m'))->count();
+        
+        $pemasukan = \App\Models\KasTransaction::where('rt_id', $rtId)->where('tipe', 'pemasukan')->sum('jumlah');
+        $pengeluaran = \App\Models\KasTransaction::where('rt_id', $rtId)->where('tipe', 'pengeluaran')->sum('jumlah');
+        $saldoKas = $pemasukan - $pengeluaran;
+        
+        $lastActivityTimestamp = DB::table('sessions')
+            ->join('users', 'sessions.user_id', '=', 'users.id')
+            ->where('users.rt_id', $rtId)
+            ->max('sessions.last_activity');
+            
+        $lastOnline = $lastActivityTimestamp 
+            ? Carbon::createFromTimestamp($lastActivityTimestamp)->diffForHumans() 
+            : 'Belum pernah login';
+
+        $this->rtDetails = [
+            'rt_rw' => 'RT ' . $rt->rt . ' / RW ' . $rt->rw,
+            'village' => $rt->village->name ?? '-',
+            'total_warga' => $totalWarga,
+            'total_tamu' => $totalTamu,
+            'tamu_bulan_ini' => $tamuBulanIni,
+            'saldo_kas' => $saldoKas,
+            'last_online' => $lastOnline,
+        ];
+        
+        $this->showRtModal = true;
+    }
+
+    public function closeRtDetails()
+    {
+        $this->showRtModal = false;
+        $this->rtDetails = null;
     }
 
     public function render()

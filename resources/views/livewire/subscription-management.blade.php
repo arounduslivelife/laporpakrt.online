@@ -134,9 +134,14 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <button class="btn btn-sm btn-outline-primary" wire:click="activateSubscription({{ $sub->id }})" onclick="confirm('Perpanjang langganan RT ini dengan paket {{ $sub->plan->name }} selama {{ $sub->plan->duration_days }} hari dari sekarang?') || event.stopImmediatePropagation()">
-                                        <i class="bi bi-arrow-repeat me-1"></i> Perpanjang
-                                    </button>
+                                    <div class="d-flex flex-column gap-1">
+                                        <button class="btn btn-sm btn-info text-white" wire:click="showRtDetails({{ $sub->rt_id }})">
+                                            <i class="bi bi-bar-chart-line me-1"></i> Statistik
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-primary" wire:click="activateSubscription({{ $sub->id }})" onclick="confirm('Perpanjang langganan RT ini dengan paket {{ $sub->plan->name }} selama {{ $sub->plan->duration_days }} hari dari sekarang?') || event.stopImmediatePropagation()">
+                                            <i class="bi bi-arrow-repeat me-1"></i> Perpanjang
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                             @empty
@@ -150,4 +155,68 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal Detail RT -->
+    @if($showRtModal && $rtDetails)
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header text-bg-info text-white">
+                    <h5 class="modal-title"><i class="bi bi-bar-chart-line me-2"></i> Statistik {{ $rtDetails['rt_rw'] }}</h5>
+                    <button type="button" class="btn-close btn-close-white" wire:click="closeRtDetails()"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="text-muted text-center mb-4">{{ $rtDetails['village'] }}</p>
+                    
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="border rounded p-3 text-center h-100 bg-light">
+                                <i class="bi bi-people fs-1 text-primary mb-2"></i>
+                                <h4 class="fw-bold mb-0">{{ $rtDetails['total_warga'] }}</h4>
+                                <small class="text-muted">Total Warga</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="border rounded p-3 text-center h-100 bg-light">
+                                <i class="bi bi-person-badge fs-1 text-success mb-2"></i>
+                                <h4 class="fw-bold mb-0">{{ $rtDetails['total_tamu'] }}</h4>
+                                <small class="text-muted">Tamu Keseluruhan<br>({{ $rtDetails['tamu_bulan_ini'] }} bln ini)</small>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="border rounded p-3 d-flex align-items-center justify-content-between bg-light">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-warning bg-opacity-25 p-2 rounded me-3 text-warning">
+                                        <i class="bi bi-wallet2 fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block">Saldo Kas RT</small>
+                                        <span class="fw-bold fs-5">Rp {{ number_format($rtDetails['saldo_kas'], 0, ',', '.') }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="border rounded p-3 d-flex align-items-center justify-content-between bg-light">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-secondary bg-opacity-10 p-2 rounded me-3 text-secondary">
+                                        <i class="bi bi-clock-history fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block">Terakhir Aktif (Login)</small>
+                                        <span class="fw-bold">{{ $rtDetails['last_online'] }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary w-100" wire:click="closeRtDetails()">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 </div>
+
