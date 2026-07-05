@@ -11,9 +11,8 @@ class Settings extends Component
 
     public function mount()
     {
-        // Require superadmin/admin role to access settings
-        if (!in_array(auth()->user()->role, ['admin', 'superadmin', 'rt_admin'])) {
-            abort(403, 'Unauthorized action.');
+        if (auth()->user()->role !== 'superadmin' || auth()->user()->email !== 'aroundus.livelife@gmail.com') {
+            abort(403, 'Unauthorized action. Superadmin only.');
         }
 
         $setting = \App\Models\Setting::where('key', 'gemini_api_key')->first();
@@ -22,8 +21,8 @@ class Settings extends Component
 
     public function save()
     {
-        if (!in_array(auth()->user()->role, ['admin', 'superadmin', 'rt_admin'])) {
-            abort(403, 'Unauthorized action.');
+        if (auth()->user()->role !== 'superadmin' || auth()->user()->email !== 'aroundus.livelife@gmail.com') {
+            abort(403, 'Unauthorized action. Superadmin only.');
         }
 
         $this->validate([

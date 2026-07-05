@@ -14,13 +14,19 @@ class UserManagement extends Component
     
     public function mount()
     {
-        abort_if(auth()->user()->role != 'rt_admin', 403);
+        if (auth()->user()->role !== 'superadmin' || auth()->user()->email !== 'aroundus.livelife@gmail.com') {
+            abort(403, 'Unauthorized action. Superadmin only.');
+        }
     }
     
     public function save()
     {
+        if (auth()->user()->role !== 'superadmin' || auth()->user()->email !== 'aroundus.livelife@gmail.com') {
+            abort(403, 'Unauthorized action. Superadmin only.');
+        }
+
         $this->validate([
-            'role' => 'required|in:warga,security',
+            'role' => 'required|in:rt_admin,warga,security',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6',
         ]);
@@ -34,7 +40,7 @@ class UserManagement extends Component
         }
         
         User::create([
-            'rt_id' => auth()->user()->rt_id,
+            'rt_id' => auth()->user()->rt_id, // superadmin can have null rt_id, which means system-wide user
             'name' => $this->name,
             'email' => $this->email,
             'password' => Hash::make($this->password),
@@ -48,13 +54,17 @@ class UserManagement extends Component
     
     public function delete($id)
     {
-        User::where('rt_id', auth()->user()->rt_id)->where('id', '!=', auth()->id())->findOrFail($id)->delete();
+        if (auth()->user()->role !== 'superadmin' || auth()->user()->email !== 'aroundus.livelife@gmail.com') {
+            abort(403, 'Unauthorized action. Superadmin only.');
+        }
+        User::where('id', '!=', auth()->id())->findOrFail($id)->delete();
     }
 
     public function render()
     {
-        $users = User::where('rt_id', auth()->user()->rt_id)->where('id', '!=', auth()->id())->get();
-        $wargas = Warga::where('rt_id', auth()->user()->rt_id)->get();
+        // Superadmin sees all users
+        $users = User::where('id', '!=', auth()->id())->get();
+        $wargas = Warga::all();
         
         return view('livewire.user-management', compact('users', 'wargas'))
             ->layout('layouts.app', ['title' => 'Manajemen Akses']);

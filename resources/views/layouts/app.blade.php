@@ -126,6 +126,7 @@
                                 <p>Kas RT</p>
                             </a>
                         </li>
+                        @if(auth()->user()->role == 'superadmin' && auth()->user()->email == 'aroundus.livelife@gmail.com')
                         <li class="nav-item">
                             <a href="{{ route('users.index') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-shield-lock"></i>
@@ -138,6 +139,7 @@
                                 <p>Pengaturan Sistem</p>
                             </a>
                         </li>
+                        @endif
                         @elseif(auth()->user()->role == 'warga')
                         <li class="nav-item">
                             <a href="{{ route('dashboard') }}" class="nav-link {{ request()->is('dashboard') ? 'active' : '' }}">
