@@ -8,9 +8,12 @@ use App\Models\Tamu;
 use App\Models\KasTransaction;
 use App\Models\Surat;
 use Illuminate\Support\Facades\DB;
+use App\Traits\DetectsMobile;
 
 class Dashboard extends Component
 {
+    use DetectsMobile;
+
     public function render()
     {
         $role = auth()->user()->role;
@@ -45,6 +48,11 @@ class Dashboard extends Component
         $chartPemasukan = $chartData->pluck('pemasukan')->toArray();
         $chartPengeluaran = $chartData->pluck('pengeluaran')->toArray();
 
+        if ($this->isMobile()) {
+            return view('livewire.mobile.dashboard', compact('totalWarga', 'tamuBulanIni', 'saldoKas', 'chartBulan', 'chartPemasukan', 'chartPengeluaran', 'rtInfo'))
+                ->layout('layouts.mobile', ['title' => 'Beranda']);
+        }
+
         return view('livewire.dashboard', compact('totalWarga', 'tamuBulanIni', 'saldoKas', 'chartBulan', 'chartPemasukan', 'chartPengeluaran', 'rtInfo'))
             ->layout('layouts.app', ['title' => 'Dashboard RT']);
     }
@@ -54,6 +62,12 @@ class Dashboard extends Component
         $wargaId = auth()->user()->warga_id;
         $kasTransactions = KasTransaction::where('warga_id', $wargaId)->latest()->get();
         $surats = Surat::where('warga_id', $wargaId)->latest()->get();
+
+        if ($this->isMobile()) {
+            return view('livewire.mobile.dashboard-warga', compact('kasTransactions', 'surats'))
+                ->layout('layouts.mobile', ['title' => 'Beranda Warga']);
+        }
+
         return view('livewire.dashboard-warga', compact('kasTransactions', 'surats'))
             ->layout('layouts.app', ['title' => 'Beranda Warga']);
     }
@@ -62,6 +76,12 @@ class Dashboard extends Component
     {
         $rtId = auth()->user()->rt_id;
         $tamuHariIni = Tamu::where('rt_id', $rtId)->whereDate('created_at', date('Y-m-d'))->count();
+
+        if ($this->isMobile()) {
+            return view('livewire.mobile.dashboard-security', compact('tamuHariIni'))
+                ->layout('layouts.mobile', ['title' => 'Dashboard Security']);
+        }
+
         return view('livewire.dashboard-security', compact('tamuHariIni'))
             ->layout('layouts.app', ['title' => 'Dashboard Security']);
     }
