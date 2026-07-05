@@ -53,8 +53,8 @@ class KtpScannerService
      */
     protected function callGeminiApi(string $base64Image, string $mimeType, string $apiKey): string
     {
-        // Using gemini-1.5-flash which is extremely fast and capable of vision tasks
-        $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . $apiKey;
+        // Using gemini-2.5-flash which is extremely fast and capable of vision tasks
+        $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' . $apiKey;
 
         $prompt = "Anda adalah sistem OCR KTP Indonesia yang sangat akurat. 
 Tugas Anda adalah mengekstrak data identitas dari gambar KTP ini.
