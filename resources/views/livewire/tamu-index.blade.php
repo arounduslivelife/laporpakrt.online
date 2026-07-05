@@ -6,8 +6,9 @@
         .crop-overlay{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:9999;display:none;flex-direction:column}
         .crop-header{padding:.75rem 1rem;background:#1e1e2e;color:#fff;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
         .crop-hint{padding:.5rem 1rem;background:#252540;color:#adb5bd;text-align:center;font-size:.8rem;flex-shrink:0}
-        .crop-body{flex:1;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#0a0a14;min-height:0}
-        .crop-body img{max-width:100%;max-height:100%;display:block}
+        .crop-body{flex:1;overflow:hidden;background:#0a0a14;position:relative;width:100%;height:100%}
+        .crop-container{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+        .crop-container img{display:block;max-width:100%;max-height:100%}
         .crop-footer{padding:.75rem 1rem;background:#1e1e2e;display:flex;gap:.75rem;justify-content:center;flex-shrink:0}
         .crop-footer .btn{min-width:120px;padding:.6rem 1.25rem;font-weight:600;font-size:.95rem}
         @media(max-width:576px){
@@ -298,7 +299,9 @@
             <i class="bi bi-info-circle me-1"></i>Geser & perbesar kotak biru agar pas membingkai KTP fisik saja
         </div>
         <div class="crop-body">
-            <img id="tamuCropImage" src="" alt="KTP Tamu">
+            <div class="crop-container">
+                <img id="tamuCropImage" src="" alt="KTP Tamu">
+            </div>
         </div>
         <div class="crop-footer">
             <button type="button" class="btn btn-outline-light" onclick="window._tamuCloseCropper()">Batal</button>
