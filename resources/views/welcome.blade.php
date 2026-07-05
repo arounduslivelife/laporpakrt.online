@@ -478,7 +478,7 @@
                 </div>
                 <div class="text-center text-md-end text-muted small">
                     <div class="mb-2">
-                        <span class="badge bg-light text-dark border"><i class="bi bi-eye text-primary me-1"></i> {{ number_format($visitorCount ?? 0) }} Pengunjung Unik</span>
+                        <span class="badge bg-light text-dark border fs-6">{{ number_format($visitorCount ?? 0) }} <i class="bi bi-eye text-primary ms-1"></i></span>
                     </div>
                     &copy; {{ date('Y') }} LaporPakRT.online<br>
                     All rights reserved.
