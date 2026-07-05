@@ -5,10 +5,12 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\KasTransaction;
 use App\Models\Warga;
+use App\Traits\DetectsMobile;
 
 class KasIndex extends Component
 {
     use WithPagination;
+    use DetectsMobile;
 
     public $tipe = 'pemasukan', $jumlah, $kategori, $keterangan, $warga_id, $periode_bulan;
     public $showForm = false;
@@ -74,6 +76,11 @@ class KasIndex extends Component
         $saldo = $pemasukan - $pengeluaran;
 
         $wargas = Warga::where('rt_id', auth()->user()->rt_id)->get();
+
+        if ($this->isMobile()) {
+            return view('livewire.mobile.kas-index', compact('transactions', 'saldo', 'wargas'))
+                ->layout('layouts.mobile', ['title' => 'Kas RT']);
+        }
 
         return view('livewire.kas-index', compact('transactions', 'saldo', 'wargas'))
             ->layout('layouts.app', ['title' => 'Manajemen Kas RT']);

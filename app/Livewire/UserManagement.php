@@ -6,52 +6,51 @@ use Livewire\Component;
 use App\Models\User;
 use App\Models\Warga;
 use Illuminate\Support\Facades\Hash;
+use App\Traits\DetectsMobile;
 
 class UserManagement extends Component
 {
-    public $role = 'warga', $name, $email, $password, $warga_id;
+    use DetectsMobile;
+
+    public $name, $email, $password, $role = 'warga', $warga_id;
     public $showForm = false;
-    
+
     public function mount()
     {
-        if (!auth()->user()->isSuperadmin()) {
-            abort(403, 'Unauthorized action. Superadmin only.');
-        }
+        abort_if(!auth()->user()->isSuperadmin(), 403);
     }
-    
+
     public function save()
     {
-        if (!auth()->user()->isSuperadmin()) {
-            abort(403, 'Unauthorized action. Superadmin only.');
-        }
-
         $this->validate([
-            'role' => 'required|in:rt_admin,warga,security',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6',
+            'role' => 'required|in:warga,security',
+            'warga_id' => 'required_if:role,warga',
+            'name' => 'required_if:role,security',
         ]);
-        
-        if ($this->role == 'warga') {
-            $this->validate(['warga_id' => 'required|exists:wargas,id']);
-            $warga = Warga::find($this->warga_id);
-            $this->name = $warga->name;
-        } else {
-            $this->validate(['name' => 'required|string']);
-        }
-        
-        User::create([
-            'rt_id' => auth()->user()->rt_id, // superadmin can have null rt_id, which means system-wide user
-            'name' => $this->name,
+
+        $userData = [
             'email' => $this->email,
             'password' => Hash::make($this->password),
             'role' => $this->role,
-            'warga_id' => $this->role == 'warga' ? $this->warga_id : null,
-        ]);
-        
-        $this->reset(['role', 'name', 'email', 'password', 'warga_id', 'showForm']);
+            'rt_id' => auth()->user()->rt_id,
+        ];
+
+        if ($this->role == 'warga') {
+            $warga = Warga::find($this->warga_id);
+            $userData['name'] = $warga->name;
+            $userData['warga_id'] = $warga->id;
+        } else {
+            $userData['name'] = $this->name;
+        }
+
+        User::create($userData);
+
+        $this->reset(['name', 'email', 'password', 'role', 'warga_id', 'showForm']);
         $this->role = 'warga';
     }
-    
+
     public function delete($id)
     {
         if (!auth()->user()->isSuperadmin()) {
@@ -65,6 +64,11 @@ class UserManagement extends Component
         // Superadmin sees all users
         $users = User::where('id', '!=', auth()->id())->get();
         $wargas = Warga::all();
+        
+        if ($this->isMobile()) {
+            return view('livewire.mobile.user-management', compact('users', 'wargas'))
+                ->layout('layouts.mobile', ['title' => 'Manajemen Akses']);
+        }
         
         return view('livewire.user-management', compact('users', 'wargas'))
             ->layout('layouts.app', ['title' => 'Manajemen Akses']);

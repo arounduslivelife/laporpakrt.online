@@ -207,22 +207,32 @@
                     </a>
                 </div>
                 <div class="col-4 text-center">
-                    <a href="#" class="text-decoration-none d-block">
+                    <a href="{{ route('surat.index') }}" class="text-decoration-none d-block">
                         <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 56px; height: 56px;">
                             <i class="bi bi-envelope-paper text-primary fs-3"></i>
                         </div>
                         <span class="text-dark small fw-medium">Surat</span>
                     </a>
                 </div>
+                
+                @if(auth()->user()->isSuperadmin())
                 <div class="col-4 text-center">
-                    <a href="#" class="text-decoration-none d-block">
+                    <a href="{{ route('settings.index') }}" class="text-decoration-none d-block">
                         <div class="bg-secondary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 56px; height: 56px;">
                             <i class="bi bi-gear text-secondary fs-3"></i>
                         </div>
                         <span class="text-dark small fw-medium">Pengaturan</span>
                     </a>
                 </div>
-                @endif
+                <div class="col-4 text-center">
+                    <a href="{{ route('users.index') }}" class="text-decoration-none d-block">
+                        <div class="bg-info bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 56px; height: 56px;">
+                            <i class="bi bi-person-badge text-info fs-3"></i>
+                        </div>
+                        <span class="text-dark small fw-medium">Manajemen</span>
+                    </a>
+                </div>
+                @else
                 <div class="col-4 text-center">
                     <a href="#" class="text-decoration-none d-block">
                         <div class="bg-info bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 56px; height: 56px;">
@@ -231,6 +241,10 @@
                         <span class="text-dark small fw-medium">Profil Saya</span>
                     </a>
                 </div>
+                @endif
+                
+                @endif
+                
                 <div class="col-4 text-center">
                     <form action="{{ route('logout') }}" method="POST" id="logout-form-offcanvas" class="d-none">@csrf</form>
                     <a href="#" class="text-decoration-none d-block" onclick="event.preventDefault(); document.getElementById('logout-form-offcanvas').submit();">

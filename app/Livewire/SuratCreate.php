@@ -6,9 +6,12 @@ use Livewire\Component;
 use App\Models\Warga;
 use App\Models\Surat;
 use Illuminate\Support\Str;
+use App\Traits\DetectsMobile;
 
 class SuratCreate extends Component
 {
+    use DetectsMobile;
+
     public $warga_id, $jenis = 'pengantar_umum', $keperluan;
     
     public function mount()
@@ -45,6 +48,12 @@ class SuratCreate extends Component
     public function render()
     {
         $wargas = Warga::where('rt_id', auth()->user()->rt_id)->get();
+        
+        if ($this->isMobile()) {
+            return view('livewire.mobile.surat-create', compact('wargas'))
+                ->layout('layouts.mobile', ['title' => 'Buat Surat Baru']);
+        }
+        
         return view('livewire.surat-create', compact('wargas'))
             ->layout('layouts.app', ['title' => 'Buat Surat Baru']);
     }

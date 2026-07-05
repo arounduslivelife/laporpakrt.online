@@ -3,9 +3,13 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use App\Models\Setting;
+use App\Traits\DetectsMobile;
 
 class Settings extends Component
 {
+    use DetectsMobile;
+
     public $gemini_api_key;
     public $is_saved = false;
 
