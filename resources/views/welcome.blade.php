@@ -2,13 +2,13 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LaporPakRT - Digitalisasi RT Modern</title>
     
-    <!-- Google Fonts: Poppins -->
+    <!-- Google Fonts: Inter & Outfit -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     
     <!-- Bootstrap CSS & Icons -->
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
@@ -19,212 +19,356 @@
 
     <style>
         :root {
-            --primary-color: #0061ff;
-            --secondary-color: #60efff;
-            --text-dark: #1e293b;
-            --text-light: #64748b;
+            --bg-dark: #070914; /* Deep midnight blue */
+            --bg-surface: rgba(255, 255, 255, 0.03);
+            --bg-surface-hover: rgba(255, 255, 255, 0.06);
+            --primary-neon: #00f0ff;
+            --secondary-neon: #7000ff;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-border-hover: rgba(0, 240, 255, 0.4);
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            color: var(--text-dark);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            background-color: var(--bg-dark);
             overflow-x: hidden;
-            background-color: #f8fafc;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Glassmorphism Navbar */
+        h1, h2, h3, h4, h5, h6, .brand-font {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Ambient Glowing Backgrounds */
+        .ambient-light {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: -1;
+            opacity: 0.5;
+            pointer-events: none;
+            animation: pulse-glow 8s infinite alternate;
+        }
+        
+        @keyframes pulse-glow {
+            0% { transform: scale(1); opacity: 0.4; }
+            100% { transform: scale(1.1); opacity: 0.6; }
+        }
+
+        .orb-1 {
+            top: -10%; left: -10%;
+            width: 50vw; height: 50vw;
+            background: radial-gradient(circle, rgba(112,0,255,0.4) 0%, rgba(112,0,255,0) 70%);
+        }
+
+        .orb-2 {
+            bottom: -20%; right: -10%;
+            width: 60vw; height: 60vw;
+            background: radial-gradient(circle, rgba(0,240,255,0.25) 0%, rgba(0,240,255,0) 70%);
+            animation-delay: -4s;
+        }
+
+        /* Custom Glassmorphism Utilities */
+        .glass-panel {
+            background: var(--bg-surface);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .glass-panel:hover {
+            border-color: var(--glass-border-hover);
+            background: var(--bg-surface-hover);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 45px rgba(0, 240, 255, 0.15);
+        }
+
+        /* Navbar */
         .navbar-glass {
-            background: rgba(255, 255, 255, 0.85) !important;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(7, 9, 20, 0.6) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 15px 0;
             transition: all 0.3s ease;
+        }
+
+        .navbar-glass.scrolled {
+            padding: 10px 0;
+            background: rgba(7, 9, 20, 0.85) !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
         .navbar-brand {
             font-weight: 800;
             font-size: 1.5rem;
-            background: linear-gradient(135deg, var(--primary-color), #00d2ff);
+            color: white !important;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-icon {
+            background: linear-gradient(135deg, var(--primary-neon), var(--secondary-neon));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .nav-link {
             font-weight: 500;
-            color: var(--text-dark) !important;
-            transition: color 0.3s;
+            color: var(--text-muted) !important;
+            transition: color 0.3s, transform 0.3s;
+            margin: 0 10px;
         }
 
         .nav-link:hover {
-            color: var(--primary-color) !important;
+            color: white !important;
+            transform: translateY(-2px);
         }
 
-        /* Hero Section with Mesh Gradient */
-        .hero-section {
-            position: relative;
-            padding: 140px 0 100px;
-            background: radial-gradient(circle at 10% 20%, rgba(96, 239, 255, 0.1) 0%, rgba(0, 97, 255, 0.05) 90.2%);
-            overflow: hidden;
-        }
-
-        /* Floating Animation */
-        @keyframes floating {
-            0% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(2deg); }
-            100% { transform: translateY(0px) rotate(0deg); }
-        }
-
-        /* Village Animations */
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        @keyframes slideRight { 0% { transform: translateX(-50px); } 100% { transform: translateX(900px); } }
-        @keyframes slideLeft { 0% { transform: translateX(50px) scaleX(-1); } 100% { transform: translateX(-900px) scaleX(-1); } }
-
-        .hero-illustration {
-            animation: floating 4s ease-in-out infinite;
-            max-width: 100%;
-            height: auto;
-            filter: drop-shadow(0 20px 30px rgba(0,97,255,0.15));
-        }
-
-        .hero-title {
-            font-weight: 800;
-            font-size: 3.5rem;
-            line-height: 1.2;
-            margin-bottom: 1.5rem;
-            color: var(--text-dark);
-        }
-
-        .hero-title span {
-            color: var(--primary-color);
-        }
-
-        .btn-custom {
-            padding: 0.8rem 2rem;
-            font-weight: 600;
-            border-radius: 50px;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary-custom {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #00d2ff 100%);
+        /* Custom Toggler for Mobile */
+        .navbar-toggler {
             border: none;
             color: white;
-            box-shadow: 0 10px 20px rgba(0, 97, 255, 0.3);
+            padding: 0;
+        }
+        .navbar-toggler:focus { box-shadow: none; }
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
         }
 
-        .btn-primary-custom:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 25px rgba(0, 97, 255, 0.4);
-            color: white;
+        /* Mobile Menu Glass Adjustment */
+        @media (max-width: 991.98px) {
+            .navbar-collapse {
+                background: rgba(15, 20, 40, 0.95);
+                backdrop-filter: blur(20px);
+                border-radius: 16px;
+                padding: 20px;
+                margin-top: 15px;
+                border: 1px solid var(--glass-border);
+            }
+            .nav-link { margin: 10px 0; }
         }
 
-        /* Features Section */
-        .feature-card {
-            background: white;
-            border-radius: 20px;
-            padding: 2.5rem;
-            border: 1px solid rgba(0,0,0,0.05);
-            transition: all 0.4s ease;
-            height: 100%;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
-        }
-
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-            border-color: rgba(0,97,255,0.1);
-        }
-
-        .icon-box {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, rgba(0,97,255,0.1) 0%, rgba(96,239,255,0.1) 100%);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            color: var(--primary-color);
-            margin-bottom: 1.5rem;
+        /* Buttons */
+        .btn-neon {
+            background: linear-gradient(45deg, var(--primary-neon), #0073ff);
+            color: #000;
+            font-weight: 700;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 28px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-size: 0.9rem;
             transition: all 0.3s ease;
-        }
-
-        .feature-card:hover .icon-box {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #00d2ff 100%);
-            color: white;
-            transform: scale(1.1) rotate(-5deg);
-        }
-
-        /* Pricing Section */
-        .pricing-section {
-            background-color: white;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
             position: relative;
-        }
-
-        .pricing-card {
-            border-radius: 24px;
-            border: 1px solid #e2e8f0;
-            background: white;
-            transition: all 0.4s ease;
-            position: relative;
+            overflow: hidden;
             z-index: 1;
         }
 
-        .pricing-card:hover {
-            transform: translateY(-10px);
+        .btn-neon::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(45deg, #0073ff, var(--primary-neon));
+            z-index: -1;
+            transition: opacity 0.3s;
+            opacity: 0;
         }
 
-        .pricing-card.pro {
-            border: 2px solid var(--primary-color);
-            box-shadow: 0 20px 40px rgba(0,97,255,0.15);
-            transform: scale(1.05);
-            z-index: 2;
+        .btn-neon:hover {
+            color: #000;
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.6);
         }
 
-        .pricing-card.pro:hover {
-            transform: scale(1.05) translateY(-10px);
+        .btn-neon:hover::before { opacity: 1; }
+
+        .btn-glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-weight: 600;
+            border-radius: 50px;
+            padding: 12px 28px;
+            transition: all 0.3s ease;
         }
 
-        .badge-popular {
+        .btn-glass:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            padding: 180px 0 100px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .text-gradient-primary {
+            background: linear-gradient(to right, var(--primary-neon), #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 40px;
+            max-width: 500px;
+        }
+
+        /* Floating 3D Elements UI Mockup */
+        .hero-graphics {
+            position: relative;
+            perspective: 1000px;
+            height: 400px;
+            width: 100%;
+        }
+
+        @keyframes float-ui-1 {
+            0% { transform: translateY(0px) rotateY(-15deg) rotateX(5deg); }
+            50% { transform: translateY(-20px) rotateY(-10deg) rotateX(2deg); }
+            100% { transform: translateY(0px) rotateY(-15deg) rotateX(5deg); }
+        }
+        
+        @keyframes float-ui-2 {
+            0% { transform: translateZ(50px) translateY(0px) rotateY(-15deg); }
+            50% { transform: translateZ(50px) translateY(15px) rotateY(-20deg); }
+            100% { transform: translateZ(50px) translateY(0px) rotateY(-15deg); }
+        }
+
+        .mockup-main {
+            position: absolute;
+            top: 20px;
+            right: 10%;
+            width: 80%;
+            max-width: 450px;
+            height: auto;
+            border-radius: 20px;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: -20px 20px 50px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.05);
+            transform: rotateY(-15deg) rotateX(5deg);
+            transform-style: preserve-3d;
+            animation: float-ui-1 6s ease-in-out infinite;
+            padding: 20px;
+        }
+
+        .mockup-widget {
+            position: absolute;
+            bottom: -20px;
+            left: -10%;
+            width: 200px;
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            border-radius: 16px;
+            padding: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4), 0 0 20px rgba(0,240,255,0.1);
+            transform: translateZ(50px) rotateY(-15deg);
+            animation: float-ui-2 7s ease-in-out infinite alternate;
+        }
+
+        /* Feature Icons */
+        .feature-icon-wrapper {
+            width: 60px; height: 60px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--primary-neon);
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .glass-panel:hover .feature-icon-wrapper {
+            background: var(--primary-neon);
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+            transform: scale(1.1);
+        }
+
+        /* Pricing Area */
+        .pricing-pro {
+            position: relative;
+        }
+        .pricing-pro::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(135deg, var(--primary-neon), var(--secondary-neon));
+            z-index: -1;
+            border-radius: 26px;
+            filter: blur(8px);
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+        .pricing-pro:hover::before { opacity: 1; filter: blur(12px); }
+
+        .pricing-badge {
             position: absolute;
             top: -15px;
             left: 50%;
             transform: translateX(-50%);
-            background: linear-gradient(135deg, #ff6b6b, #ff8e8b);
+            background: linear-gradient(90deg, #ff007f, #7000ff);
             color: white;
-            padding: 5px 20px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            box-shadow: 0 5px 15px rgba(255,107,107,0.3);
-        }
-
-        .price-text {
-            font-size: 3.5rem;
+            font-size: 0.8rem;
             font-weight: 800;
-            color: var(--text-dark);
-        }
-
-        .feature-list li {
-            padding: 10px 0;
-            color: var(--text-light);
-            display: flex;
-            align-items: center;
-        }
-
-        .feature-list i {
-            margin-right: 10px;
-            font-size: 1.2rem;
+            padding: 6px 16px;
+            border-radius: 20px;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(255, 0, 127, 0.4);
         }
 
         /* Footer */
         footer {
-            background: var(--text-dark);
-            color: white;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            background: rgba(0,0,0,0.3);
         }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-neon); }
+
+        /* Helpers */
+        .text-neon { color: var(--primary-neon); text-shadow: 0 0 10px rgba(0,240,255,0.5); }
     </style>
 </head>
 <body oncontextmenu="return false;" onkeydown="if(event.keyCode==123) return false;">
+    
     <!-- Anti-Inspect Script -->
     <script>
         document.addEventListener('contextmenu', event => event.preventDefault());
@@ -237,13 +381,18 @@
         }
     </script>
 
+    <!-- Background Orbs -->
+    <div class="ambient-light orb-1"></div>
+    <div class="ambient-light orb-2"></div>
+
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light navbar-glass fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-glass fixed-top">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="#">
-                <i class="bi bi-shield-fill-check me-2 fs-3 text-primary"></i> LaporPakRT
+            <a class="navbar-brand brand-font d-flex align-items-center" href="#">
+                <i class="bi bi-hexagon-half brand-icon me-2 fs-3"></i> 
+                <span>LaporPak<span class="text-neon">RT</span></span>
             </a>
-            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -252,9 +401,9 @@
                     <li class="nav-item"><a class="nav-link" href="#fitur">Fitur</a></li>
                     <li class="nav-item"><a class="nav-link" href="#harga">Harga</a></li>
                 </ul>
-                <div class="d-flex mt-3 mt-lg-0">
-                    <a href="{{ route('login') }}" class="btn btn-link text-decoration-none text-dark fw-bold me-3">Masuk</a>
-                    <a href="{{ route('register') }}" class="btn btn-custom btn-primary-custom">Daftar RT</a>
+                <div class="d-flex mt-3 mt-lg-0 align-items-center gap-3">
+                    <a href="{{ route('login') }}" class="text-white text-decoration-none fw-medium hover-neon">Log In</a>
+                    <a href="{{ route('register') }}" class="btn-neon">Mulai Sistem</a>
                 </div>
             </div>
         </div>
@@ -264,210 +413,158 @@
     <section id="beranda" class="hero-section">
         <div class="container">
             <div class="row align-items-center">
-                <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-right" data-aos-duration="1000">
-                    <div class="d-inline-block mb-3 px-3 py-1 rounded-pill" style="background: rgba(0,97,255,0.1); color: var(--primary-color); font-weight: 600; font-size: 0.9rem;">
-                        <i class="bi bi-star-fill me-1"></i> Platform SaaS RT #1 di Indonesia
+                <div class="col-lg-6 mb-5 mb-lg-0 text-center text-lg-start" data-aos="fade-right" data-aos-duration="1000">
+                    <div class="d-inline-flex align-items-center mb-3 px-3 py-1 rounded-pill" style="background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.2);">
+                        <span class="spinner-grow spinner-grow-sm text-neon me-2" style="width: 8px; height: 8px;"></span>
+                        <span class="text-neon fw-semibold" style="font-size: 0.85rem; letter-spacing: 1px;">SISTEM MANAJEMEN RT V2.0</span>
                     </div>
-                    <h1 class="hero-title">Digitalisasi RT Anda Kini Makin <span>Mudah & Modern</span></h1>
-                    <p class="lead mb-4 text-muted" style="font-size: 1.1rem; line-height: 1.8;">
-                        Tinggalkan cara manual! Kelola data warga, catat buku tamu, dan atur kas RT dalam satu genggaman. Cepat, aman, dan bisa diakses kapan saja.
+                    
+                    <h1 class="hero-title fw-black brand-font">
+                        Masa Depan <br>
+                        <span class="text-gradient-primary">Ekosistem Warga.</span>
+                    </h1>
+                    
+                    <p class="hero-subtitle mx-auto mx-lg-0">
+                        Platform sentralisasi data warga, keamanan (buku tamu AI), dan transparansi kas. Dirancang eksklusif dengan keamanan tinggi untuk RT modern.
                     </p>
-                    <div class="d-flex gap-3">
-                        <a href="{{ route('register') }}" class="btn btn-custom btn-primary-custom d-flex align-items-center">
-                            Mulai Gratis <i class="bi bi-arrow-right ms-2"></i>
+                    
+                    <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start">
+                        <a href="{{ route('register') }}" class="btn-neon d-inline-flex align-items-center justify-content-center">
+                            Deploy Sekarang <i class="bi bi-rocket-takeoff ms-2"></i>
                         </a>
-                        <a href="#fitur" class="btn btn-custom btn-outline-secondary bg-white text-dark border-0 shadow-sm d-flex align-items-center">
-                            Pelajari Fitur
+                        <a href="#fitur" class="btn-glass d-inline-flex align-items-center justify-content-center">
+                            Jelajahi Modul
                         </a>
                     </div>
                     
-                    <div class="mt-5 d-flex align-items-center gap-4 text-muted">
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-check-circle-fill text-success fs-5 me-2"></i> Gratis Selamanya
+                    <div class="mt-5 d-flex gap-4 justify-content-center justify-content-lg-start">
+                        <div>
+                            <h4 class="text-white brand-font mb-0 fw-bold">100%</h4>
+                            <small class="text-muted">Cloud Secured</small>
                         </div>
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-check-circle-fill text-success fs-5 me-2"></i> Offline Support
+                        <div class="border-start border-secondary opacity-25"></div>
+                        <div>
+                            <h4 class="text-white brand-font mb-0 fw-bold">PWA</h4>
+                            <small class="text-muted">Offline Support</small>
                         </div>
                     </div>
                 </div>
                 
-                <div class="col-lg-6 text-center" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
-                    <!-- Pure HTML/CSS Dashboard Illustration -->
-                    <div class="hero-illustration position-relative mt-4 mt-lg-0">
-                        <!-- Main Dashboard Card -->
-                        <div class="bg-white rounded-4 shadow-lg p-4 position-relative text-start" style="z-index: 2; border: 1px solid rgba(0,0,0,0.05); width: 100%; max-width: 450px; margin: 0 auto;">
-                            <!-- Header Mockup -->
-                            <div class="d-flex justify-content-between align-items-center mb-4">
-                                <div class="d-flex align-items-center">
-                                    <div class="rounded-circle" style="width: 45px; height: 45px; background: linear-gradient(135deg, var(--primary-color), #00d2ff);"></div>
-                                    <div class="ms-3">
-                                        <div class="rounded bg-secondary opacity-25 mb-2" style="width: 100px; height: 10px;"></div>
-                                        <div class="rounded bg-secondary opacity-25" style="width: 60px; height: 8px;"></div>
-                                    </div>
+                <div class="col-lg-6" data-aos="zoom-out-left" data-aos-duration="1200">
+                    <!-- 3D Glassmorphism Graphics -->
+                    <div class="hero-graphics d-none d-md-block">
+                        <!-- Main Dashboard Mockup -->
+                        <div class="mockup-main">
+                            <div class="d-flex justify-content-between mb-4 border-bottom border-secondary pb-3 border-opacity-25">
+                                <div class="d-flex gap-2">
+                                    <div class="rounded-circle bg-danger opacity-75" style="width:12px; height:12px;"></div>
+                                    <div class="rounded-circle bg-warning opacity-75" style="width:12px; height:12px;"></div>
+                                    <div class="rounded-circle bg-success opacity-75" style="width:12px; height:12px;"></div>
                                 </div>
-                                <div class="rounded-pill bg-primary bg-opacity-10 text-primary px-3 py-1" style="font-size: 0.8rem; font-weight: 600;">Admin RT</div>
+                                <div class="text-muted" style="font-size: 0.7rem;">RT/RW Admin Node</div>
                             </div>
                             
-                            <!-- Charts Mockup -->
                             <div class="row g-3 mb-4">
                                 <div class="col-6">
-                                    <div class="rounded-3 p-3 h-100" style="background: rgba(0,97,255,0.05);">
-                                        <div class="rounded bg-primary opacity-25 mb-2" style="width: 50px; height: 8px;"></div>
-                                        <div class="fs-3 fw-bold text-dark">156</div>
+                                    <div class="rounded p-3 bg-white bg-opacity-5 border border-white border-opacity-10">
+                                        <div class="text-muted mb-1" style="font-size: 0.7rem;">Total Warga</div>
+                                        <div class="fs-4 brand-font fw-bold text-white">2,405</div>
+                                        <div class="progress mt-2" style="height: 4px; background: rgba(255,255,255,0.1);">
+                                            <div class="progress-bar bg-info" style="width: 75%"></div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-6">
-                                    <div class="rounded-3 p-3 h-100" style="background: rgba(96,239,255,0.1);">
-                                        <div class="rounded bg-info opacity-50 mb-2" style="width: 50px; height: 8px;"></div>
-                                        <div class="fs-3 fw-bold text-dark">42</div>
+                                    <div class="rounded p-3 bg-white bg-opacity-5 border border-white border-opacity-10">
+                                        <div class="text-muted mb-1" style="font-size: 0.7rem;">Kas Aktif</div>
+                                        <div class="fs-4 brand-font fw-bold text-neon">Rp 15M</div>
+                                        <div class="progress mt-2" style="height: 4px; background: rgba(255,255,255,0.1);">
+                                            <div class="progress-bar" style="width: 60%; background: var(--secondary-neon);"></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             
-                            <!-- List Mockup -->
-                            <div class="d-flex align-items-center mb-3">
-                                <i class="bi bi-person-circle fs-3 text-muted opacity-50"></i>
-                                <div class="ms-3 w-100">
-                                    <div class="rounded bg-secondary opacity-25 mb-2 w-75" style="height: 8px;"></div>
-                                    <div class="rounded bg-secondary opacity-25 w-50" style="height: 6px;"></div>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-person-circle fs-3 text-muted opacity-50"></i>
-                                <div class="ms-3 w-100">
-                                    <div class="rounded bg-secondary opacity-25 mb-2 w-50" style="height: 8px;"></div>
-                                    <div class="rounded bg-secondary opacity-25 w-25" style="height: 6px;"></div>
+                            <div class="d-flex align-items-center mb-3 p-2 rounded bg-white bg-opacity-5">
+                                <div class="rounded bg-success bg-opacity-25 p-2 me-3 text-success"><i class="bi bi-shield-check"></i></div>
+                                <div class="w-100">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="text-white" style="font-size:0.85rem;">Sistem Enkripsi</span>
+                                        <span class="text-success" style="font-size:0.8rem;">Aktif</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         
-                        <!-- Floating Badge 1 -->
-                        <div class="bg-white rounded-pill shadow-sm py-2 px-3 position-absolute d-flex align-items-center" style="top: -20px; right: -10px; z-index: 1; animation: floating 6s ease-in-out infinite alternate;">
-                            <i class="bi bi-check-circle-fill text-success fs-5 me-2"></i>
-                            <span class="fw-bold text-dark" style="font-size: 0.9rem;">Sistem Aman</span>
-                        </div>
-
-                        <!-- Floating Badge 2 -->
-                        <div class="bg-white rounded-3 shadow py-2 px-3 position-absolute d-flex align-items-center gap-2" style="bottom: -20px; left: -20px; z-index: 3; animation: floating 4s ease-in-out infinite alternate-reverse;">
-                            <div class="rounded d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; background: rgba(0,97,255,0.1); color: var(--primary-color);">
-                                <i class="bi bi-people-fill fs-5"></i>
+                        <!-- Small Widget -->
+                        <div class="mockup-widget">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="spinner-grow text-neon spinner-grow-sm me-2"></div>
+                                <span class="text-white fw-bold brand-font" style="font-size:0.9rem;">AI Camera Scan</span>
                             </div>
-                            <div class="text-start">
-                                <div class="fw-bold text-dark" style="font-size: 0.9rem; line-height: 1;">Data Warga</div>
-                                <div class="text-muted" style="font-size: 0.75rem;">Otomatis Sinkron</div>
+                            <div class="text-muted" style="font-size: 0.7rem; line-height: 1.3;">Pemindaian KTP Tamu mendeteksi identitas dalam 1.2 detik.</div>
+                            <div class="mt-3 bg-white bg-opacity-10 rounded p-1 position-relative overflow-hidden" style="height: 4px;">
+                                <div class="position-absolute top-0 bottom-0 bg-info" style="width: 40%; animation: slideRight 2s infinite ease-in-out;"></div>
                             </div>
                         </div>
+                        
+                        <style>@keyframes slideRight { 0%{left: -40%;} 100%{left: 100%;} }</style>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Animated Village Section -->
-    <section class="py-5 bg-light overflow-hidden position-relative">
-        <div class="container text-center mb-5 position-relative z-2" data-aos="fade-up">
-            <span class="text-primary fw-bold text-uppercase tracking-wider">Ekosistem Digital</span>
-            <h2 class="fw-bold mt-2 mb-3 display-6">Lingkungan RT Yang Hidup</h2>
-            <p class="text-muted mx-auto" style="max-width: 600px;">Bayangkan semua warga, rumah, dan aktivitas di RT Anda saling terhubung dalam satu sistem yang rapi dan aman.</p>
-        </div>
-        
-        <div class="village-scene mx-auto position-relative" style="height: 250px; max-width: 800px; border-bottom: 4px solid var(--text-dark);">
-            <!-- Sun -->
-            <div class="position-absolute text-warning" style="top: 20px; right: 10%; animation: spin 10s linear infinite;">
-                <i class="bi bi-brightness-high-fill" style="font-size: 3rem;"></i>
-            </div>
-            
-            <!-- Clouds -->
-            <div class="position-absolute text-secondary opacity-50" style="top: 30px; left: -100px; animation: slideRight 20s linear infinite;">
-                <i class="bi bi-cloud-fill" style="font-size: 4rem;"></i>
-            </div>
-            <div class="position-absolute text-secondary opacity-25" style="top: 60px; left: -150px; animation: slideRight 25s linear infinite 5s;">
-                <i class="bi bi-cloud-fill" style="font-size: 3rem;"></i>
-            </div>
-
-            <!-- Buildings/Houses -->
-            <div class="position-absolute" style="bottom: -15px; left: 10%; z-index: 2;">
-                <i class="bi bi-house-door-fill" style="font-size: 5rem; color: var(--primary-color);"></i>
-            </div>
-            <div class="position-absolute" style="bottom: -22px; left: 30%; z-index: 1;">
-                <i class="bi bi-building-fill" style="font-size: 8rem; color: var(--secondary-color);"></i>
-            </div>
-            <div class="position-absolute" style="bottom: -10px; left: 60%; z-index: 2;">
-                <i class="bi bi-shop" style="font-size: 4rem; color: #ff6b6b;"></i>
-            </div>
-            <div class="position-absolute" style="bottom: -15px; right: 15%; z-index: 1;">
-                <i class="bi bi-house-fill" style="font-size: 6rem; color: var(--text-dark);"></i>
-            </div>
-
-            <!-- Trees -->
-            <div class="position-absolute" style="bottom: -5px; left: 25%; z-index: 3;">
-                <i class="bi bi-tree-fill text-success" style="font-size: 3rem;"></i>
-            </div>
-            <div class="position-absolute" style="bottom: -10px; right: 35%; z-index: 3;">
-                <i class="bi bi-tree-fill text-success" style="font-size: 4rem;"></i>
-            </div>
-
-            <!-- Animated Person Walking -->
-            <div class="position-absolute" style="bottom: -5px; left: -50px; z-index: 4; animation: slideRight 15s linear infinite;">
-                <i class="bi bi-person-walking text-dark" style="font-size: 2rem;"></i>
-            </div>
-            <!-- Animated Bicycle -->
-            <div class="position-absolute" style="bottom: -5px; right: -50px; z-index: 4; animation: slideLeft 12s linear infinite;">
-                <i class="bi bi-bicycle text-primary" style="font-size: 2rem;"></i>
             </div>
         </div>
     </section>
 
     <!-- Features Section -->
-    <section id="fitur" class="py-5 my-5">
+    <section id="fitur" class="py-5 my-5 position-relative z-1">
         <div class="container">
             <div class="text-center mb-5" data-aos="fade-up">
-                <span class="text-primary fw-bold text-uppercase tracking-wider">FITUR UNGGULAN</span>
-                <h2 class="fw-bold mt-2 mb-3 display-6">Semua Yang Anda Butuhkan</h2>
-                <p class="text-muted mx-auto" style="max-width: 600px;">Kami mendesain fitur yang benar-benar mempermudah tugas pengurus RT sehari-hari.</p>
+                <h6 class="text-neon fw-bold tracking-wider mb-2">MODUL INTI</h6>
+                <h2 class="brand-font fw-black display-5 text-white">Arsitektur Fitur Premium</h2>
+                <p class="text-muted mx-auto mt-3" style="max-width: 600px;">Bukan sekadar pencatatan biasa. Kami membangun ekosistem cerdas untuk memudahkan birokrasi dan keamanan lingkungan Anda.</p>
             </div>
 
             <div class="row g-4">
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                    <div class="feature-card">
-                        <div class="icon-box"><i class="bi bi-people-fill"></i></div>
-                        <h4 class="fw-bold mb-3">Database Warga</h4>
-                        <p class="text-muted">Kelola data KK, NIK, dan demografi warga secara digital. Pencarian super cepat dan data tersimpan aman di cloud.</p>
+                    <div class="glass-panel p-4 h-100">
+                        <div class="feature-icon-wrapper"><i class="bi bi-database-fill"></i></div>
+                        <h4 class="brand-font fw-bold text-white mb-3">Cloud Database</h4>
+                        <p class="text-muted" style="font-size: 0.95rem;">Penyimpanan data demografi KK dan NIK yang terpusat dengan enkripsi tingkat lanjut. Akses instan di mana pun.</p>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                    <div class="feature-card">
-                        <div class="icon-box"><i class="bi bi-clipboard2-check-fill"></i></div>
-                        <h4 class="fw-bold mb-3">Buku Tamu Digital</h4>
-                        <p class="text-muted">Security dapat mencatat kunjungan tamu real-time, lengkap dengan foto wajah/KTP dan titik geolokasi GPS.</p>
+                    <div class="glass-panel p-4 h-100">
+                        <div class="feature-icon-wrapper"><i class="bi bi-upc-scan"></i></div>
+                        <h4 class="brand-font fw-bold text-white mb-3">AI Guest Scanner</h4>
+                        <p class="text-muted" style="font-size: 0.95rem;">Buku tamu canggih yang dilengkapi pemindai KTP cerdas (OCR) dan deteksi koordinat GPS (Geotagging).</p>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-                    <div class="feature-card">
-                        <div class="icon-box"><i class="bi bi-envelope-paper-fill"></i></div>
-                        <h4 class="fw-bold mb-3">Surat Pengantar</h4>
-                        <p class="text-muted">Warga bisa mengajukan surat pengantar mandiri secara online dan RT tinggal melakukan approval.</p>
+                    <div class="glass-panel p-4 h-100">
+                        <div class="feature-icon-wrapper"><i class="bi bi-wallet2"></i></div>
+                        <h4 class="brand-font fw-bold text-white mb-3">Smart Finance</h4>
+                        <p class="text-muted" style="font-size: 0.95rem;">Manajemen kas transparan dengan riwayat audit (*audit trail*). Laporan PDF/Excel instan dalam hitungan detik.</p>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
-                    <div class="feature-card">
-                        <div class="icon-box"><i class="bi bi-wallet2"></i></div>
-                        <h4 class="fw-bold mb-3">Keuangan & Kas</h4>
-                        <p class="text-muted">Catat pemasukan dan pengeluaran kas RT dengan transparan. Laporan bulanan dapat diunduh kapan saja.</p>
+                    <div class="glass-panel p-4 h-100">
+                        <div class="feature-icon-wrapper"><i class="bi bi-file-earmark-lock-fill"></i></div>
+                        <h4 class="brand-font fw-bold text-white mb-3">Auto-Purge System</h4>
+                        <p class="text-muted" style="font-size: 0.95rem;">Sistem pembersih otomatis (*cron-job*) yang menghancurkan berkas fisik dari server saat data warga ditarik demi privasi mutlak.</p>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="500">
-                    <div class="feature-card">
-                        <div class="icon-box"><i class="bi bi-wifi-off"></i></div>
-                        <h4 class="fw-bold mb-3">Offline-First (PWA)</h4>
-                        <p class="text-muted">Tidak ada sinyal? Tidak masalah. Aplikasi tetap bisa digunakan dan akan sinkronisasi otomatis saat online.</p>
+                    <div class="glass-panel p-4 h-100">
+                        <div class="feature-icon-wrapper"><i class="bi bi-app-indicator"></i></div>
+                        <h4 class="brand-font fw-bold text-white mb-3">PWA Native Feel</h4>
+                        <p class="text-muted" style="font-size: 0.95rem;">Install di layar Home layaknya aplikasi native tanpa perlu ke App Store. Mendukung pengoperasian dalam sinyal lemah.</p>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="600">
-                    <div class="feature-card">
-                        <div class="icon-box"><i class="bi bi-shield-lock-fill"></i></div>
-                        <h4 class="fw-bold mb-3">Keamanan Data</h4>
-                        <p class="text-muted">Sistem keamanan enkripsi standar industri memastikan privasi data warga Anda terlindungi dengan baik.</p>
+                    <div class="glass-panel p-4 h-100">
+                        <div class="feature-icon-wrapper"><i class="bi bi-diagram-3-fill"></i></div>
+                        <h4 class="brand-font fw-bold text-white mb-3">Role-Based Access</h4>
+                        <p class="text-muted" style="font-size: 0.95rem;">Pembagian otoritas absolut antara Warga, Satpam/Keamanan, dan Admin RT. Semua aktivitas terlacak rapi.</p>
                     </div>
                 </div>
             </div>
@@ -475,54 +572,57 @@
     </section>
 
     <!-- Pricing Section -->
-    <section id="harga" class="pricing-section py-5 my-5">
+    <section id="harga" class="py-5 my-5 position-relative z-1">
         <div class="container">
             <div class="text-center mb-5" data-aos="fade-up">
-                <span class="text-primary fw-bold text-uppercase tracking-wider">HARGA TRANSPARAN</span>
-                <h2 class="fw-bold mt-2 mb-3 display-6">Pilih Paket Sesuai Kebutuhan</h2>
-                <p class="text-muted mx-auto" style="max-width: 600px;">Mulai digitalisasi RT Anda secara gratis, dan tingkatkan sesuai pertumbuhan lingkungan Anda.</p>
+                <h6 class="text-neon fw-bold tracking-wider mb-2">INVESTASI</h6>
+                <h2 class="brand-font fw-black display-5 text-white">Lisensi Akses</h2>
+                <p class="text-muted mx-auto mt-3" style="max-width: 600px;">Pilih tingkat otorisasi yang sesuai dengan ekosistem RT Anda.</p>
             </div>
 
-            <div class="row g-4 justify-content-center align-items-center mt-4">
+            <div class="row g-4 justify-content-center mt-4">
                 <!-- Basic Plan -->
-                <div class="col-lg-4 col-md-6" data-aos="fade-right" data-aos-delay="100">
-                    <div class="pricing-card p-5">
-                        <h4 class="fw-bold text-muted mb-2">Paket Basic</h4>
-                        <p class="text-muted mb-4">Cocok untuk RT berskala kecil.</p>
+                <div class="col-lg-4 col-md-6" data-aos="fade-right">
+                    <div class="glass-panel p-5 h-100 position-relative">
+                        <h4 class="brand-font fw-bold text-white mb-2">Protokol Dasar</h4>
+                        <p class="text-muted mb-4 small">Untuk kluster/RT skala kecil.</p>
+                        
                         <div class="mb-4">
-                            <span class="price-text">Rp 0</span>
+                            <span class="fs-1 fw-black text-white brand-font">Rp 0</span>
                             <span class="text-muted">/selamanya</span>
                         </div>
-                        <ul class="list-unstyled feature-list text-start mb-5">
-                            <li><i class="bi bi-check-circle-fill text-success"></i> Maksimal 50 Kepala Keluarga</li>
-                            <li><i class="bi bi-check-circle-fill text-success"></i> Buku Tamu (Tanpa Foto/GPS)</li>
-                            <li><i class="bi bi-check-circle-fill text-success"></i> Manajemen Kas Sederhana</li>
-                            <li class="opacity-50"><i class="bi bi-x-circle-fill text-danger"></i> Surat Pengantar Online</li>
-                            <li class="opacity-50"><i class="bi bi-x-circle-fill text-danger"></i> Dukungan Prioritas</li>
+                        
+                        <ul class="list-unstyled text-start mb-5" style="font-size: 0.95rem;">
+                            <li class="mb-3 d-flex"><i class="bi bi-check-lg text-neon me-3"></i> <span class="text-light">Maksimal 50 Keluarga</span></li>
+                            <li class="mb-3 d-flex"><i class="bi bi-check-lg text-neon me-3"></i> <span class="text-light">Buku Tamu Manual</span></li>
+                            <li class="mb-3 d-flex"><i class="bi bi-check-lg text-neon me-3"></i> <span class="text-light">Manajemen Kas Dasar</span></li>
+                            <li class="mb-3 d-flex opacity-50"><i class="bi bi-x-lg text-danger me-3"></i> <span class="text-muted">AI KTP Scanner</span></li>
+                            <li class="mb-3 d-flex opacity-50"><i class="bi bi-x-lg text-danger me-3"></i> <span class="text-muted">Dukungan Prioritas</span></li>
                         </ul>
-                        <a href="{{ route('register') }}" class="btn btn-custom btn-outline-primary w-100 fw-bold bg-light">Mulai Gratis</a>
+                        <a href="{{ route('register') }}" class="btn-glass w-100 text-center d-block text-decoration-none">Inisialisasi Gratis</a>
                     </div>
                 </div>
 
                 <!-- Pro Plan -->
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                    <div class="pricing-card pro p-5">
-                        <div class="badge-popular">PALING DIMINATI</div>
-                        <h4 class="fw-bold text-primary mb-2">Paket Pro</h4>
-                        <p class="text-muted mb-4">Fitur lengkap untuk RT modern.</p>
+                    <div class="glass-panel p-5 h-100 pricing-pro">
+                        <div class="pricing-badge">ELITE TIER</div>
+                        <h4 class="brand-font fw-bold text-neon mb-2">Protokol Elite</h4>
+                        <p class="text-muted mb-4 small">Membuka seluruh batasan sistem.</p>
+                        
                         <div class="mb-4">
-                            <span class="price-text">Rp 99K</span>
+                            <span class="fs-1 fw-black text-white brand-font">Rp 99K</span>
                             <span class="text-muted">/bulan</span>
                         </div>
-                        <ul class="list-unstyled feature-list text-start mb-5">
-                            <li><i class="bi bi-check-circle-fill text-success"></i> <b>Tak Terbatas</b> Kepala Keluarga</li>
-                            <li><i class="bi bi-check-circle-fill text-success"></i> Buku Tamu (Dengan Foto & GPS)</li>
-                            <li><i class="bi bi-check-circle-fill text-success"></i> Laporan Keuangan Export Excel</li>
-                            <li><i class="bi bi-check-circle-fill text-success"></i> Pengajuan Surat Online Warga</li>
-                            <li><i class="bi bi-check-circle-fill text-success"></i> WhatsApp Notifikasi (Segera)</li>
-                            <li><i class="bi bi-check-circle-fill text-success"></i> Customer Support 24/7</li>
+                        
+                        <ul class="list-unstyled text-start mb-5" style="font-size: 0.95rem;">
+                            <li class="mb-3 d-flex"><i class="bi bi-check-lg text-neon me-3"></i> <span class="text-white fw-bold">Unlimited Data Keluarga</span></li>
+                            <li class="mb-3 d-flex"><i class="bi bi-check-lg text-neon me-3"></i> <span class="text-light">AI KTP Scanner & Geotag</span></li>
+                            <li class="mb-3 d-flex"><i class="bi bi-check-lg text-neon me-3"></i> <span class="text-light">Export Audit Eksekutif</span></li>
+                            <li class="mb-3 d-flex"><i class="bi bi-check-lg text-neon me-3"></i> <span class="text-light">Auto-Purge Security</span></li>
+                            <li class="mb-3 d-flex"><i class="bi bi-check-lg text-neon me-3"></i> <span class="text-light">Dukungan Teknis 24/7</span></li>
                         </ul>
-                        <a href="{{ route('register') }}" class="btn btn-custom btn-primary-custom w-100">Berlangganan Pro</a>
+                        <a href="{{ route('register') }}" class="btn-neon w-100 text-center d-block text-decoration-none">Upgrade ke Elite</a>
                     </div>
                 </div>
             </div>
@@ -530,30 +630,29 @@
     </section>
 
     <!-- Call to Action -->
-    <section class="py-5 mb-5">
+    <section class="py-5 mb-5 position-relative z-1">
         <div class="container">
-            <div class="p-5 text-center text-white rounded-5 position-relative overflow-hidden" style="background: linear-gradient(135deg, var(--primary-color) 0%, #00d2ff 100%);" data-aos="zoom-in">
-                <!-- Decorative Circles -->
-                <div class="position-absolute rounded-circle" style="width: 200px; height: 200px; background: rgba(255,255,255,0.1); top: -50px; right: -50px;"></div>
-                <div class="position-absolute rounded-circle" style="width: 150px; height: 150px; background: rgba(255,255,255,0.1); bottom: -50px; left: -50px;"></div>
+            <div class="glass-panel p-5 text-center overflow-hidden position-relative" data-aos="zoom-in" style="border: 1px solid rgba(0, 240, 255, 0.3);">
+                <!-- Glow Effect inside CTA -->
+                <div class="position-absolute" style="top:50%; left:50%; transform:translate(-50%,-50%); width:300px; height:300px; background:radial-gradient(circle, rgba(112,0,255,0.4) 0%, rgba(0,0,0,0) 70%); z-index:-1;"></div>
                 
-                <h2 class="fw-bold mb-3 position-relative z-1">Siap Mendigitalisasi RT Anda?</h2>
-                <p class="lead mb-4 opacity-75 position-relative z-1">Bergabunglah dengan ratusan pengurus RT lainnya yang sudah menikmati kemudahan LaporPakRT.</p>
-                <a href="{{ route('register') }}" class="btn btn-light btn-custom text-primary px-5 fw-bold position-relative z-1">Daftar Sekarang</a>
+                <h2 class="brand-font fw-black mb-3 text-white">Siap Melakukan Migrasi Sistem?</h2>
+                <p class="text-muted mx-auto mb-5" style="max-width: 500px;">Tinggalkan sistem manual kuno. Waktunya membawa lingkungan Anda ke era digitalisasi penuh keamanan.</p>
+                <a href="{{ route('register') }}" class="btn-neon px-5 py-3 fs-6 d-inline-block text-decoration-none">Mulai Proses Booting</a>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="pt-5 pb-4">
+    <footer class="pt-5 pb-4 mt-auto">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                    <h5 class="fw-bold mb-2"><i class="bi bi-shield-fill-check text-primary"></i> LaporPakRT</h5>
-                    <p class="text-muted small mb-0">Platform Digitalisasi Rukun Tetangga #1 di Indonesia.</p>
+                    <h5 class="brand-font fw-bold mb-2 text-white"><i class="bi bi-hexagon-half text-neon me-1"></i> LaporPak<span class="text-neon">RT</span></h5>
+                    <p class="text-muted small mb-0">Infrastruktur Digitalisasi Rukun Tetangga #1.</p>
                 </div>
                 <div class="col-md-6 text-center text-md-end">
-                    <p class="text-muted small mb-0">&copy; {{ date('Y') }} LaporPakRT. All rights reserved.</p>
+                    <p class="text-muted small mb-0">&copy; {{ date('Y') }} LaporPakRT Systems. Securely Encrypted.</p>
                 </div>
             </div>
         </div>
@@ -565,20 +664,14 @@
     <!-- AOS Animation -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // Initialize AOS
-        AOS.init({
-            once: true, // Animasi hanya berjalan sekali
-            offset: 50, // Trigger animasi 50px sebelum elemen terlihat
-        });
+        AOS.init({ once: true, offset: 50 });
 
-        // Navbar blur on scroll
         window.addEventListener('scroll', function() {
+            var navbar = document.querySelector('.navbar-glass');
             if (window.scrollY > 50) {
-                document.querySelector('.navbar-glass').style.background = 'rgba(255, 255, 255, 0.95)';
-                document.querySelector('.navbar-glass').style.boxShadow = '0 4px 30px rgba(0, 0, 0, 0.05)';
+                navbar.classList.add('scrolled');
             } else {
-                document.querySelector('.navbar-glass').style.background = 'rgba(255, 255, 255, 0.85)';
-                document.querySelector('.navbar-glass').style.boxShadow = 'none';
+                navbar.classList.remove('scrolled');
             }
         });
     </script>
