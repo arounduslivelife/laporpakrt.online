@@ -18,30 +18,31 @@
         <div class="container-fluid">
             
             @if($showForm)
-            {{-- Cropper.js Assets --}}
             <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
             <style>
-                .ocr-dropzone-sm {
-                    border: 2px dashed #ced4da; border-radius: .75rem; padding: 1.5rem 1rem;
+                .ktp-upload-box {
+                    border: 2.5px dashed #0d6efd; border-radius: 1rem; padding: 2rem 1rem;
                     text-align: center; cursor: pointer; transition: all .3s ease;
-                    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                    background: linear-gradient(135deg, #f0f5ff 0%, #e0ecff 100%);
+                    position: relative; overflow: hidden;
                 }
-                .ocr-dropzone-sm:hover { border-color: #0d6efd; background: #e7f1ff; transform: translateY(-1px); box-shadow: 0 4px 15px rgba(13,110,253,.1); }
-                .cropper-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.85); z-index: 1060; display: flex; align-items: center; justify-content: center; }
-                .cropper-modal-content { background: #fff; border-radius: 1rem; width: 95%; max-width: 700px; max-height: 90vh; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,.4); }
-                .cropper-modal-body { padding: 1rem; background: #1a1a2e; }
-                .cropper-modal-body img { max-width: 100%; display: block; }
-                .cropper-modal-footer { padding: 1rem 1.5rem; background: #fff; display: flex; gap: .75rem; justify-content: flex-end; }
-                .scan-indicator { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem 1rem; border-radius: .5rem; font-size: .85rem; }
-                .spin { animation: spin 1s linear infinite; }
-                @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-                .scan-progress-sm { height: 3px; border-radius: 2px; overflow: hidden; background: #e9ecef; }
-                .scan-progress-bar-sm { height: 100%; background: linear-gradient(90deg, #0d6efd, #0dcaf0, #0d6efd); background-size: 200%; animation: shimmer 1.5s infinite; }
-                @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+                .ktp-upload-box:hover { background: linear-gradient(135deg, #dce8ff 0%, #c5d8ff 100%); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(13,110,253,.15); }
+                .ktp-upload-box .upload-icon { font-size: 2.5rem; color: #0d6efd; }
+                .crop-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.9); z-index: 9999; display: flex; flex-direction: column; }
+                .crop-header { padding: 1rem 1.5rem; background: #1e1e2e; color: #fff; display: flex; align-items: center; justify-content: space-between; }
+                .crop-body { flex: 1; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #111; }
+                .crop-body img { max-width: 100%; max-height: 100%; }
+                .crop-footer { padding: 1rem 1.5rem; background: #1e1e2e; display: flex; gap: .75rem; justify-content: center; }
+                .ocr-success-box { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border: 2px solid #66bb6a; border-radius: 1rem; padding: 1.5rem; text-align: center; }
+                .tip-box { background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-radius: .75rem; padding: 1rem 1.25rem; border-left: 4px solid #1976d2; }
+                .scan-shimmer { height: 4px; border-radius: 2px; overflow: hidden; background: #e0e0e0; }
+                .scan-shimmer-bar { height: 100%; width: 100%; background: linear-gradient(90deg, #1976d2, #42a5f5, #1976d2); background-size: 200%; animation: shimmer 1.2s infinite linear; }
+                @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+                .spin { animation: spin-anim 1s linear infinite; }
+                @keyframes spin-anim { from{transform:rotate(0)} to{transform:rotate(360deg)} }
             </style>
 
-            <div class="card mb-4 border-0 shadow-sm" x-data="wargaKtpScanner()">
+            <div class="card mb-4 border-0 shadow-sm">
                 <div class="card-header bg-white border-bottom">
                     <div class="d-flex align-items-center justify-content-between">
                         <h5 class="mb-0">
@@ -51,121 +52,114 @@
                         <button type="button" class="btn-close" wire:click="resetForm"></button>
                     </div>
                 </div>
-                <div class="card-body p-4">
+                <div class="card-body p-3 p-md-4">
                     <form wire:submit.prevent="save">
-                        {{-- OCR Quick Scan Section --}}
-                        <div class="alert alert-info border-0 d-flex align-items-start mb-4" style="background: linear-gradient(135deg, #e7f1ff, #d0e2ff); border-radius: .75rem;">
-                            <i class="bi bi-lightbulb text-primary me-3" style="font-size: 1.5rem; margin-top: 2px;"></i>
-                            <div>
-                                <strong>Tip Cepat:</strong> Upload foto KTP di bawah untuk mengisi form secara otomatis menggunakan teknologi OCR. Anda tetap bisa mengedit hasilnya secara manual.
+
+                        {{-- KTP OCR Section - Di atas form agar user scan dulu --}}
+                        <div class="mb-4" id="ktp-section">
+                            <div class="tip-box mb-3">
+                                <div class="d-flex align-items-start">
+                                    <i class="bi bi-magic text-primary me-2" style="font-size:1.3rem; margin-top:2px;"></i>
+                                    <div>
+                                        <strong>Isi Otomatis dengan Scan KTP</strong><br>
+                                        <small class="text-muted">Foto KTP lalu crop area-nya. Data NIK, Nama, Alamat, dll akan terisi otomatis ke form di bawah.</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Upload Area --}}
+                            <div id="ktp-dropzone-area">
+                                <div class="ktp-upload-box" onclick="document.getElementById('ktpFileInput').click()">
+                                    <div class="upload-icon"><i class="bi bi-credit-card-2-front"></i></div>
+                                    <h6 class="fw-bold mt-2 mb-1">Klik untuk Foto / Upload KTP</h6>
+                                    <small class="text-muted">Kamera akan terbuka di HP &bull; Maks 8MB</small>
+                                </div>
+                                <input type="file" id="ktpFileInput" accept="image/*" capture="environment" class="d-none"
+                                    onchange="openCropper(this)">
+                            </div>
+
+                            {{-- Success State --}}
+                            <div id="ktp-success-area" style="display:none;">
+                                <div class="ocr-success-box">
+                                    <i class="bi bi-patch-check-fill text-success" style="font-size:2rem;"></i>
+                                    <h6 class="fw-bold mt-2 mb-1 text-success">KTP Berhasil Di-scan!</h6>
+                                    <small class="text-muted">Periksa data yang sudah terisi di bawah</small>
+                                    <div class="mt-2">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetKtpUpload()">
+                                            <i class="bi bi-arrow-counterclockwise me-1"></i> Scan Ulang
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Scanning Indicator --}}
+                            <div wire:loading wire:target="scanKtp" class="mt-3">
+                                <div class="d-flex align-items-center gap-2 text-primary mb-2">
+                                    <i class="bi bi-cpu spin"></i>
+                                    <strong class="small">AI sedang membaca data KTP...</strong>
+                                </div>
+                                <div class="scan-shimmer"><div class="scan-shimmer-bar"></div></div>
+                            </div>
+
+                            @error('foto_ktp') <div class="text-danger small mt-2"><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</div> @enderror
+                        </div>
+
+                        <hr>
+
+                        {{-- Form Fields --}}
+                        <h6 class="text-muted text-uppercase small fw-bold mb-3"><i class="bi bi-pencil-square me-1"></i> Data Identitas</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">Nama Lengkap <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" wire:model="name" required placeholder="Sesuai KTP">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">NIK</label>
+                                <input type="text" class="form-control" wire:model="nik" maxlength="16" placeholder="16 digit">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">Nomor KK</label>
+                                <input type="text" class="form-control" wire:model="no_kk" maxlength="16" placeholder="16 digit">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">Jenis Kelamin</label>
+                                <select class="form-select" wire:model="jenis_kelamin">
+                                    <option value="">Pilih</option>
+                                    <option value="LAKI-LAKI">Laki-laki</option>
+                                    <option value="PEREMPUAN">Perempuan</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">Status Domisili</label>
+                                <select class="form-select" wire:model="status_domisili">
+                                    <option value="Tetap">Warga Tetap</option>
+                                    <option value="Kontrak">Kontrak/Kos</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label fw-semibold">Tempat Lahir</label>
+                                <input type="text" class="form-control" wire:model="tempat_lahir" placeholder="Kota">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label fw-semibold">Tanggal Lahir</label>
+                                <input type="date" class="form-control" wire:model="tanggal_lahir">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label fw-semibold">Alamat</label>
+                                <textarea class="form-control" wire:model="alamat" rows="2" placeholder="Alamat lengkap sesuai KTP"></textarea>
                             </div>
                         </div>
 
-                        <div class="row">
-                            {{-- Left: Form Fields --}}
-                            <div class="col-lg-7">
-                                <h6 class="text-muted text-uppercase small fw-bold mb-3"><i class="bi bi-pencil-square me-1"></i> Data Identitas</h6>
-                                <div class="row">
-                                    <div class="col-md-12 mb-3">
-                                        <label class="form-label fw-semibold">Nama Lengkap <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" wire:model="name" required placeholder="Sesuai KTP">
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label fw-semibold">NIK</label>
-                                        <input type="text" class="form-control" wire:model="nik" maxlength="16" placeholder="16 digit">
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label fw-semibold">Nomor KK</label>
-                                        <input type="text" class="form-control" wire:model="no_kk" maxlength="16" placeholder="16 digit">
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label fw-semibold">Jenis Kelamin</label>
-                                        <select class="form-select" wire:model="jenis_kelamin">
-                                            <option value="">Pilih</option>
-                                            <option value="LAKI-LAKI">Laki-laki</option>
-                                            <option value="PEREMPUAN">Perempuan</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label fw-semibold">Status Domisili</label>
-                                        <select class="form-select" wire:model="status_domisili">
-                                            <option value="Tetap">Warga Tetap</option>
-                                            <option value="Kontrak">Kontrak/Kos</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label fw-semibold">Tempat Lahir</label>
-                                        <input type="text" class="form-control" wire:model="tempat_lahir" placeholder="Kota kelahiran">
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label fw-semibold">Tanggal Lahir</label>
-                                        <input type="date" class="form-control" wire:model="tanggal_lahir">
-                                    </div>
-                                    <div class="col-12 mb-3">
-                                        <label class="form-label fw-semibold">Alamat</label>
-                                        <textarea class="form-control" wire:model="alamat" rows="2" placeholder="Alamat lengkap sesuai KTP"></textarea>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {{-- Right: Photo & KTP Upload --}}
-                            <div class="col-lg-5">
-                                <h6 class="text-muted text-uppercase small fw-bold mb-3"><i class="bi bi-camera me-1"></i> Foto & Dokumen</h6>
-
-                                {{-- Foto Wajah --}}
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Foto Wajah</label>
-                                    <input type="file" class="form-control" wire:model="foto_wajah" accept="image/*" capture="environment">
-                                    <div wire:loading wire:target="foto_wajah" class="text-info small mt-1"><i class="bi bi-arrow-repeat spin"></i> Mengunggah...</div>
-                                    @if ($foto_wajah)
-                                        <img src="{{ $foto_wajah->temporaryUrl() }}" class="img-thumbnail mt-2 rounded" style="max-height: 100px;">
-                                    @elseif ($editMode && $foto_path)
-                                        <img src="{{ Storage::url($foto_path) }}" class="img-thumbnail mt-2 rounded" style="max-height: 100px;">
-                                    @endif
-                                </div>
-
-                                {{-- KTP with OCR --}}
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Foto KTP <span class="badge bg-primary-subtle text-primary ms-1">OCR</span></label>
-
-                                    {{-- State: Ready to upload --}}
-                                    <div x-show="!ktpReady">
-                                        <div class="ocr-dropzone-sm" x-on:click="$refs.ktpInput.click()">
-                                            <i class="bi bi-credit-card-2-front text-primary" style="font-size: 2rem;"></i>
-                                            <p class="mb-1 mt-2 fw-semibold small">Klik untuk foto KTP</p>
-                                            <span class="text-muted" style="font-size: .75rem;">Akan otomatis mengisi form di samping</span>
-                                        </div>
-                                        <input type="file" x-ref="ktpInput" class="d-none" accept="image/*" capture="environment"
-                                            x-on:change="handleKtpFile($event.target.files[0])">
-                                    </div>
-
-                                    {{-- State: KTP uploaded & scanned --}}
-                                    <div x-show="ktpReady" x-cloak>
-                                        <div class="border rounded p-3 text-center" style="background: #f0fdf4;">
-                                            <i class="bi bi-check-circle-fill text-success" style="font-size: 1.5rem;"></i>
-                                            <p class="mb-1 mt-1 fw-semibold small text-success">KTP berhasil di-scan!</p>
-                                            <button type="button" class="btn btn-outline-secondary btn-sm mt-1" x-on:click="resetKtp()">
-                                                <i class="bi bi-arrow-counterclockwise me-1"></i> Ganti KTP
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {{-- Scanning indicator --}}
-                                    <div wire:loading wire:target="scanKtp" class="mt-2">
-                                        <div class="scan-indicator bg-info-subtle text-info">
-                                            <i class="bi bi-cpu"></i> <span>AI membaca KTP...</span>
-                                        </div>
-                                        <div class="scan-progress-sm mt-1">
-                                            <div class="scan-progress-bar-sm" style="width:100%"></div>
-                                        </div>
-                                    </div>
-
-                                    @if ($editMode && $ktp_path && !$foto_ktp)
-                                        <img src="{{ Storage::url($ktp_path) }}" class="img-thumbnail mt-2 rounded" style="max-height: 100px;">
-                                    @endif
-                                    @error('foto_ktp') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
-                                </div>
-                            </div>
+                        <hr>
+                        <h6 class="text-muted text-uppercase small fw-bold mb-3"><i class="bi bi-camera me-1"></i> Foto Wajah (Opsional)</h6>
+                        <div class="mb-3">
+                            <input type="file" class="form-control" wire:model="foto_wajah" accept="image/*" capture="environment">
+                            <div wire:loading wire:target="foto_wajah" class="text-info small mt-1"><i class="bi bi-arrow-repeat spin"></i> Mengunggah...</div>
+                            @if ($foto_wajah)
+                                <img src="{{ $foto_wajah->temporaryUrl() }}" class="img-thumbnail mt-2 rounded" style="max-height: 100px;">
+                            @elseif ($editMode && $foto_path)
+                                <img src="{{ Storage::url($foto_path) }}" class="img-thumbnail mt-2 rounded" style="max-height: 100px;">
+                            @endif
                         </div>
 
                         <hr>
@@ -177,98 +171,99 @@
                         </div>
                     </form>
                 </div>
-
-                {{-- Cropper Modal (Full-screen overlay) --}}
-                <template x-if="showCropperModal">
-                    <div class="cropper-modal-overlay" x-transition>
-                        <div class="cropper-modal-content">
-                            <div class="p-3 border-bottom d-flex align-items-center justify-content-between">
-                                <h6 class="mb-0"><i class="bi bi-crop me-2 text-primary"></i>Potong Area KTP</h6>
-                                <button type="button" class="btn-close" x-on:click="closeCropperModal()"></button>
-                            </div>
-                            <p class="px-3 pt-2 mb-0 text-muted small">Seret kotak biru untuk membingkai area fisik KTP saja. Buang latar belakang untuk akurasi lebih tinggi.</p>
-                            <div class="cropper-modal-body">
-                                <img id="cropperImageWarga" :src="cropImageUrl" style="max-width: 100%; display: block;">
-                            </div>
-                            <div class="cropper-modal-footer">
-                                <button type="button" class="btn btn-outline-secondary" x-on:click="closeCropperModal()">Batal</button>
-                                <button type="button" class="btn btn-primary" x-bind:disabled="cropUploading" x-on:click="cropAndUpload()">
-                                    <span x-show="!cropUploading"><i class="bi bi-upc-scan me-1"></i> Crop & Scan OCR</span>
-                                    <span x-show="cropUploading"><i class="bi bi-arrow-repeat spin me-1"></i> Memproses...</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </template>
             </div>
 
+            {{-- Fullscreen Cropper Overlay --}}
+            <div id="cropOverlay" class="crop-overlay" style="display:none;">
+                <div class="crop-header">
+                    <h6 class="mb-0"><i class="bi bi-crop me-2"></i>Potong Area KTP</h6>
+                    <button type="button" class="btn btn-sm btn-outline-light" onclick="closeCropper()">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+                <div class="p-2 text-center" style="background:#2a2a3e; color:#adb5bd;">
+                    <small><i class="bi bi-info-circle me-1"></i>Seret kotak biru agar pas membingkai KTP saja. Buang latar belakang.</small>
+                </div>
+                <div class="crop-body">
+                    <img id="cropImage" src="" alt="KTP">
+                </div>
+                <div class="crop-footer">
+                    <button type="button" class="btn btn-outline-light" onclick="closeCropper()">Batal</button>
+                    <button type="button" class="btn btn-primary px-4" id="btnCropScan" onclick="doCropAndScan()">
+                        <i class="bi bi-upc-scan me-1"></i> Crop & Scan
+                    </button>
+                </div>
+            </div>
+
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
             <script>
-                function wargaKtpScanner() {
-                    return {
-                        showCropperModal: false,
-                        cropImageUrl: null,
-                        cropper: null,
-                        cropUploading: false,
-                        ktpReady: false,
+                var _cropper = null;
 
-                        init() {
-                            this.ktpReady = !!@this.get('foto_ktp');
-                        },
+                function openCropper(input) {
+                    var file = input.files[0];
+                    if (!file) return;
+                    if (file.size > 8 * 1024 * 1024) { alert('File terlalu besar. Maks 8MB.'); input.value = ''; return; }
+                    if (!file.type.startsWith('image/')) { alert('Hanya file gambar.'); input.value = ''; return; }
 
-                        handleKtpFile(file) {
-                            if (!file) return;
-                            if (file.size > 8 * 1024 * 1024) { alert('File terlalu besar. Maksimal 8MB.'); return; }
-                            if (!file.type.startsWith('image/')) { alert('Hanya file gambar yang diperbolehkan.'); return; }
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        var img = document.getElementById('cropImage');
+                        img.src = e.target.result;
+                        document.getElementById('cropOverlay').style.display = 'flex';
 
-                            this.cropImageUrl = URL.createObjectURL(file);
-                            this.showCropperModal = true;
-
-                            this.$nextTick(() => {
-                                setTimeout(() => {
-                                    const img = document.getElementById('cropperImageWarga');
-                                    if (this.cropper) this.cropper.destroy();
-                                    this.cropper = new Cropper(img, {
-                                        viewMode: 1,
-                                        autoCropArea: 0.85,
-                                        responsive: true,
-                                        background: true,
-                                    });
-                                }, 300);
+                        setTimeout(function() {
+                            if (_cropper) _cropper.destroy();
+                            _cropper = new Cropper(img, {
+                                viewMode: 1,
+                                autoCropArea: 0.85,
+                                responsive: true,
+                                background: true,
                             });
-                        },
+                        }, 200);
+                    };
+                    reader.readAsDataURL(file);
+                }
 
-                        cropAndUpload() {
-                            if (!this.cropper) return;
-                            this.cropUploading = true;
-                            this.cropper.getCroppedCanvas({ maxWidth: 1600, maxHeight: 1600 }).toBlob((blob) => {
-                                if (!blob) { this.cropUploading = false; alert('Gagal memotong gambar.'); return; }
-                                const croppedFile = new File([blob], 'ktp_cropped.jpg', { type: 'image/jpeg' });
-                                @this.upload('foto_ktp', croppedFile, () => {
-                                    this.cropUploading = false;
-                                    this.showCropperModal = false;
-                                    this.ktpReady = true;
-                                    if (this.cropper) this.cropper.destroy();
-                                    @this.scanKtp();
-                                }, (error) => {
-                                    this.cropUploading = false;
-                                    console.error('Upload error:', error);
-                                    alert('Upload gagal. Periksa koneksi atau ukuran file.');
-                                }, () => {});
-                            }, 'image/jpeg', 0.85);
-                        },
+                function closeCropper() {
+                    document.getElementById('cropOverlay').style.display = 'none';
+                    if (_cropper) { _cropper.destroy(); _cropper = null; }
+                }
 
-                        closeCropperModal() {
-                            this.showCropperModal = false;
-                            if (this.cropper) this.cropper.destroy();
-                            this.cropper = null;
-                        },
+                function doCropAndScan() {
+                    if (!_cropper) return;
+                    var btn = document.getElementById('btnCropScan');
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="bi bi-arrow-repeat spin me-1"></i> Memproses...';
 
-                        resetKtp() {
-                            this.ktpReady = false;
-                            this.cropImageUrl = null;
-                            if (this.$refs.ktpInput) this.$refs.ktpInput.value = '';
-                        }
-                    }
+                    _cropper.getCroppedCanvas({ maxWidth: 1600, maxHeight: 1600 }).toBlob(function(blob) {
+                        if (!blob) { btn.disabled = false; btn.innerHTML = '<i class="bi bi-upc-scan me-1"></i> Crop & Scan'; alert('Gagal crop.'); return; }
+                        var croppedFile = new File([blob], 'ktp_cropped.jpg', { type: 'image/jpeg' });
+
+                        @this.upload('foto_ktp', croppedFile, function() {
+                            // Upload OK
+                            closeCropper();
+                            btn.disabled = false;
+                            btn.innerHTML = '<i class="bi bi-upc-scan me-1"></i> Crop & Scan';
+
+                            // Show success, hide dropzone
+                            document.getElementById('ktp-dropzone-area').style.display = 'none';
+                            document.getElementById('ktp-success-area').style.display = 'block';
+
+                            // Trigger server-side OCR scan
+                            @this.scanKtp();
+                        }, function(error) {
+                            btn.disabled = false;
+                            btn.innerHTML = '<i class="bi bi-upc-scan me-1"></i> Crop & Scan';
+                            console.error('Upload error:', error);
+                            alert('Upload gagal. Cek koneksi internet.');
+                        }, function() {});
+                    }, 'image/jpeg', 0.85);
+                }
+
+                function resetKtpUpload() {
+                    document.getElementById('ktp-dropzone-area').style.display = 'block';
+                    document.getElementById('ktp-success-area').style.display = 'none';
+                    document.getElementById('ktpFileInput').value = '';
                 }
             </script>
             @endif
@@ -390,29 +385,13 @@
                         <div class="col-md-8">
                             <table class="table table-bordered">
                                 <tbody>
-                                    <tr>
-                                        <th style="width: 35%;">NIK</th>
-                                        <td>{{ $viewWarga->nik ?? '-' }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>No. Kartu Keluarga</th>
-                                        <td>{{ $viewWarga->no_kk ?? '-' }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Jenis Kelamin</th>
-                                        <td>{{ $viewWarga->jenis_kelamin ?? '-' }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Tempat, Tanggal Lahir</th>
-                                        <td>{{ $viewWarga->tempat_lahir ?? '-' }}, {{ $viewWarga->tanggal_lahir ? \Carbon\Carbon::parse($viewWarga->tanggal_lahir)->format('d-m-Y') : '-' }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Alamat</th>
-                                        <td>{{ $viewWarga->alamat ?? '-' }}</td>
-                                    </tr>
+                                    <tr><th style="width: 35%;">NIK</th><td>{{ $viewWarga->nik ?? '-' }}</td></tr>
+                                    <tr><th>No. Kartu Keluarga</th><td>{{ $viewWarga->no_kk ?? '-' }}</td></tr>
+                                    <tr><th>Jenis Kelamin</th><td>{{ $viewWarga->jenis_kelamin ?? '-' }}</td></tr>
+                                    <tr><th>Tempat, Tanggal Lahir</th><td>{{ $viewWarga->tempat_lahir ?? '-' }}, {{ $viewWarga->tanggal_lahir ? \Carbon\Carbon::parse($viewWarga->tanggal_lahir)->format('d-m-Y') : '-' }}</td></tr>
+                                    <tr><th>Alamat</th><td>{{ $viewWarga->alamat ?? '-' }}</td></tr>
                                 </tbody>
                             </table>
-
                             @if($viewWarga->ktp_path)
                             <div class="mt-3">
                                 <h6>Foto KTP:</h6>
