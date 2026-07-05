@@ -207,11 +207,11 @@
                     </a>
                 </div>
                 <div class="col-4 text-center">
-                    <a href="{{ route('surat.index') }}" class="text-decoration-none d-block">
-                        <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 56px; height: 56px;">
-                            <i class="bi bi-envelope-paper text-primary fs-3"></i>
+                    <a href="#" onclick="alert('Mohon maaf, menu ini sedang dalam pengembangan'); return false;" class="text-decoration-none d-block" style="opacity: 0.6; cursor: not-allowed;">
+                        <div class="bg-secondary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 56px; height: 56px;">
+                            <i class="bi bi-envelope-paper text-secondary fs-3"></i>
                         </div>
-                        <span class="text-dark small fw-medium">Surat</span>
+                        <span class="text-muted small fw-medium">Surat</span>
                     </a>
                 </div>
                 
