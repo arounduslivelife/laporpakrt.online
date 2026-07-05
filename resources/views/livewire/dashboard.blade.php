@@ -1,4 +1,11 @@
 <div>
+    @if(isset($daysLeft) && $daysLeft >= 0 && $daysLeft <= 3)
+    <div class="alert alert-warning mb-0 border-0 rounded-0 text-center" style="background-color: #fffbeb; color: #b45309; border-bottom: 1px solid #fde68a !important;">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <strong>Peringatan!</strong> Masa aktif langganan RT Anda tersisa <strong>{{ $daysLeft }} hari lagi</strong>. Segera hubungi Superadmin untuk memperpanjang langganan sebelum fitur terkunci.
+    </div>
+    @endif
+    
     <div class="app-content-header">
         <div class="container-fluid">
             <div class="row">

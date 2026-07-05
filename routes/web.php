@@ -26,18 +26,25 @@ Route::get('/login', Login::class)->name('login');
 Route::get('/register', Register::class)->name('register');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', \App\Livewire\Dashboard::class)->name('dashboard');
-    Route::get('/warga', \App\Livewire\WargaIndex::class)->name('warga.index');
-    Route::get('/warga/export/excel', [\App\Http\Controllers\WargaExportController::class, 'excel'])->name('warga.export.excel');
-    Route::get('/warga/export/pdf', [\App\Http\Controllers\WargaExportController::class, 'pdf'])->name('warga.export.pdf');
-    Route::get('/tamu', \App\Livewire\TamuIndex::class)->name('tamu.index');
-    Route::get('/ocr-test', \App\Livewire\OcrTest::class)->name('ocr.test');
-    Route::get('/surat', \App\Livewire\SuratIndex::class)->name('surat.index');
-    Route::get('/surat/create', \App\Livewire\SuratCreate::class)->name('surat.create');
-    Route::get('/surat/{id}/pdf', [\App\Http\Controllers\SuratController::class, 'pdf'])->name('surat.pdf');
-    Route::get('/kas', \App\Livewire\KasIndex::class)->name('kas.index');
-    Route::get('/users', \App\Livewire\UserManagement::class)->name('users.index');
-    Route::get('/subscriptions', \App\Livewire\SubscriptionManagement::class)->name('subscriptions.index');
-    Route::get('/settings', \App\Livewire\Settings::class)->name('settings.index');
+    // Route Khusus Expired (tidak dicek oleh middleware check.subscription)
+    Route::get('/subscription-expired', \App\Livewire\SubscriptionExpired::class)->name('subscription.expired');
+
+    // Route yang diproteksi masa aktif langganan
+    Route::middleware(['check.subscription'])->group(function () {
+        Route::get('/dashboard', \App\Livewire\Dashboard::class)->name('dashboard');
+        Route::get('/warga', \App\Livewire\WargaIndex::class)->name('warga.index');
+        Route::get('/warga/export/excel', [\App\Http\Controllers\WargaExportController::class, 'excel'])->name('warga.export.excel');
+        Route::get('/warga/export/pdf', [\App\Http\Controllers\WargaExportController::class, 'pdf'])->name('warga.export.pdf');
+        Route::get('/tamu', \App\Livewire\TamuIndex::class)->name('tamu.index');
+        Route::get('/ocr-test', \App\Livewire\OcrTest::class)->name('ocr.test');
+        Route::get('/surat', \App\Livewire\SuratIndex::class)->name('surat.index');
+        Route::get('/surat/create', \App\Livewire\SuratCreate::class)->name('surat.create');
+        Route::get('/surat/{id}/pdf', [\App\Http\Controllers\SuratController::class, 'pdf'])->name('surat.pdf');
+        Route::get('/kas', \App\Livewire\KasIndex::class)->name('kas.index');
+        Route::get('/users', \App\Livewire\UserManagement::class)->name('users.index');
+        Route::get('/subscriptions', \App\Livewire\SubscriptionManagement::class)->name('subscriptions.index');
+        Route::get('/settings', \App\Livewire\Settings::class)->name('settings.index');
+    });
+
     Route::post('/logout', function() { \Illuminate\Support\Facades\Auth::logout(); session()->regenerateToken(); return redirect('/'); })->name('logout');
 });

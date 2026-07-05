@@ -15,4 +15,5 @@ class Rt extends Model
     public function village()    { return $this->belongsTo(Region::class, 'village_code', 'code'); }
     public function surats() { return $this->hasMany(Surat::class); }
     public function kasTransactions() { return $this->hasMany(KasTransaction::class); }
+    public function subscription() { return $this->hasOne(Subscription::class); }
 }

@@ -48,12 +48,15 @@ class Dashboard extends Component
         $chartPemasukan = $chartData->pluck('pemasukan')->toArray();
         $chartPengeluaran = $chartData->pluck('pengeluaran')->toArray();
 
+        $subscription = auth()->user()->rt ? auth()->user()->rt->subscription : null;
+        $daysLeft = $subscription ? now()->diffInDays(\Carbon\Carbon::parse($subscription->end_date), false) : 999;
+
         if ($this->isMobile()) {
-            return view('livewire.mobile.dashboard', compact('totalWarga', 'tamuBulanIni', 'saldoKas', 'chartBulan', 'chartPemasukan', 'chartPengeluaran', 'rtInfo'))
+            return view('livewire.mobile.dashboard', compact('totalWarga', 'tamuBulanIni', 'saldoKas', 'chartBulan', 'chartPemasukan', 'chartPengeluaran', 'rtInfo', 'daysLeft'))
                 ->layout('layouts.mobile', ['title' => 'Beranda']);
         }
 
-        return view('livewire.dashboard', compact('totalWarga', 'tamuBulanIni', 'saldoKas', 'chartBulan', 'chartPemasukan', 'chartPengeluaran', 'rtInfo'))
+        return view('livewire.dashboard', compact('totalWarga', 'tamuBulanIni', 'saldoKas', 'chartBulan', 'chartPemasukan', 'chartPengeluaran', 'rtInfo', 'daysLeft'))
             ->layout('layouts.app', ['title' => 'Dashboard RT']);
     }
 

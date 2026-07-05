@@ -4,6 +4,13 @@
         <p class="text-muted small">Selamat datang di Panel RT {{ $rtInfo->rt }} / RW {{ $rtInfo->rw }}</p>
     </div>
 
+    @if(isset($daysLeft) && $daysLeft >= 0 && $daysLeft <= 3)
+    <div class="alert alert-warning border-0 d-flex align-items-center mb-3" role="alert" style="border-radius: 16px; background-color: #fffbeb; color: #b45309;">
+        <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+        <span class="small fw-medium">Sisa langganan: <strong>{{ $daysLeft }} hari</strong>. Hubungi Superadmin.</span>
+    </div>
+    @endif
+
     <!-- Info Grid -->
     <div class="row g-3 mb-4">
         <div class="col-6">

@@ -84,6 +84,18 @@ class Register extends Component
 
         $user->update(['rt_id' => $rt->id]);
 
+        // Berikan langganan Gratis 7 Hari secara otomatis
+        $freePlan = \App\Models\SubscriptionPlan::where('price', 0)->first();
+        if ($freePlan) {
+            \App\Models\Subscription::create([
+                'rt_id' => $rt->id,
+                'plan_id' => $freePlan->id,
+                'start_date' => now(),
+                'end_date' => now()->addDays($freePlan->duration_days),
+                'status' => 'active',
+            ]);
+        }
+
         Auth::login($user);
         return $this->redirect(route('dashboard'), navigate: true);
     }
