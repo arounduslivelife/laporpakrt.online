@@ -3,16 +3,15 @@
 namespace App\Services;
 
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Laravel\Facades\Image;
-use thiagoalessio\TesseractOCR\TesseractOCR;
-use thiagoalessio\TesseractOCR\TesseractOcrException;
+use App\Models\Setting;
 
 class KtpScannerService
 {
     /**
-     * Scan a KTP image and extract identity fields.
+     * Scan a KTP image and extract identity fields using Google Gemini Vision AI.
      *
      * @param UploadedFile|string $image Either a Livewire/Http uploaded file or a storage path.
      * @return array<string, string|null>
@@ -25,121 +24,112 @@ class KtpScannerService
             throw new \RuntimeException('File KTP tidak ditemukan.');
         }
 
-        $binary = $this->getBinaryPath();
+        // Get API Key from database settings
+        $setting = Setting::where('key', 'gemini_api_key')->first();
+        $apiKey = $setting ? $setting->value : null;
 
-        if (! file_exists($binary)) {
-            throw new \RuntimeException(
-                'Tesseract OCR binary tidak ditemukan di: ' . $binary .
-                '. Silakan install Tesseract OCR atau sesuaikan TESSERACT_PATH di .env.'
-            );
+        if (empty($apiKey)) {
+            throw new \RuntimeException('Google Gemini API Key belum dikonfigurasi. Silakan atur di menu Pengaturan Sistem.');
         }
 
-        $processedPath = $this->preprocess($sourcePath);
+        // Convert image to base64
+        $imageData = base64_encode(file_get_contents($sourcePath));
+        $mimeType = mime_content_type($sourcePath) ?: 'image/jpeg';
 
         try {
-            $rawText = $this->runOcr($processedPath, $binary);
-        } finally {
-            // Always clean up the temporary preprocessed image
-            if (file_exists($processedPath) && $processedPath !== $sourcePath) {
-                @unlink($processedPath);
-            }
-        }
+            $jsonResponse = $this->callGeminiApi($imageData, $mimeType, $apiKey);
+            $data = $this->parseJsonResponse($jsonResponse);
+            $data['_raw'] = $jsonResponse; // Keep raw for debugging
 
-        Log::debug('OCR KTP raw text', ['text' => $rawText]);
-
-        $data = $this->parse($rawText);
-        $data['_raw'] = $rawText;
-
-        return $data;
-    }
-
-    /**
-     * Normalize an uploaded file or storage path into a local filesystem path.
-     */
-    protected function resolveSourcePath($image): string
-    {
-        if ($image instanceof UploadedFile) {
-            return $image->getRealPath();
-        }
-
-        // Livewire 3 TemporaryUploadedFile extends UploadedFile, so the above covers it.
-        // Fallback: assume a storage path relative to the public disk.
-        if (is_string($image)) {
-            $path = storage_path('app/public/' . ltrim($image, '/'));
-            if (file_exists($path)) {
-                return $path;
-            }
-
-            $absolute = Storage::disk('public')->path(ltrim($image, '/'));
-            if (file_exists($absolute)) {
-                return $absolute;
-            }
-        }
-
-        return (string) $image;
-    }
-
-    /**
-     * Preprocess the image to improve OCR accuracy.
-     */
-    protected function preprocess(string $sourcePath): string
-    {
-        $extension = strtolower(pathinfo($sourcePath, PATHINFO_EXTENSION));
-        $extension = in_array($extension, ['jpg', 'jpeg', 'png', 'webp'], true) ? $extension : 'jpg';
-
-        $processedPath = sys_get_temp_dir() . '/ktp_scan_' . uniqid() . '.' . $extension;
-
-        $image = Image::read($sourcePath);
-
-        // Convert to grayscale, increase contrast and sharpness.
-        $image->greyscale();
-        $image->contrast(20);
-        $image->sharpen(10);
-
-        // Scale up small images so Tesseract reads text better.
-        $width = $image->width();
-        if ($width < 1200) {
-            $scale = 1200 / $width;
-            $image->scale(width: 1200);
-        }
-
-        $image->save($processedPath, quality: 90);
-
-        return $processedPath;
-    }
-
-    /**
-     * Run Tesseract OCR against the preprocessed image.
-     */
-    protected function runOcr(string $imagePath, string $binary): string
-    {
-        try {
-            $ocr = new TesseractOCR($imagePath);
-            $ocr->executable($binary);
-            $ocr->lang(...explode('+', config('app.tesseract_lang', 'ind+eng')));
-            $ocr->psm(3); // Auto page segmentation with OSD
-
-            return trim($ocr->run());
-        } catch (TesseractOcrException $e) {
-            Log::error('Tesseract OCR failed', ['error' => $e->getMessage()]);
-            throw new \RuntimeException('Gagal membaca teks dari KTP: ' . $e->getMessage());
+            return $data;
+        } catch (\Exception $e) {
+            Log::error('Gemini OCR failed', ['error' => $e->getMessage()]);
+            throw new \RuntimeException('Gagal membaca teks dari KTP (Gemini API): ' . $e->getMessage());
         }
     }
 
     /**
-     * Parse raw OCR text into structured KTP fields.
-     *
-     * @return array<string, string|null>
+     * Call Google Gemini API
      */
-    protected function parse(string $text): array
+    protected function callGeminiApi(string $base64Image, string $mimeType, string $apiKey): string
     {
-        // Normalize line breaks and common OCR artifacts.
-        $text = str_replace(["\r\n", "\r"], "\n", $text);
-        $text = preg_replace('/\n+/', "\n", $text);
-        $text = preg_replace('/\s+/', ' ', $text);
+        // Using gemini-1.5-flash which is extremely fast and capable of vision tasks
+        $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . $apiKey;
 
-        // Fix common OCR misreadings before regex matching.
-        $text = $this->normalizeOcrArtifacts($text);
+        $prompt = "Anda adalah sistem OCR KTP Indonesia yang sangat akurat. 
+Tugas Anda adalah mengekstrak data identitas dari gambar KTP ini.
+Abaikan latar belakang seperti meja, tangan, dll.
+Kembalikan respon murni HANYA berupa JSON (tanpa markdown backticks, tanpa kata-kata lain).
+Struktur JSON yang WAJIB digunakan:
+{
+  \"nik\": \"string (16 digit angka)\",
+  \"name\": \"string (nama lengkap)\",
+  \"tempat_lahir\": \"string\",
+  \"tanggal_lahir\": \"string (format YYYY-MM-DD)\",
+  \"jenis_kelamin\": \"string (LAKI-LAKI atau PEREMPUAN)\",
+  \"alamat\": \"string\",
+  \"rt\": \"string (3 digit angka)\",
+  \"rw\": \"string (3 digit angka)\",
+  \"kelurahan\": \"string\",
+  \"kecamatan\": \"string\",
+  \"kabupaten\": \"string\",
+  \"provinsi\": \"string\",
+  \"agama\": \"string\",
+  \"status_perkawinan\": \"string\",
+  \"pekerjaan\": \"string\",
+  \"kewarganegaraan\": \"string (WNI atau WNA)\"
+}";
+
+        $payload = [
+            'contents' => [
+                [
+                    'parts' => [
+                        ['text' => $prompt],
+                        [
+                            'inline_data' => [
+                                'mime_type' => $mimeType,
+                                'data' => $base64Image,
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            'generationConfig' => [
+                'responseMimeType' => 'application/json',
+                'temperature' => 0.1 // Low temperature for high accuracy/determinism
+            ]
+        ];
+
+        $response = Http::timeout(30)->post($url, $payload);
+
+        if (!$response->successful()) {
+            throw new \RuntimeException('API Error: ' . $response->body());
+        }
+
+        $responseData = $response->json();
+        
+        // Extract text response from Gemini structure
+        $text = $responseData['candidates'][0]['content']['parts'][0]['text'] ?? '{}';
+        
+        return trim($text);
+    }
+
+    /**
+     * Parse JSON response into the expected array structure
+     */
+    protected function parseJsonResponse(string $jsonString): array
+    {
+        // Clean markdown backticks if Gemini accidentally includes them
+        $jsonString = str_replace(['```json', '```'], '', $jsonString);
+        $jsonString = trim($jsonString);
+
+        $parsed = json_decode($jsonString, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            Log::warning('Failed to parse Gemini JSON', ['raw' => $jsonString, 'error' => json_last_error_msg()]);
+            // Provide empty fallback structure
+            $parsed = [];
+        }
 
         $data = [
             'nik' => null,
@@ -160,174 +150,48 @@ class KtpScannerService
             'kewarganegaraan' => null,
         ];
 
-        // NIK: 16 consecutive digits.
-        if (preg_match('/\b(\d{16})\b/', $text, $m)) {
-            $data['nik'] = $m[1];
-        }
-
-        // Nama: usually follows "Nama" label.
-        $data['name'] = $this->extractAfterLabel($text, 'Nama');
-
-        // Tempat/Tgl Lahir — tolerate OCR artifacts like Tg!, Tgi, Tg1, etc.
-        if (preg_match('/Tempat\/T[gq][l1!iI]\s*Lahir\s*[:=;]?\s*([^\n]+)/i', $text, $m) ||
-            preg_match('/Tempat\s*\/\s*Tanggal\s*Lahir\s*[:=;]?\s*([^\n]+)/i', $text, $m)) {
-            $parts = explode(',', trim($m[1]), 2);
-            $data['tempat_lahir'] = trim($parts[0] ?? '');
-            $data['tanggal_lahir'] = isset($parts[1]) ? $this->normalizeDate(trim($parts[1])) : null;
-        }
-
-        // Jenis Kelamin
-        if (preg_match('/Jenis Kelamin\s*:?\s*(LAKI-LAKI|PEREMPUAN|LAKI\s*-\s*LAKI)/i', $text, $m)) {
-            $data['jenis_kelamin'] = strtoupper(preg_replace('/\s+/', '', $m[1])) === 'LAKI-LAKI' ? 'LAKI-LAKI' : 'PEREMPUAN';
-        }
-
-        // Alamat
-        $data['alamat'] = $this->extractAfterLabel($text, 'Alamat');
-
-        // RT / RW
-        if (preg_match('/RT\/RW\s*:?\s*(\d{2,3})\s*\/\s*(\d{2,3})/i', $text, $m)) {
-            $data['rt'] = str_pad($m[1], 3, '0', STR_PAD_LEFT);
-            $data['rw'] = str_pad($m[2], 3, '0', STR_PAD_LEFT);
-        }
-
-        // Kelurahan / Desa
-        $data['kelurahan'] = $this->extractAfterLabel($text, 'Kel/Desa', 'Desa');
-
-        // Kecamatan
-        $data['kecamatan'] = $this->extractAfterLabel($text, 'Kecamatan');
-
-        // Kabupaten / Kota
-        if (preg_match('/Kabupaten\/Kota\s*:?\s*([^\n]+)/i', $text, $m)) {
-            $data['kabupaten'] = trim($m[1]);
-        }
-
-        // Provinsi
-        $data['provinsi'] = $this->extractAfterLabel($text, 'Provinsi');
-
-        // Agama
-        if (preg_match('/Agama\s*:?\s*(ISLAM|KRISTEN|KATOLIK|HINDU|BUDHA|BUDDHA|KONGHUCHU)/i', $text, $m)) {
-            $data['agama'] = strtoupper($m[1]);
-        }
-
-        // Status Perkawinan
-        if (preg_match('/Status Perkawinan\s*:?\s*(BELUM KAWIN|KAWIN|CERAI HIDUP|CERAI MATI)/i', $text, $m)) {
-            $data['status_perkawinan'] = strtoupper($m[1]);
-        }
-
-        // Pekerjaan
-        $data['pekerjaan'] = $this->extractAfterLabel($text, 'Pekerjaan');
-
-        // Kewarganegaraan
-        if (preg_match('/Kewarganegaraan\s*:?\s*(WNI|WNA)/i', $text, $m)) {
-            $data['kewarganegaraan'] = strtoupper($m[1]);
+        // Merge parsed data safely
+        if (is_array($parsed)) {
+            foreach ($data as $key => $value) {
+                if (isset($parsed[$key])) {
+                    $val = trim((string) $parsed[$key]);
+                    // Only assign if it's not empty, not "null", and not placeholder texts
+                    if ($val !== '' && strtolower($val) !== 'null' && strtolower($val) !== 'tidak terbaca' && strtolower($val) !== 'none') {
+                        $data[$key] = strtoupper($val);
+                    }
+                }
+            }
+            
+            // Re-format dates if needed
+            if (!empty($data['tanggal_lahir'])) {
+                $data['tanggal_lahir'] = str_replace('/', '-', $data['tanggal_lahir']);
+            }
         }
 
         return $data;
     }
 
     /**
-     * Normalize common OCR misreadings in Indonesian KTP text.
+     * Normalize an uploaded file or storage path into a local filesystem path.
      */
-    protected function normalizeOcrArtifacts(string $text): string
+    protected function resolveSourcePath($image): string
     {
-        $replacements = [
-            // Tempat/Tgl Lahir variations
-            '/Tempat\s*\/\s*T[gq][l1!iI]\s*Lahir/i' => 'Tempat/Tgl Lahir',
-            '/Tempat\s*\/\s*Tanggal\s*Lahir/i' => 'Tempat/Tgl Lahir',
-
-            // Common label fixes
-            '/Jenis\s+Kelamin/i' => 'Jenis Kelamin',
-            '/Gol\.?\s*Darah/i' => 'Gol Darah',
-            '/Status\s+Perkawinan/i' => 'Status Perkawinan',
-            '/Kewarganegaraan/i' => 'Kewarganegaraan',
-            '/Pekerjaan/i' => 'Pekerjaan',
-            '/Kabupaten\s*\/\s*Kota/i' => 'Kabupaten/Kota',
-            '/Kel\/Desa/i' => 'Kel/Desa',
-            '/Kecamatan/i' => 'Kecamatan',
-            '/Provinsi/i' => 'Provinsi',
-            '/Agama/i' => 'Agama',
-            '/Alamat/i' => 'Alamat',
-            '/RT\/RW/i' => 'RT/RW',
-            '/Nama/i' => 'Nama',
-            '/NIK/i' => 'NIK',
-
-            // Separator variations
-            '/\s*=\s*\?\s*/' => ' ',
-        ];
-
-        foreach ($replacements as $pattern => $replacement) {
-            $text = preg_replace($pattern, $replacement, $text);
+        if ($image instanceof UploadedFile) {
+            return $image->getRealPath();
         }
 
-        return $text;
-    }
+        if (is_string($image)) {
+            $path = storage_path('app/public/' . ltrim($image, '/'));
+            if (file_exists($path)) {
+                return $path;
+            }
 
-    /**
-     * Extract value after a label from OCR text.
-     */
-    protected function extractAfterLabel(string $text, string $label, ?string $fallbackLabel = null): ?string
-    {
-        $labels = [$label];
-        if ($fallbackLabel) {
-            $labels[] = $fallbackLabel;
-        }
-
-        foreach ($labels as $lab) {
-            $escaped = preg_quote($lab, '/');
-            // Match label followed by optional colon/spaces until next common label or end.
-            $pattern = '/\b' . $escaped . '\b\s*:?\s*([^\n]+?)(?=\b(?:NIK|Nama|Tempat|Tgl|Jenis|Alamat|RT\/RW|Kel\/Desa|Kecamatan|Kabupaten|Provinsi|Agama|Status|Pekerjaan|Kewarganegaraan|Berlaku)\b|$)/i';
-
-            if (preg_match($pattern, $text, $m)) {
-                $value = trim($m[1]);
-                // Clean trailing label fragments.
-                $value = preg_replace('/\s*[:\-]$/', '', $value);
-                return $value ?: null;
+            $absolute = Storage::disk('public')->path(ltrim($image, '/'));
+            if (file_exists($absolute)) {
+                return $absolute;
             }
         }
 
-        return null;
-    }
-
-    /**
-     * Normalize Indonesian date formats to YYYY-MM-DD.
-     */
-    protected function normalizeDate(string $date): ?string
-    {
-        $date = trim($date);
-
-        // Common Indonesian format: 17-08-1990 or 17/08/1990
-        if (preg_match('/(\d{1,2})[\-\/](\d{1,2})[\-\/](\d{4})/', $date, $m)) {
-            [$d, $mo, $y] = [(int) $m[1], (int) $m[2], (int) $m[3]];
-            return sprintf('%04d-%02d-%02d', $y, $mo, $d);
-        }
-
-        // Format with month name: 17 Agustus 1990
-        $months = [
-            'januari' => 1, 'februari' => 2, 'maret' => 3, 'april' => 4,
-            'mei' => 5, 'juni' => 6, 'juli' => 7, 'agustus' => 8,
-            'september' => 9, 'oktober' => 10, 'november' => 11, 'desember' => 12,
-        ];
-
-        if (preg_match('/(\d{1,2})\s+([a-z]+)\s+(\d{4})/i', $date, $m)) {
-            $monthKey = strtolower($m[2]);
-            if (isset($months[$monthKey])) {
-                return sprintf('%04d-%02d-%02d', (int) $m[3], $months[$monthKey], (int) $m[1]);
-            }
-        }
-
-        return $date ?: null;
-    }
-
-    /**
-     * Return the configured Tesseract binary path.
-     */
-    protected function getBinaryPath(): string
-    {
-        $path = config('app.tesseract_path');
-
-        // Strip quotes that might be present in the .env value.
-        $path = trim($path, '"\'');
-
-        return $path;
+        return (string) $image;
     }
 }

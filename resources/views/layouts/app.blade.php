@@ -132,6 +132,12 @@
                                 <p>Manajemen Akses</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('settings.index') }}" class="nav-link {{ request()->is('settings*') ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-gear"></i>
+                                <p>Pengaturan Sistem</p>
+                            </a>
+                        </li>
                         @elseif(auth()->user()->role == 'warga')
                         <li class="nav-item">
                             <a href="{{ route('dashboard') }}" class="nav-link {{ request()->is('dashboard') ? 'active' : '' }}">
