@@ -12,7 +12,7 @@ class Settings extends Component
     public function mount()
     {
         // Require superadmin/admin role to access settings
-        if (auth()->user()->role !== 'admin' && auth()->user()->role !== 'superadmin') {
+        if (!in_array(auth()->user()->role, ['admin', 'superadmin', 'rt_admin'])) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -22,7 +22,7 @@ class Settings extends Component
 
     public function save()
     {
-        if (auth()->user()->role !== 'admin' && auth()->user()->role !== 'superadmin') {
+        if (!in_array(auth()->user()->role, ['admin', 'superadmin', 'rt_admin'])) {
             abort(403, 'Unauthorized action.');
         }
 
