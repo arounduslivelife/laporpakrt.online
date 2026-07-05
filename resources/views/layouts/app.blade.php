@@ -67,6 +67,47 @@
         }
         .app-content-header { padding: 2rem 0.5rem; }
         h3 { font-weight: 600; color: #1e293b; }
+        
+        /* Bottom Navigation for Mobile */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+            z-index: 1040;
+            display: flex;
+            justify-content: space-around;
+            padding: 0.6rem 0;
+            padding-bottom: calc(0.6rem + env(safe-area-inset-bottom, 0px));
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+        .bottom-nav-item {
+            text-align: center;
+            color: #64748b;
+            text-decoration: none;
+            font-size: 0.7rem;
+            font-weight: 600;
+            flex: 1;
+            transition: color 0.2s, transform 0.2s;
+        }
+        .bottom-nav-item i {
+            display: block;
+            font-size: 1.3rem;
+            margin-bottom: 3px;
+        }
+        .bottom-nav-item.active {
+            color: #0d6efd;
+            transform: translateY(-2px);
+        }
+        .bottom-nav-item:hover {
+            color: #0d6efd;
+        }
+        @media (max-width: 991.98px) {
+            .app-main { padding-bottom: 80px; }
+        }
     </style>
 </head>
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
@@ -213,5 +254,33 @@
             });
         });
     </script>
+
+    <!-- Bottom Navigation (Mobile Only) -->
+    <nav class="bottom-nav d-lg-none">
+        <a href="{{ route('dashboard') }}" class="bottom-nav-item {{ request()->is('dashboard') ? 'active' : '' }}">
+            <i class="bi bi-house{{ request()->is('dashboard') ? '-fill' : '' }}"></i>
+            Beranda
+        </a>
+        @if(auth()->user() && (auth()->user()->role == 'rt_admin' || auth()->user()->isSuperadmin()))
+        <a href="{{ route('warga.index') }}" class="bottom-nav-item {{ request()->is('warga*') ? 'active' : '' }}">
+            <i class="bi bi-people{{ request()->is('warga*') ? '-fill' : '' }}"></i>
+            Warga
+        </a>
+        <a href="{{ route('kas.index') }}" class="bottom-nav-item {{ request()->is('kas*') ? 'active' : '' }}">
+            <i class="bi bi-wallet2"></i>
+            Kas
+        </a>
+        @endif
+        @if(auth()->user() && (auth()->user()->role == 'rt_admin' || auth()->user()->isSuperadmin() || auth()->user()->role == 'security'))
+        <a href="{{ route('tamu.index') }}" class="bottom-nav-item {{ request()->is('tamu*') ? 'active' : '' }}">
+            <i class="bi bi-book{{ request()->is('tamu*') ? '-fill' : '' }}"></i>
+            Tamu
+        </a>
+        @endif
+        <a href="#" class="bottom-nav-item text-danger" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+            <i class="bi bi-box-arrow-right"></i>
+            Keluar
+        </a>
+    </nav>
 </body>
 </html>

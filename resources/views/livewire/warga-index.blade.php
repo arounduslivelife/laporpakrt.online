@@ -17,6 +17,41 @@
         @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
         .spin { animation: spin-anim 1s linear infinite; }
         @keyframes spin-anim { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+
+        /* Full Screen Scanner Overlay */
+        .scanner-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.95);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(8px);
+        }
+        .scan-box {
+            width: 280px; height: 180px;
+            border: 2px solid rgba(59, 130, 246, 0.5);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+        .scan-line-anim {
+            width: 100%; height: 3px;
+            background: #3b82f6;
+            box-shadow: 0 0 10px #3b82f6, 0 0 20px #3b82f6;
+            position: absolute;
+            top: 0;
+            animation: scan 2s infinite ease-in-out;
+        }
+        @keyframes scan {
+            0% { top: 0; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
     </style>
 
     <div class="app-content-header">
@@ -26,13 +61,20 @@
                     <h3 class="mb-0">Data Warga</h3>
                 </div>
                 <div class="col-6 text-end">
-                    <button class="btn btn-primary" wire:click="$toggle('showForm')">
-                        <i class="bi bi-plus"></i> <span class="d-none d-sm-inline">Tambah Warga</span>
+                    <button class="btn btn-primary d-none d-md-inline-block" wire:click="$toggle('showForm')">
+                        <i class="bi bi-plus-lg me-1"></i> Tambah Warga
                     </button>
                 </div>
             </div>
         </div>
     </div>
+    
+    <!-- Floating Action Button for Mobile -->
+    <button class="btn btn-primary rounded-circle shadow-lg d-md-none d-flex justify-content-center align-items-center" 
+        style="position: fixed; bottom: 85px; right: 20px; width: 60px; height: 60px; z-index: 1050; transition: transform 0.2s;" 
+        wire:click="$toggle('showForm')">
+        <i class="bi bi-plus" style="font-size: 2rem;"></i>
+    </button>
     
     <div class="app-content">
         <div class="container-fluid">
@@ -89,12 +131,14 @@
                             </div>
                         </div>
 
-                        <div wire:loading wire:target="scanKtp" class="mb-3">
-                            <div class="d-flex align-items-center gap-2 text-primary mb-2">
-                                <i class="bi bi-cpu spin"></i>
-                                <strong class="small">AI sedang membaca data KTP...</strong>
+                        <div wire:loading wire:target="scanKtp">
+                            <div class="scanner-overlay">
+                                <div class="scan-box mb-4">
+                                    <div class="scan-line-anim"></div>
+                                </div>
+                                <h4 class="text-white fw-bold">Sedang Menganalisis KTP...</h4>
+                                <p class="text-light opacity-75">AI sedang mengekstrak data identitas</p>
                             </div>
-                            <div class="scan-shimmer"><div class="scan-shimmer-bar"></div></div>
                         </div>
                         @error('foto_ktp') <div class="text-danger small mb-3"><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</div> @enderror
 
@@ -194,7 +238,7 @@
                     </div>
                 </div>
                 <div class="card-body p-0 table-responsive">
-                    <table class="table table-striped table-hover mb-0">
+                    <table class="table table-striped table-hover mb-0 d-none d-md-table">
                         <thead>
                             <tr>
                                 <th>No</th>
@@ -245,6 +289,44 @@
                             @endforelse
                         </tbody>
                     </table>
+                    
+                    <!-- Mobile Card Layout -->
+                    <div class="d-md-none p-2 bg-light">
+                        @forelse($wargas as $warga)
+                        <div class="card mb-3 shadow-sm border-0">
+                            <div class="card-body p-3">
+                                <div class="d-flex align-items-center mb-3">
+                                    @if($warga->foto_path)
+                                        <img src="{{ Storage::url($warga->foto_path) }}" class="rounded-circle shadow-sm me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                    @else
+                                        <div class="bg-primary bg-gradient rounded-circle shadow-sm d-flex justify-content-center align-items-center text-white me-3" style="width: 50px; height: 50px; font-size: 1.5rem;">
+                                            {{ substr($warga->name, 0, 1) }}
+                                        </div>
+                                    @endif
+                                    <div>
+                                        <h6 class="fw-bold mb-1">{{ $warga->name }}</h6>
+                                        <div class="text-muted small mb-1"><i class="bi bi-credit-card me-1"></i> {{ $warga->nik ? substr($warga->nik, 0, 4) . '****' . substr($warga->nik, -4) : '-' }}</div>
+                                        @if($warga->status_domisili == 'Tetap')
+                                            <span class="badge bg-success rounded-pill"><i class="bi bi-house-check"></i> Warga Tetap</span>
+                                        @else
+                                            <span class="badge text-bg-warning rounded-pill"><i class="bi bi-house-dash"></i> Kontrak/Kos</span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2 justify-content-end border-top pt-2 mt-2">
+                                    <button wire:click="view({{ $warga->id }})" class="btn btn-sm btn-outline-info flex-fill"><i class="bi bi-eye"></i> Detail</button>
+                                    <button wire:click="edit({{ $warga->id }})" class="btn btn-sm btn-outline-warning flex-fill"><i class="bi bi-pencil"></i> Edit</button>
+                                    <button wire:click="delete({{ $warga->id }})" class="btn btn-sm btn-outline-danger flex-fill" onclick="confirm('Yakin ingin menghapus warga ini?') || event.stopImmediatePropagation()"><i class="bi bi-trash"></i> Hapus</button>
+                                </div>
+                            </div>
+                        </div>
+                        @empty
+                        <div class="text-center py-5 text-muted">
+                            <i class="bi bi-inbox fs-1 mb-2"></i>
+                            <p>Belum ada data warga terdaftar.</p>
+                        </div>
+                        @endforelse
+                    </div>
                 </div>
                 <div class="card-footer">
                     {{ $wargas->links() }}

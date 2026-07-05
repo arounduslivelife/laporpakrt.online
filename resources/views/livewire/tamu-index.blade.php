@@ -16,6 +16,43 @@
         .tamu-card .tamu-meta{font-size:.8rem;color:#6c757d}
         @media(min-width:769px){.mobile-cards{display:none}}
         @media(max-width:768px){.desktop-table{display:none!important}}
+
+        /* Full Screen Scanner Overlay */
+        .scanner-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.95);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(8px);
+        }
+        .scan-box {
+            width: 280px; height: 180px;
+            border: 2px solid rgba(59, 130, 246, 0.5);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+        .scan-line-anim {
+            width: 100%; height: 3px;
+            background: #3b82f6;
+            box-shadow: 0 0 10px #3b82f6, 0 0 20px #3b82f6;
+            position: absolute;
+            top: 0;
+            animation: scan 2s infinite ease-in-out;
+        }
+        @keyframes scan {
+            0% { top: 0; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+        @media(min-width:769px){.mobile-cards{display:none}}
+        @media(max-width:768px){.desktop-table{display:none!important}}
     </style>
 
     <div class="app-content-header">
@@ -25,13 +62,20 @@
                     <h3 class="mb-0"><i class="bi bi-people me-2"></i>Buku Tamu</h3>
                 </div>
                 <div class="col-6 text-end">
-                    <button class="btn btn-success" wire:click="$toggle('showForm')" onclick="getLocation()">
+                    <button class="btn btn-success d-none d-md-inline-block" wire:click="$toggle('showForm')" onclick="getLocation()">
                         <i class="bi bi-person-plus"></i> <span class="d-none d-sm-inline">Input Tamu</span>
                     </button>
                 </div>
             </div>
         </div>
     </div>
+    
+    <!-- Floating Action Button for Mobile -->
+    <button class="btn btn-success rounded-circle shadow-lg d-md-none d-flex justify-content-center align-items-center" 
+        style="position: fixed; bottom: 85px; right: 20px; width: 60px; height: 60px; z-index: 1050; transition: transform 0.2s;" 
+        wire:click="$toggle('showForm')" onclick="getLocation()">
+        <i class="bi bi-person-plus" style="font-size: 1.8rem;"></i>
+    </button>
     
     <div class="app-content">
         <div class="container-fluid">
@@ -82,12 +126,14 @@
                             </div>
                         </div>
 
-                        <div wire:loading wire:target="scanKtp" class="mb-3">
-                            <div class="d-flex align-items-center gap-2 text-success mb-2">
-                                <i class="bi bi-cpu spin"></i>
-                                <strong class="small">AI membaca data KTP tamu...</strong>
+                        <div wire:loading wire:target="scanKtp">
+                            <div class="scanner-overlay">
+                                <div class="scan-box mb-4">
+                                    <div class="scan-line-anim"></div>
+                                </div>
+                                <h4 class="text-white fw-bold">Sedang Menganalisis KTP...</h4>
+                                <p class="text-light opacity-75">AI membaca data KTP tamu</p>
                             </div>
-                            <div class="scan-shimmer"><div class="scan-shimmer-bar"></div></div>
                         </div>
                         @error('file_ktp') <div class="text-danger small mb-3"><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</div> @enderror
 
