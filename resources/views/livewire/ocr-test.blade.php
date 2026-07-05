@@ -10,11 +10,18 @@
         }
         .ocr-upload-zone:hover { border-color: #1565c0; background: linear-gradient(135deg, #bbdefb 0%, #90caf9 100%); transform: translateY(-3px); box-shadow: 0 12px 30px rgba(21,101,192,.2); }
         .ocr-upload-zone .zone-icon { font-size: 3.5rem; color: #1565c0; }
-        .crop-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.92); z-index: 9999; display: none; flex-direction: column; }
-        .crop-header { padding: 1rem 1.5rem; background: #1a1a2e; color: #fff; display: flex; align-items: center; justify-content: space-between; }
-        .crop-body { flex: 1; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #0d0d1a; padding: .5rem; }
-        .crop-body img { max-width: 100%; max-height: 100%; display: block; }
-        .crop-footer { padding: 1rem 1.5rem; background: #1a1a2e; display: flex; gap: .75rem; justify-content: center; }
+        .crop-overlay{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:9999;display:none;flex-direction:column}
+        .crop-header{padding:.75rem 1rem;background:#1e1e2e;color:#fff;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+        .crop-body{flex:1;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#0a0a14;min-height:0}
+        .crop-body img{max-width:100%;max-height:100%;display:block}
+        .crop-footer{padding:.75rem 1rem;background:#1e1e2e;display:flex;gap:.75rem;justify-content:center;flex-shrink:0}
+        .crop-footer .btn{min-width:120px;padding:.6rem 1.25rem;font-weight:600;font-size:.95rem}
+        @media(max-width:576px){
+            .crop-header{padding:.6rem .75rem}
+            .crop-header h6{font-size:.9rem}
+            .crop-footer{padding:.6rem .75rem;gap:.5rem}
+            .crop-footer .btn{min-width:100px;padding:.55rem 1rem;font-size:.85rem}
+        }
         .result-item { display: flex; align-items: center; padding: .65rem 1rem; border-bottom: 1px solid #f0f0f0; transition: background .2s; }
         .result-item:last-child { border-bottom: none; }
         .result-item:hover { background: #f8f9fa; }

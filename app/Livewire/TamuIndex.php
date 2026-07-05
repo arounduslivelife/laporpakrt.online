@@ -67,7 +67,7 @@ class TamuIndex extends Component
     public function scanKtp()
     {
         $this->validate([
-            'file_ktp' => 'required|image|max:2048',
+            'file_ktp' => 'required|image|max:8192',
         ]);
 
         try {
@@ -104,8 +104,8 @@ class TamuIndex extends Component
             'alamat' => 'nullable|string|max:500',
             'tujuan' => 'required|string|max:255',
             'lama_kunjungan_hari' => 'required|integer|min:1',
-            'file_wajah' => 'nullable|image|max:2048',
-            'file_ktp' => 'nullable|image|max:2048',
+            'file_wajah' => 'nullable|image|max:8192',
+            'file_ktp' => 'nullable|image|max:8192',
         ]);
 
         $wajahPath = $this->file_wajah ? $this->file_wajah->store('tamu/wajah', 'public') : null;

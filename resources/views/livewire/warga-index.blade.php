@@ -9,11 +9,18 @@
         }
         .ktp-upload-box:hover { background: linear-gradient(135deg, #dce8ff 0%, #c5d8ff 100%); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(13,110,253,.15); }
         .ktp-upload-box .upload-icon { font-size: 2.5rem; color: #0d6efd; }
-        .crop-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.92); z-index: 9999; display: none; flex-direction: column; }
-        .crop-header { padding: 1rem 1.5rem; background: #1e1e2e; color: #fff; display: flex; align-items: center; justify-content: space-between; }
-        .crop-body { flex: 1; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #111; }
-        .crop-body img { max-width: 100%; max-height: 100%; }
-        .crop-footer { padding: 1rem 1.5rem; background: #1e1e2e; display: flex; gap: .75rem; justify-content: center; }
+        .crop-overlay{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:9999;display:none;flex-direction:column}
+        .crop-header{padding:.75rem 1rem;background:#1e1e2e;color:#fff;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+        .crop-body{flex:1;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#0a0a14;min-height:0}
+        .crop-body img{max-width:100%;max-height:100%;display:block}
+        .crop-footer{padding:.75rem 1rem;background:#1e1e2e;display:flex;gap:.75rem;justify-content:center;flex-shrink:0}
+        .crop-footer .btn{min-width:120px;padding:.6rem 1.25rem;font-weight:600;font-size:.95rem}
+        @media(max-width:576px){
+            .crop-header{padding:.6rem .75rem}
+            .crop-header h6{font-size:.9rem}
+            .crop-footer{padding:.6rem .75rem;gap:.5rem}
+            .crop-footer .btn{min-width:100px;padding:.55rem 1rem;font-size:.85rem}
+        }
         .ocr-success-box { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border: 2px solid #66bb6a; border-radius: 1rem; padding: 1.5rem; text-align: center; }
         .tip-box { background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-radius: .75rem; padding: 1rem 1.25rem; border-left: 4px solid #1976d2; }
         .scan-shimmer { height: 4px; border-radius: 2px; overflow: hidden; background: #e0e0e0; }
