@@ -16,22 +16,6 @@
         .tamu-card .tamu-meta{font-size:.8rem;color:#6c757d}
         @media(min-width:769px){.mobile-cards{display:none}}
         @media(max-width:768px){.desktop-table{display:none!important}}
-
-        /* === WEBCAM OVERLAY === */
-        .webcam-overlay{position:fixed;inset:0;background:#000;z-index:9999;display:none;flex-direction:column}
-        .webcam-header{padding:1rem;background:#1e1e2e;color:#fff;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-        .webcam-body{flex:1;position:relative;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center}
-        .webcam-body video{min-width:100%;min-height:100%;object-fit:cover;position:absolute;inset:0;z-index:1}
-        .ktp-guide{position:absolute;width:90%;aspect-ratio:1.58;border:2px solid rgba(255,255,255,0.7);box-shadow:0 0 0 3000px rgba(0,0,0,0.6);z-index:10;border-radius:8px}
-        @media (min-aspect-ratio: 1/1) { .ktp-guide { width: 50%; } }
-        .guide-corner{position:absolute;width:30px;height:30px;border-color:#198754;border-style:solid;z-index:11}
-        .guide-corner.top-left{top:-2px;left:-2px;border-width:4px 0 0 4px;border-top-left-radius:8px}
-        .guide-corner.top-right{top:-2px;right:-2px;border-width:4px 4px 0 0;border-top-right-radius:8px}
-        .guide-corner.bottom-left{bottom:-2px;left:-2px;border-width:0 0 4px 4px;border-bottom-left-radius:8px}
-        .guide-corner.bottom-right{bottom:-2px;right:-2px;border-width:0 4px 4px 0;border-bottom-right-radius:8px}
-        .guide-text{position:absolute;top:-30px;left:0;right:0;text-align:center;color:#fff;font-size:14px;font-weight:600;text-shadow:1px 1px 3px #000}
-        .webcam-footer{padding:1.5rem 1rem;background:#1e1e2e;display:flex;gap:1rem;justify-content:center;flex-shrink:0;z-index:10}
-        .webcam-footer .btn{min-width:130px;padding:.8rem 1.5rem;font-weight:600;border-radius:2rem;font-size:1rem}
     </style>
 
     <div class="app-content-header">
@@ -74,19 +58,20 @@
                                 </div>
                             </div>
                             <div id="tamu-ktp-dropzone">
-                                <div class="ktp-upload-box" onclick="window._tamuOpenCam()">
+                                <div class="ktp-upload-box" onclick="document.getElementById('tamuFileInput').click()">
                                     <div class="upload-icon"><i class="bi bi-camera"></i></div>
-                                    <h6 class="fw-bold mt-2 mb-1">Buka Kamera Pemindai KTP</h6>
-                                    <small class="text-muted">Proses potong gambar otomatis di dalam web</small>
+                                    <h6 class="fw-bold mt-2 mb-1">Klik untuk Ambil Foto KTP Tamu</h6>
+                                    <small class="text-muted">Kamera bawaan HP akan terbuka untuk hasil lebih tajam</small>
                                 </div>
+                                <input type="file" id="tamuFileInput" accept="image/*" capture="environment" class="d-none"
+                                    onchange="window._tamuProcessKtp(this)">
                             </div>
                             <div id="tamu-ktp-success" style="display:none;">
                                 <div class="ocr-success-box">
                                     <i class="bi bi-patch-check-fill text-success" style="font-size:1.8rem"></i>
                                     <h6 class="fw-bold mt-2 mb-1 text-success">KTP Berhasil Difoto!</h6>
-                                    <small class="text-muted">Gambar KTP berhasil terpotong sesuai panduan.</small>
                                     <div class="mt-3">
-                                        <img id="ktp-preview-img" src="" class="img-thumbnail rounded mb-2" style="max-height: 120px; display: none;">
+                                        <img id="ktp-preview-img" src="" class="img-thumbnail rounded mb-2" style="max-height: 120px; display: none; margin: 0 auto;">
                                     </div>
                                     <div class="mt-2">
                                         <button type="button" class="btn btn-outline-secondary btn-sm" onclick="window._tamuResetKtp()">
@@ -277,34 +262,6 @@
         </div>
     </div>
 
-    {{-- ============================================================ --}}
-    {{-- WEBCAM OVERLAY --}}
-    {{-- ============================================================ --}}
-    <div id="tamuCamOverlay" class="webcam-overlay">
-        <div class="webcam-header">
-            <h6 class="mb-0"><i class="bi bi-camera me-2"></i>Scan KTP Tamu</h6>
-            <button type="button" class="btn btn-sm btn-outline-light" onclick="window._tamuCloseCam()"><i class="bi bi-x-lg"></i></button>
-        </div>
-        <div class="webcam-body">
-            <video id="tamuVideo" autoplay playsinline></video>
-            <div id="tamuGuide" class="ktp-guide">
-                <div class="guide-text">Posisikan KTP di dalam kotak ini</div>
-                <div class="guide-corner top-left"></div>
-                <div class="guide-corner top-right"></div>
-                <div class="guide-corner bottom-left"></div>
-                <div class="guide-corner bottom-right"></div>
-            </div>
-        </div>
-        <div class="webcam-footer">
-            <button type="button" class="btn btn-outline-light" onclick="window._tamuCloseCam()">Batal</button>
-            <button type="button" class="btn btn-success" id="btnTakeTamuPic" onclick="window._tamuTakePic()">
-                <i class="bi bi-camera-fill me-1"></i> Ambil Foto
-            </button>
-        </div>
-    </div>
-
-    <canvas id="tamuCanvas" style="display:none;"></canvas>
-
     <script>
         // === Geolocation ===
         function getLocation() {
@@ -325,111 +282,66 @@
             }
         }
 
-        // === Webcam Logic ===
+        // === KTP Upload Logic ===
         (function() {
-            var stream = null;
+            window._tamuProcessKtp = function(input) {
+                var file = input.files[0];
+                if (!file) return;
 
-            window._tamuOpenCam = function() {
-                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                    alert('Browser Anda tidak mendukung fitur Web Camera. Gunakan Chrome atau Safari terbaru.');
-                    return;
-                }
-                document.getElementById('tamuCamOverlay').style.display = 'flex';
-                navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
-                    audio: false
-                }).then(function(s) {
-                    stream = s;
-                    var video = document.getElementById('tamuVideo');
-                    video.srcObject = stream;
-                    video.play();
-                }).catch(function(err) {
-                    console.error(err);
-                    alert('Gagal mengakses kamera: ' + err.message);
-                    window._tamuCloseCam();
-                });
-            };
-
-            window._tamuCloseCam = function() {
-                document.getElementById('tamuCamOverlay').style.display = 'none';
-                if (stream) {
-                    stream.getTracks().forEach(track => track.stop());
-                    stream = null;
-                }
-            };
-
-            window._tamuTakePic = function() {
-                var btn = document.getElementById('btnTakeTamuPic');
-                btn.disabled = true;
-                btn.innerHTML = '<i class="bi bi-arrow-repeat spin me-1"></i> Memproses...';
-
-                var video = document.getElementById('tamuVideo');
-                var guide = document.getElementById('tamuGuide');
-                var canvas = document.getElementById('tamuCanvas');
-                var ctx = canvas.getContext('2d');
-
-                var vw = video.videoWidth;
-                var vh = video.videoHeight;
-                var cw = video.clientWidth;
-                var ch = video.clientHeight;
-                var vRatio = vw / vh;
-                var cRatio = cw / ch;
-
-                var renderW, renderH;
-                if (cRatio > vRatio) { renderW = cw; renderH = cw / vRatio; } 
-                else { renderH = ch; renderW = ch * vRatio; }
+                var component = Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id'));
+                var dz = document.getElementById('tamu-ktp-dropzone');
+                var sc = document.getElementById('tamu-ktp-success');
+                var imgPreview = document.getElementById('ktp-preview-img');
                 
-                var offsetX = (renderW - cw) / 2;
-                var offsetY = (renderH - ch) / 2;
-                var guideRect = guide.getBoundingClientRect();
-                var containerRect = video.parentElement.getBoundingClientRect();
-                var gX = guideRect.left - containerRect.left;
-                var gY = guideRect.top - containerRect.top;
-                
-                var scale = vw / renderW;
-                var cropX = (gX + offsetX) * scale;
-                var cropY = (gY + offsetY) * scale;
-                var cropW = guideRect.width * scale;
-                var cropH = guideRect.height * scale;
+                if (dz) dz.style.display = 'none';
+                if (sc) sc.style.display = 'block';
 
-                canvas.width = cropW;
-                canvas.height = cropH;
-                ctx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var img = new Image();
+                    img.onload = function() {
+                        var canvas = document.createElement('canvas');
+                        var ctx = canvas.getContext('2d');
+                        var maxDim = 1600;
+                        var w = img.width, h = img.height;
 
-                canvas.toBlob(function(blob) {
-                    if (!blob) {
-                        btn.disabled = false; btn.innerHTML = '<i class="bi bi-camera-fill me-1"></i> Ambil Foto';
-                        alert('Gagal mengambil gambar.'); return;
-                    }
-                    var file = new File([blob], 'ktp_tamu.jpg', { type: 'image/jpeg' });
-                    
-                    var previewUrl = URL.createObjectURL(blob);
-                    var imgPreview = document.getElementById('ktp-preview-img');
-                    if (imgPreview) { imgPreview.src = previewUrl; imgPreview.style.display = 'block'; }
+                        if (w > maxDim || h > maxDim) {
+                            if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
+                            else { w = Math.round((w * maxDim) / h); h = maxDim; }
+                        }
+                        canvas.width = w; canvas.height = h;
+                        ctx.drawImage(img, 0, 0, w, h);
 
-                    var component = Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id'));
-                    component.upload('file_ktp', file, function() {
-                        window._tamuCloseCam();
-                        btn.disabled = false; btn.innerHTML = '<i class="bi bi-camera-fill me-1"></i> Ambil Foto';
-                        var dz = document.getElementById('tamu-ktp-dropzone');
-                        var sc = document.getElementById('tamu-ktp-success');
-                        if (dz) dz.style.display = 'none';
-                        if (sc) sc.style.display = 'block';
-                        component.call('scanKtp');
-                    }, function(error) {
-                        btn.disabled = false; btn.innerHTML = '<i class="bi bi-camera-fill me-1"></i> Ambil Foto';
-                        alert('Upload gagal. Cek koneksi.');
-                    }, function() {});
-                }, 'image/jpeg', 0.9);
+                        canvas.toBlob(function(blob) {
+                            if (!blob) { alert('Gagal memproses gambar'); window._tamuResetKtp(); return; }
+                            var previewUrl = URL.createObjectURL(blob);
+                            if (imgPreview) { imgPreview.src = previewUrl; imgPreview.style.display = 'block'; }
+                            
+                            var compressedFile = new File([blob], 'ktp_tamu.jpg', { type: 'image/jpeg' });
+                            
+                            component.upload('file_ktp', compressedFile, function() {
+                                component.call('scanKtp');
+                            }, function(error) {
+                                alert('Upload gagal. Cek koneksi.');
+                                window._tamuResetKtp();
+                            }, function() {});
+                        }, 'image/jpeg', 0.85);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
             };
 
             window._tamuResetKtp = function() {
                 var dz = document.getElementById('tamu-ktp-dropzone');
                 var sc = document.getElementById('tamu-ktp-success');
                 var imgPreview = document.getElementById('ktp-preview-img');
+                var input = document.getElementById('tamuFileInput');
+                
                 if (dz) dz.style.display = 'block';
                 if (sc) sc.style.display = 'none';
                 if (imgPreview) { imgPreview.src = ''; imgPreview.style.display = 'none'; }
+                if (input) input.value = '';
             };
         })();
     </script>
