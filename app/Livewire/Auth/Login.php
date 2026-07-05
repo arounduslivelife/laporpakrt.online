@@ -12,6 +12,7 @@ class Login extends Component
 
     public $email;
     public $password;
+    public $remember = false;
 
     public function login()
     {
@@ -20,7 +21,7 @@ class Login extends Component
             'password' => 'required',
         ]);
 
-        if (Auth::attempt(['email' => $this->email, 'password' => $this->password])) {
+        if (Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
             session()->regenerate();
             return $this->redirect(route('dashboard'), navigate: true);
         }

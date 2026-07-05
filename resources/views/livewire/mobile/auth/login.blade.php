@@ -24,7 +24,7 @@
         
         <div class="d-flex justify-content-between align-items-center mb-5 ms-1">
             <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="rememberMe">
+                <input class="form-check-input" type="checkbox" id="rememberMe" wire:model="remember">
                 <label class="form-check-label small fw-medium" for="rememberMe">Ingat Saya</label>
             </div>
             <a href="#" class="text-decoration-none small fw-bold text-primary">Lupa Sandi?</a>
