@@ -73,7 +73,7 @@ class SubscriptionManagement extends Component
 
     public function render()
     {
-        $query = Subscription::with(['rt.village.district.regency', 'plan']);
+        $query = Subscription::with(['rt.village.parent.parent', 'plan']);
 
         if (!empty($this->search)) {
             $query->whereHas('rt', function($q) {
