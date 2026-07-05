@@ -16,41 +16,6 @@
         .tamu-card .tamu-meta{font-size:.8rem;color:#6c757d}
         @media(min-width:769px){.mobile-cards{display:none}}
         @media(max-width:768px){.desktop-table{display:none!important}}
-
-        /* Full Screen Scanner Overlay */
-        .scanner-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 23, 42, 0.95);
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(8px);
-        }
-        .scan-box {
-            width: 280px; height: 180px;
-            border: 2px solid rgba(59, 130, 246, 0.5);
-            border-radius: 12px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-        }
-        .scan-line-anim {
-            width: 100%; height: 3px;
-            background: #3b82f6;
-            box-shadow: 0 0 10px #3b82f6, 0 0 20px #3b82f6;
-            position: absolute;
-            top: 0;
-            animation: scan 2s infinite ease-in-out;
-        }
-        @keyframes scan {
-            0% { top: 0; opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { top: 100%; opacity: 0; }
-        }
         @media(min-width:769px){.mobile-cards{display:none}}
         @media(max-width:768px){.desktop-table{display:none!important}}
     </style>
@@ -69,13 +34,6 @@
             </div>
         </div>
     </div>
-    
-    <!-- Floating Action Button for Mobile -->
-    <button class="btn btn-success rounded-circle shadow-lg d-md-none d-flex justify-content-center align-items-center" 
-        style="position: fixed; bottom: 85px; right: 20px; width: 60px; height: 60px; z-index: 1050; transition: transform 0.2s;" 
-        wire:click="$toggle('showForm')" onclick="getLocation()">
-        <i class="bi bi-person-plus" style="font-size: 1.8rem;"></i>
-    </button>
     
     <div class="app-content">
         <div class="container-fluid">
@@ -259,48 +217,6 @@
                             @endforelse
                         </tbody>
                     </table>
-                </div>
-
-                <div class="card-body mobile-cards">
-                    @forelse($tamus as $tamu)
-                    <div class="tamu-card">
-                        <div class="d-flex align-items-start justify-content-between mb-2">
-                            <div class="d-flex align-items-center">
-                                @if($tamu->foto_wajah)
-                                    <img src="{{ Storage::url($tamu->foto_wajah) }}" class="rounded me-2" style="width:42px;height:42px;object-fit:cover">
-                                @else
-                                    <div class="bg-secondary rounded d-flex justify-content-center align-items-center text-white me-2" style="width:42px;height:42px"><i class="bi bi-person"></i></div>
-                                @endif
-                                <div>
-                                    <div class="tamu-name">{{ $tamu->name }}</div>
-                                    <div class="tamu-meta">{{ $tamu->alamat ?? 'Tanpa Alamat' }}</div>
-                                </div>
-                            </div>
-                            @if($tamu->waktu_keluar)
-                                <span class="badge bg-secondary"><i class="bi bi-door-closed"></i> Selesai</span>
-                            @elseif($tamu->waktu_masuk)
-                                <span class="badge bg-success"><i class="bi bi-person-bounding-box"></i> Di Dalam</span>
-                            @else
-                                <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split"></i> Menunggu</span>
-                            @endif
-                        </div>
-                        <div class="tamu-meta mb-2">
-                            <i class="bi bi-bullseye me-1"></i>{{ $tamu->tujuan }} &bull; {{ $tamu->lama_kunjungan_hari }} Hari<br>
-                            <i class="bi bi-clock me-1"></i>{{ $tamu->created_at->format('d/m/Y H:i') }}
-                        </div>
-                        <div class="d-flex gap-1 flex-wrap">
-                            @if(!$tamu->waktu_masuk)
-                                <button wire:click="checkIn({{ $tamu->id }})" class="btn btn-sm btn-success"><i class="bi bi-box-arrow-in-right me-1"></i>Masuk</button>
-                            @elseif(!$tamu->waktu_keluar)
-                                <button wire:click="checkOut({{ $tamu->id }})" class="btn btn-sm btn-danger"><i class="bi bi-box-arrow-left me-1"></i>Keluar</button>
-                            @endif
-                            <button wire:click="edit({{ $tamu->id }})" class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil"></i></button>
-                            <button wire:click="delete({{ $tamu->id }})" class="btn btn-sm btn-outline-danger" onclick="confirm('Hapus?') || event.stopImmediatePropagation()"><i class="bi bi-trash"></i></button>
-                        </div>
-                    </div>
-                    @empty
-                    <div class="text-center py-4 text-muted">Belum ada tamu.</div>
-                    @endforelse
                 </div>
 
                 <div class="card-footer">{{ $tamus->links() }}</div>

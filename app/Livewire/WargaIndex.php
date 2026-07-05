@@ -6,11 +6,13 @@ use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use App\Models\Warga;
 use App\Services\KtpScannerService;
+use App\Traits\DetectsMobile;
 
 class WargaIndex extends Component
 {
     use WithPagination;
     use WithFileUploads;
+    use DetectsMobile;
 
     public $nik, $no_kk, $name, $alamat, $status_domisili = 'Tetap', $jenis_kelamin, $tempat_lahir, $tanggal_lahir;
     public $foto_wajah, $foto_ktp;
@@ -175,6 +177,11 @@ class WargaIndex extends Component
                 $q->where('status_domisili', $this->filterDomisili)
             )
             ->paginate($this->perPage);
+
+        if ($this->isMobile()) {
+            return view('livewire.mobile.warga-index', compact('wargas'))
+                ->layout('layouts.mobile', ['title' => 'Warga']);
+        }
 
         return view('livewire.warga-index', compact('wargas'))
             ->layout('layouts.app');

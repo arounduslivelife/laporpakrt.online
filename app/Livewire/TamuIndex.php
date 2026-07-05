@@ -6,11 +6,13 @@ use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use App\Models\Tamu;
 use App\Services\KtpScannerService;
+use App\Traits\DetectsMobile;
 
 class TamuIndex extends Component
 {
     use WithPagination;
     use WithFileUploads;
+    use DetectsMobile;
 
     public $name, $nik, $alamat, $tujuan, $lama_kunjungan_hari = 1;
     public $lat, $lng;
@@ -158,6 +160,11 @@ class TamuIndex extends Component
             )
             ->latest()
             ->paginate($this->perPage);
+
+        if ($this->isMobile()) {
+            return view('livewire.mobile.tamu-index', compact('tamus'))
+                ->layout('layouts.mobile', ['title' => 'Buku Tamu']);
+        }
 
         return view('livewire.tamu-index', compact('tamus'))
             ->layout('layouts.app');
