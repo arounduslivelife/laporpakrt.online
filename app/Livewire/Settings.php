@@ -43,6 +43,9 @@ class Settings extends Component
 
     public function render()
     {
+        if ($this->isMobile()) {
+            return view('livewire.mobile.settings')->layout('layouts.mobile', ['title' => 'Pengaturan']);
+        }
         return view('livewire.settings')->layout('layouts.app');
     }
 }

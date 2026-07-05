@@ -44,8 +44,11 @@
     </div>
 </div>
 
-@script
+@assets
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+@endassets
+
+@script
 <script>
     document.addEventListener('livewire:initialized', () => {
         var options = {
