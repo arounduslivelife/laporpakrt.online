@@ -145,11 +145,13 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-semibold">NIK</label>
-                                <input type="text" class="form-control" wire:model="nik" maxlength="16" placeholder="16 digit">
+                                <input type="text" class="form-control @error('nik') is-invalid @enderror" wire:model="nik" maxlength="16" placeholder="16 digit">
+                                @error('nik') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-semibold">Nomor KK</label>
-                                <input type="text" class="form-control" wire:model="no_kk" maxlength="16" placeholder="16 digit">
+                                <input type="text" class="form-control @error('no_kk') is-invalid @enderror" wire:model="no_kk" maxlength="16" placeholder="16 digit">
+                                @error('no_kk') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-semibold">Jenis Kelamin</label>

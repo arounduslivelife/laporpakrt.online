@@ -142,16 +142,19 @@
                 <div class="mb-3">
                     <label class="form-label text-muted small fw-semibold">Nama Lengkap</label>
                     <input type="text" class="form-control form-control-lg bg-light border-0" style="border-radius: 12px;" wire:model="name" required placeholder="Sesuai KTP">
+                    @error('name') <span class="text-danger small mt-1 d-block ms-1">{{ $message }}</span> @enderror
                 </div>
                 
                 <div class="row">
                     <div class="col-6 mb-3">
                         <label class="form-label text-muted small fw-semibold">NIK</label>
                         <input type="text" class="form-control bg-light border-0" style="border-radius: 12px;" wire:model="nik" placeholder="16 Digit">
+                        @error('nik') <span class="text-danger small mt-1 d-block ms-1">{{ $message }}</span> @enderror
                     </div>
                     <div class="col-6 mb-3">
                         <label class="form-label text-muted small fw-semibold">No KK</label>
                         <input type="text" class="form-control bg-light border-0" style="border-radius: 12px;" wire:model="no_kk" placeholder="16 Digit">
+                        @error('no_kk') <span class="text-danger small mt-1 d-block ms-1">{{ $message }}</span> @enderror
                     </div>
                 </div>
 
