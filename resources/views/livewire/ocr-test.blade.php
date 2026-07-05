@@ -54,10 +54,12 @@
                                         x-on:click="
                                             uploading = true;
                                             cropper.getCroppedCanvas({ maxWidth: 1600, maxHeight: 1600 }).toBlob((blob) => {
-                                                @this.upload('image', blob, (uploadedFilename) => {
+                                                if(!blob) { uploading = false; alert('Gagal memotong gambar.'); return; }
+                                                const croppedFile = new File([blob], 'ktp_cropped.jpg', { type: 'image/jpeg' });
+                                                @this.upload('image', croppedFile, (uploadedFilename) => {
                                                     uploading = false;
                                                     @this.scan();
-                                                }, () => { uploading = false; }, (event) => {});
+                                                }, (error) => { uploading = false; console.error(error); alert('Upload gagal. Cek console.'); }, (event) => {});
                                             }, 'image/jpeg', 0.85);
                                         ">
                                         <span x-show="!uploading"><i class="bi bi-crop"></i> Crop & Scan KTP</span>

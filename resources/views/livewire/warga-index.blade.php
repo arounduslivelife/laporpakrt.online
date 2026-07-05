@@ -108,12 +108,14 @@
                                             x-on:click="
                                                 uploading = true;
                                                 cropper.getCroppedCanvas({ maxWidth: 1600, maxHeight: 1600 }).toBlob((blob) => {
-                                                    @this.upload('foto_ktp', blob, (uploadedFilename) => {
+                                                    if(!blob) { uploading = false; alert('Gagal memotong gambar.'); return; }
+                                                    const croppedFile = new File([blob], 'ktp_cropped.jpg', { type: 'image/jpeg' });
+                                                    @this.upload('foto_ktp', croppedFile, (uploadedFilename) => {
                                                         uploading = false;
                                                         imageUrl = null;
                                                         if (cropper) cropper.destroy();
                                                         @this.scanKtp();
-                                                    }, () => { uploading = false; }, (event) => {});
+                                                    }, (error) => { uploading = false; console.error(error); alert('Upload gagal. Cek console.'); }, (event) => {});
                                                 }, 'image/jpeg', 0.85);
                                             ">
                                             <span x-show="!uploading"><i class="bi bi-crop"></i> Crop & Scan OCR</span>
