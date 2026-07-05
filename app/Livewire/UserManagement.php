@@ -17,7 +17,7 @@ class UserManagement extends Component
 
     public function mount()
     {
-        abort_if(!auth()->user()->isSuperadmin(), 403);
+        abort_if(!in_array(auth()->user()->role, ['superadmin', 'rt_admin']), 403);
     }
 
     public function save()
@@ -32,8 +32,9 @@ class UserManagement extends Component
 
         $userData = [
             'email' => $this->email,
-            'password' => Hash::make($this->password),
+            'password' => \Illuminate\Support\Facades\Hash::make($this->password),
             'role' => $this->role,
+            // If superadmin creates, they might not have rt_id.
             'rt_id' => auth()->user()->rt_id,
         ];
 
@@ -49,14 +50,24 @@ class UserManagement extends Component
 
         $this->reset(['name', 'email', 'password', 'role', 'warga_id', 'showForm']);
         $this->role = 'warga';
+        $this->dispatch('notify', ['type' => 'success', 'message' => 'User berhasil ditambahkan!']);
     }
 
     public function delete($id)
     {
-        if (!auth()->user()->isSuperadmin()) {
-            abort(403, 'Unauthorized action. Superadmin only.');
+        $user = User::findOrFail($id);
+        
+        // RT Admin can only delete users in their RT. Superadmin can delete anyone.
+        if (!auth()->user()->isSuperadmin() && $user->rt_id != auth()->user()->rt_id) {
+            abort(403, 'Unauthorized action.');
         }
-        User::where('id', '!=', auth()->id())->findOrFail($id)->delete();
+
+        if ($user->id == auth()->id()) {
+            abort(403, 'Cannot delete yourself.');
+        }
+
+        $user->delete();
+        $this->dispatch('notify', ['type' => 'success', 'message' => 'User berhasil dihapus!']);
     }
 
     public $search = '';
