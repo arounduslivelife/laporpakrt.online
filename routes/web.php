@@ -16,8 +16,9 @@ Route::get('/', function (\Illuminate\Http\Request $request) {
         \App\Models\Visitor::firstOrCreate(['ip_address' => $ip]);
     }
     $visitorCount = \App\Models\Visitor::count();
+    $plans = \App\Models\SubscriptionPlan::all();
     
-    return view('welcome', compact('visitorCount'));
+    return view('welcome', compact('visitorCount', 'plans'));
 });
 
 Route::any('/testpath', function () {

@@ -381,27 +381,35 @@
             </div>
 
             <div class="row g-4">
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                    <div class="feature-card">
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-card px-4 py-4">
                         <div class="feature-icon"><i class="bi bi-people"></i></div>
-                        <h4 class="fw-bold mb-3">Database Warga</h4>
-                        <p class="text-muted">Data kependudukan (KK & NIK) tersimpan rapi. Pencarian nama dan blok rumah warga sangat cepat.</p>
+                        <h5 class="fw-bold mb-3">Database Warga</h5>
+                        <p class="text-muted small">Kelola data KK, NIK, dan anggota keluarga dengan rapi. Pencarian nama dan blok rumah warga sangat cepat.</p>
                     </div>
                 </div>
                 
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                    <div class="feature-card">
-                        <div class="feature-icon"><i class="bi bi-journal-text"></i></div>
-                        <h4 class="fw-bold mb-3">Pencatatan Tamu AI</h4>
-                        <p class="text-muted">Satpam hanya perlu memfoto KTP tamu. AI kami akan mengekstrak Nama dan NIK secara otomatis ke dalam sistem.</p>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-card px-4 py-4">
+                        <div class="feature-icon"><i class="bi bi-file-earmark-text"></i></div>
+                        <h5 class="fw-bold mb-3">Surat Pengantar</h5>
+                        <p class="text-muted small">Warga dapat meminta surat pengantar dan RT dapat menerbitkannya dalam format PDF secara otomatis.</p>
                     </div>
                 </div>
                 
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-                    <div class="feature-card">
-                        <div class="feature-icon"><i class="bi bi-bar-chart"></i></div>
-                        <h4 class="fw-bold mb-3">Rekap Kas Transparan</h4>
-                        <p class="text-muted">Catat uang masuk dan keluar dengan mudah. Sistem akan menghitung saldo akhir otomatis tanpa salah hitung.</p>
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-card px-4 py-4">
+                        <div class="feature-icon"><i class="bi bi-upc-scan"></i></div>
+                        <h5 class="fw-bold mb-3">Tamu KTP & GPS</h5>
+                        <p class="text-muted small">Satpam foto KTP tamu, AI otomatis mengisi Nama/NIK. Dilengkapi pencatatan waktu keluar-masuk dan koordinat GPS.</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                    <div class="feature-card px-4 py-4">
+                        <div class="feature-icon"><i class="bi bi-wallet2"></i></div>
+                        <h5 class="fw-bold mb-3">Manajemen Kas</h5>
+                        <p class="text-muted small">Catat uang masuk/keluar bulanan secara transparan. Sistem menghitung saldo akhir otomatis tanpa repot.</p>
                     </div>
                 </div>
             </div>
@@ -417,49 +425,40 @@
             </div>
 
             <div class="row g-4 justify-content-center">
-                <!-- Paket Gratis -->
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                    <div class="pricing-card">
-                        <h4 class="fw-bold mb-1">Paket Gratis</h4>
-                        <p class="text-muted mb-4 pb-2 border-bottom">Masa aktif 7 Hari.</p>
-                        
-                        <div class="mb-4">
-                            <span class="display-5 fw-bold text-dark">Rp 0</span>
-                        </div>
-                        
-                        <ul class="list-unstyled pricing-list mb-5">
-                            <li><i class="bi bi-check-circle-fill text-success"></i> Akses Manajemen Warga</li>
-                            <li><i class="bi bi-check-circle-fill text-success"></i> Akses Pencatatan Tamu</li>
-                            <li><i class="bi bi-check-circle-fill text-success"></i> Akses Laporan Kas</li>
-                            <li><i class="bi bi-check-circle-fill text-success"></i> Uji Coba Penuh</li>
-                        </ul>
-                        
-                        <a href="{{ route('register') }}" class="btn btn-outline w-100 text-center text-decoration-none">Daftar Sekarang</a>
-                    </div>
-                </div>
-
-                <!-- Paket Berlangganan -->
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                    <div class="pricing-card premium">
+                @foreach($plans ?? [] as $plan)
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
+                    <div class="pricing-card {{ $plan->price > 0 ? 'premium' : '' }}">
+                        @if($plan->price > 0)
                         <div class="badge-premium">BERLANGGANAN</div>
-                        <h4 class="fw-bold mb-1 text-primary">Paket Aktif</h4>
-                        <p class="text-muted mb-4 pb-2 border-bottom">Masa aktif 30 Hari.</p>
+                        @endif
+                        <h4 class="fw-bold mb-1 {{ $plan->price > 0 ? 'text-primary' : '' }}">{{ $plan->name }}</h4>
+                        <p class="text-muted mb-4 pb-2 border-bottom">Masa aktif {{ $plan->duration_days }} Hari.</p>
                         
                         <div class="mb-4">
-                            <span class="display-5 fw-bold text-dark">Bebas</span>
-                            <small class="text-muted fw-semibold"> / bulan</small>
+                            <span class="display-5 fw-bold text-dark">Rp {{ number_format($plan->price, 0, ',', '.') }}</span>
+                            @if($plan->price > 0)
+                            <small class="text-muted fw-semibold"> / {{ $plan->duration_days }} hari</small>
+                            @endif
                         </div>
                         
                         <ul class="list-unstyled pricing-list mb-5">
-                            <li><i class="bi bi-check-circle-fill text-primary"></i> Perpanjangan Masa Aktif 30 Hari</li>
-                            <li><i class="bi bi-check-circle-fill text-primary"></i> Data Tidak Terhapus (Aman)</li>
-                            <li><i class="bi bi-check-circle-fill text-primary"></i> Fitur Export Laporan Lengkap</li>
+                            @foreach($plan->features ?? [] as $feature)
+                            <li><i class="bi bi-check-circle-fill {{ $plan->price > 0 ? 'text-primary' : 'text-success' }}"></i> {{ $feature }}</li>
+                            @endforeach
+                            @if($plan->price > 0)
                             <li><i class="bi bi-check-circle-fill text-primary"></i> Dukungan Bantuan Teknis</li>
+                            <li><i class="bi bi-check-circle-fill text-primary"></i> Data Tidak Terhapus (Aman)</li>
+                            @else
+                            <li><i class="bi bi-check-circle-fill text-success"></i> Uji Coba Penuh</li>
+                            @endif
                         </ul>
                         
-                        <a href="{{ route('register') }}" class="btn btn-primary w-100 text-center text-decoration-none">Perpanjang Akses</a>
+                        <a href="{{ route('register') }}" class="btn {{ $plan->price > 0 ? 'btn-primary' : 'btn-outline' }} w-100 text-center text-decoration-none">
+                            {{ $plan->price > 0 ? 'Perpanjang Akses' : 'Daftar Sekarang' }}
+                        </a>
                     </div>
                 </div>
+                @endforeach
             </div>
             
             <div class="text-center mt-5" data-aos="fade-up" data-aos-delay="300">
