@@ -193,6 +193,7 @@
     <div wire:loading wire:target="scanKtp">
         <div class="ocr-scanner-overlay">
             <div class="scan-box mb-4">
+                <img id="scanPreviewTamuMobile" src="" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; opacity: 0.6; display: none;">
                 <div class="scan-line"></div>
             </div>
             <h4 class="text-white fw-bold mb-1">Menganalisis KTP</h4>
@@ -229,6 +230,9 @@
             
             var reader = new FileReader();
             reader.onload = function(e) {
+                var preview = document.getElementById('scanPreviewTamuMobile');
+                if (preview) { preview.src = e.target.result; preview.style.display = 'block'; }
+                
                 var img = new Image();
                 img.onload = function() {
                     var canvas = document.createElement('canvas');
