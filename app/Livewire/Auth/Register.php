@@ -57,10 +57,13 @@ class Register extends Component
             'rt' => 'required|max:3',
         ]);
 
+        $formattedRw = str_pad($this->rw, 3, '0', STR_PAD_LEFT);
+        $formattedRt = str_pad($this->rt, 3, '0', STR_PAD_LEFT);
+
         // Cek duplikasi RT
         $exists = Rt::where('village_code', $this->village_id)
-                    ->where('rw', $this->rw)
-                    ->where('rt', $this->rt)
+                    ->where('rw', $formattedRw)
+                    ->where('rt', $formattedRt)
                     ->exists();
         
         if ($exists) {
@@ -77,8 +80,8 @@ class Register extends Component
 
         $rt = Rt::create([
             'village_code' => $this->village_id,
-            'rw' => str_pad($this->rw, 3, '0', STR_PAD_LEFT),
-            'rt' => str_pad($this->rt, 3, '0', STR_PAD_LEFT),
+            'rw' => $formattedRw,
+            'rt' => $formattedRt,
             'admin_id' => $user->id,
         ]);
 
