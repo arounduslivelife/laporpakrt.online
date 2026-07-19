@@ -17,6 +17,7 @@ class WargaIndex extends Component
     public $nik, $no_kk, $name, $alamat, $status_domisili = 'Tetap', $jenis_kelamin, $tempat_lahir, $tanggal_lahir;
     public $foto_wajah, $foto_ktp;
     public $foto_path, $ktp_path;
+    public $selectedBantuans = [];
     public $showForm = false;
 
     public function mount()
@@ -35,8 +36,9 @@ class WargaIndex extends Component
 
     public function edit($id)
     {
-        $warga = Warga::where('rt_id', auth()->user()->rt_id)->findOrFail($id);
+        $warga = Warga::with('bantuans')->where('rt_id', auth()->user()->rt_id)->findOrFail($id);
         $this->fill($warga->only(['nik', 'no_kk', 'name', 'alamat', 'status_domisili', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 'foto_path', 'ktp_path']));
+        $this->selectedBantuans = $warga->bantuans->pluck('id')->map(fn($id) => (string)$id)->toArray();
         $this->editMode = true;
         $this->editId = $id;
         $this->showForm = true;
@@ -46,7 +48,7 @@ class WargaIndex extends Component
 
     public function view($id)
     {
-        $this->viewWarga = Warga::where('rt_id', auth()->user()->rt_id)->findOrFail($id);
+        $this->viewWarga = Warga::with('bantuans')->where('rt_id', auth()->user()->rt_id)->findOrFail($id);
     }
 
     public function closeView()
@@ -61,7 +63,7 @@ class WargaIndex extends Component
 
     public function resetForm()
     {
-        $this->reset(['nik', 'no_kk', 'name', 'alamat', 'status_domisili', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 'editMode', 'editId', 'showForm', 'foto_wajah', 'foto_ktp', 'foto_path', 'ktp_path', 'forceSave', 'showDuplicateWarning', 'duplicateInfo']);
+        $this->reset(['nik', 'no_kk', 'name', 'alamat', 'status_domisili', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 'editMode', 'editId', 'showForm', 'foto_wajah', 'foto_ktp', 'foto_path', 'ktp_path', 'forceSave', 'showDuplicateWarning', 'duplicateInfo', 'selectedBantuans']);
         $this->status_domisili = 'Tetap';
     }
 
@@ -177,6 +179,7 @@ class WargaIndex extends Component
             if ($ktpPath) $updateData['ktp_path'] = $ktpPath;
 
             $warga->update($updateData);
+            $warga->bantuans()->sync($this->selectedBantuans);
         } else {
             Warga::create([
                 'rt_id' => auth()->user()->rt_id,
@@ -191,6 +194,7 @@ class WargaIndex extends Component
                 'foto_path' => $fotoPath,
                 'ktp_path' => $ktpPath,
             ]);
+            $newWarga->bantuans()->sync($this->selectedBantuans);
         }
         
         $this->resetForm();
@@ -210,12 +214,14 @@ class WargaIndex extends Component
             )
             ->paginate($this->perPage);
 
+        $bantuansList = \App\Models\Bantuan::all();
+
         if ($this->isMobile()) {
-            return view('livewire.mobile.warga-index', compact('wargas'))
+            return view('livewire.mobile.warga-index', compact('wargas', 'bantuansList'))
                 ->layout('layouts.mobile', ['title' => 'Warga']);
         }
 
-        return view('livewire.warga-index', compact('wargas'))
+        return view('livewire.warga-index', compact('wargas', 'bantuansList'))
             ->layout('layouts.app');
     }
 }

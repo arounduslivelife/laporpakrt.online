@@ -184,6 +184,24 @@
                         </div>
 
                         <hr>
+                        <h6 class="text-muted text-uppercase small fw-bold mb-3"><i class="bi bi-box2-heart me-1"></i> Bantuan Sosial yang Diterima</h6>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <div class="d-flex flex-wrap gap-3">
+                                    @foreach($bantuansList as $bantuan)
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" wire:model="selectedBantuans" value="{{ $bantuan->id }}" id="bantuan_{{ $bantuan->id }}">
+                                            <label class="form-check-label" for="bantuan_{{ $bantuan->id }}" title="{{ $bantuan->description }}">
+                                                {{ $bantuan->name }}
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <div class="form-text mt-2"><i class="bi bi-info-circle"></i> Centang jenis bantuan yang saat ini diterima oleh warga. (Bisa pilih lebih dari satu)</div>
+                            </div>
+                        </div>
+
+                        <hr>
                         <h6 class="text-muted text-uppercase small fw-bold mb-3"><i class="bi bi-camera me-1"></i> Foto Wajah (Opsional)</h6>
                         <div class="mb-3">
                             <input type="file" class="form-control" wire:model="foto_wajah" accept="image/*" capture="environment">
@@ -362,6 +380,20 @@
                                     <tr><th>Jenis Kelamin</th><td>{{ $viewWarga->jenis_kelamin ?? '-' }}</td></tr>
                                     <tr><th>Tempat, Tanggal Lahir</th><td>{{ $viewWarga->tempat_lahir ?? '-' }}, {{ $viewWarga->tanggal_lahir ? \Carbon\Carbon::parse($viewWarga->tanggal_lahir)->format('d-m-Y') : '-' }}</td></tr>
                                     <tr><th>Alamat</th><td>{{ $viewWarga->alamat ?? '-' }}</td></tr>
+                                    <tr>
+                                        <th>Bantuan Sosial</th>
+                                        <td>
+                                            @if($viewWarga->bantuans->count() > 0)
+                                                <div class="d-flex flex-wrap gap-1">
+                                                    @foreach($viewWarga->bantuans as $bantuan)
+                                                        <span class="badge bg-info text-dark" title="{{ $bantuan->description }}">{{ $bantuan->name }}</span>
+                                                    @endforeach
+                                                </div>
+                                            @else
+                                                <span class="text-muted fst-italic">Tidak ada</span>
+                                            @endif
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                             @if($viewWarga->ktp_path)

@@ -11,6 +11,7 @@ class Warga extends Model
     public function rt() { return $this->belongsTo(Rt::class); }
     public function surats() { return $this->hasMany(Surat::class); }
     public function kasTransactions() { return $this->hasMany(KasTransaction::class); }
+    public function bantuans() { return $this->belongsToMany(Bantuan::class, 'bantuan_warga')->withTimestamps(); }
 
     protected static function booted()
     {

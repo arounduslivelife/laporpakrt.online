@@ -192,6 +192,20 @@
                     <textarea class="form-control bg-light border-0" style="border-radius: 12px;" wire:model="alamat" rows="2"></textarea>
                 </div>
 
+                <div class="mb-4">
+                    <label class="form-label text-muted small fw-semibold"><i class="bi bi-box2-heart me-1"></i> Bantuan Sosial</label>
+                    <div class="bg-light p-3" style="border-radius: 12px;">
+                        @foreach($bantuansList as $bantuan)
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" wire:model="selectedBantuans" value="{{ $bantuan->id }}" id="mob_bantuan_{{ $bantuan->id }}">
+                                <label class="form-check-label text-dark" for="mob_bantuan_{{ $bantuan->id }}">
+                                    {{ $bantuan->name }}
+                                </label>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
                 <button type="submit" class="btn btn-primary w-100 py-3 fw-bold" style="border-radius: 16px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border: none;">
                     <i class="bi bi-check-circle me-2"></i> Simpan Data Warga
                 </button>
