@@ -62,7 +62,7 @@
     @if(!$showForm)
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="fw-bold m-0">Data Warga</h5>
-            <span class="badge bg-primary rounded-pill px-3 py-2">{{ $wargas->total() }} Total</span>
+            <span class="badge bg-primary rounded-pill px-3 py-2">{{ $paginatedKks->total() }} KK</span>
         </div>
 
         <div class="search-box">
@@ -71,31 +71,46 @@
         </div>
 
         <div>
-            @forelse($wargas as $warga)
-                <div class="soft-card">
-                    <div class="d-flex align-items-center mb-3">
-                        @if($warga->foto_path)
-                            <img src="{{ Storage::url($warga->foto_path) }}" class="rounded-circle shadow-sm me-3" style="width: 54px; height: 54px; object-fit: cover;">
-                        @else
-                            <div class="bg-primary rounded-circle shadow-sm d-flex justify-content-center align-items-center text-white me-3" style="width: 54px; height: 54px; font-size: 1.5rem; background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;">
-                                {{ substr($warga->name, 0, 1) }}
-                            </div>
-                        @endif
-                        <div class="flex-grow-1">
-                            <h6 class="fw-bold mb-1">{{ $warga->name }}</h6>
-                            <div class="text-muted small mb-1"><i class="bi bi-credit-card me-1"></i> {{ $warga->nik ? substr($warga->nik, 0, 4) . '****' . substr($warga->nik, -4) : '-' }}</div>
-                            @if($warga->status_domisili == 'Tetap')
-                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill border border-success border-opacity-25 px-2"><i class="bi bi-house-check me-1"></i>Tetap</span>
-                            @else
-                                <span class="badge bg-warning bg-opacity-10 text-warning-emphasis rounded-pill border border-warning border-opacity-25 px-2"><i class="bi bi-house-dash me-1"></i>Kontrak</span>
-                            @endif
-                        </div>
+            @forelse($paginatedKks as $kkGroup)
+                @php
+                    $family = collect($groupedWargas[$kkGroup] ?? []);
+                    $kepala = $family->firstWhere('status_keluarga', 'Kepala Keluarga') ?? $family->first();
+                    $kkTitle = str_starts_with($kkGroup, 'tanpa_kk_') ? 'Tanpa KK' : 'KK: ' . $kkGroup;
+                @endphp
+                
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2 px-1">
+                        <h6 class="fw-bold text-primary mb-0"><i class="bi bi-people-fill me-2"></i>{{ $kkTitle }}</h6>
+                        <span class="badge bg-light text-dark">{{ $family->count() }} Jiwa</span>
                     </div>
                     
-                    <div class="d-flex gap-2 border-top pt-3 mt-1">
-                        <button wire:click="edit({{ $warga->id }})" class="btn btn-light text-primary flex-fill fw-medium" style="border-radius: 12px;"><i class="bi bi-pencil me-1"></i> Edit</button>
-                        <button wire:click="delete({{ $warga->id }})" class="btn btn-light text-danger flex-fill fw-medium" style="border-radius: 12px;" onclick="confirm('Hapus warga ini?') || event.stopImmediatePropagation()"><i class="bi bi-trash me-1"></i> Hapus</button>
+                    @foreach($family as $warga)
+                    <div class="soft-card mb-2">
+                        <div class="d-flex align-items-center mb-3">
+                            @if($warga->foto_path)
+                                <img src="{{ Storage::url($warga->foto_path) }}" class="rounded-circle shadow-sm me-3" style="width: 54px; height: 54px; object-fit: cover;">
+                            @else
+                                <div class="bg-primary rounded-circle shadow-sm d-flex justify-content-center align-items-center text-white me-3" style="width: 54px; height: 54px; font-size: 1.5rem; background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;">
+                                    {{ substr($warga->name, 0, 1) }}
+                                </div>
+                            @endif
+                            <div class="flex-grow-1">
+                                <h6 class="fw-bold mb-1">{{ $warga->name }}</h6>
+                                <div class="text-muted small mb-1"><i class="bi bi-person-badge me-1"></i> {{ $warga->status_keluarga ?? 'Anggota' }}</div>
+                                @if($warga->status_domisili == 'Tetap')
+                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill border border-success border-opacity-25 px-2"><i class="bi bi-house-check me-1"></i>Tetap</span>
+                                @else
+                                    <span class="badge bg-warning bg-opacity-10 text-warning-emphasis rounded-pill border border-warning border-opacity-25 px-2"><i class="bi bi-house-dash me-1"></i>Kontrak</span>
+                                @endif
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex gap-2 border-top pt-3 mt-1">
+                            <button wire:click="edit({{ $warga->id }})" class="btn btn-light text-primary flex-fill fw-medium" style="border-radius: 12px;"><i class="bi bi-pencil me-1"></i> Edit</button>
+                            <button wire:click="delete({{ $warga->id }})" class="btn btn-light text-danger flex-fill fw-medium" style="border-radius: 12px;" onclick="confirm('Hapus warga ini?') || event.stopImmediatePropagation()"><i class="bi bi-trash me-1"></i> Hapus</button>
+                        </div>
                     </div>
+                    @endforeach
                 </div>
             @empty
                 <div class="text-center py-5">
@@ -108,7 +123,7 @@
             @endforelse
             
             <div class="mt-4">
-                {{ $wargas->links() }}
+                {{ $paginatedKks->links() }}
             </div>
         </div>
 
@@ -155,6 +170,53 @@
                         <label class="form-label text-muted small fw-semibold">No KK</label>
                         <input type="text" class="form-control bg-light border-0" style="border-radius: 12px;" wire:model="no_kk" placeholder="16 Digit">
                         @error('no_kk') <span class="text-danger small mt-1 d-block ms-1">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <label class="form-label text-muted small fw-semibold">Status Perkawinan</label>
+                        <select class="form-select bg-light border-0" style="border-radius: 12px;" wire:model="status_perkawinan">
+                            <option value="">Pilih</option>
+                            <option value="Belum Kawin">Belum Kawin</option>
+                            <option value="Kawin">Kawin</option>
+                            <option value="Kawin Belum Tercatat">Kawin Belum Tercatat</option>
+                            <option value="Cerai Hidup">Cerai Hidup</option>
+                            <option value="Cerai Mati">Cerai Mati</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label class="form-label text-muted small fw-semibold">Status Hubungan Dalam Keluarga (SHDK)</label>
+                        <select class="form-select bg-light border-0" style="border-radius: 12px;" wire:model="status_keluarga">
+                            <option value="">Pilih</option>
+                            <option value="Kepala Keluarga">Kepala Keluarga</option>
+                            <option value="Suami">Suami</option>
+                            <option value="Istri">Istri</option>
+                            <option value="Anak">Anak</option>
+                            <option value="Menantu">Menantu</option>
+                            <option value="Cucu">Cucu</option>
+                            <option value="Orang Tua">Orang Tua</option>
+                            <option value="Mertua">Mertua</option>
+                            <option value="Famili Lain">Famili Lain</option>
+                            <option value="Pembantu">Pembantu</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label class="form-label text-muted small fw-semibold">Penghasilan</label>
+                        <select class="form-select bg-light border-0" style="border-radius: 12px;" wire:model="penghasilan">
+                            <option value="">Pilih</option>
+                            <option value="< Rp 1 Juta">< Rp 1 Juta</option>
+                            <option value="Rp 1 Juta - 3 Juta">Rp 1 Juta - 3 Juta</option>
+                            <option value="Rp 3 Juta - 5 Juta">Rp 3 Juta - 5 Juta</option>
+                            <option value="> Rp 5 Juta">> Rp 5 Juta</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <div class="form-check form-switch mt-1">
+                            <input class="form-check-input" type="checkbox" wire:model="is_disabilitas" id="mob_is_disabilitas">
+                            <label class="form-check-label text-muted small fw-semibold" for="mob_is_disabilitas">Penyandang Disabilitas</label>
+                        </div>
                     </div>
                 </div>
 

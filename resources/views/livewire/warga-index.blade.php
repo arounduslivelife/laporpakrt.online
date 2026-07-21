@@ -169,6 +169,50 @@
                                     <option value="Kontrak">Kontrak/Kos</option>
                                 </select>
                             </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">Status Perkawinan</label>
+                                <select class="form-select" wire:model="status_perkawinan">
+                                    <option value="">Pilih</option>
+                                    <option value="Belum Kawin">Belum Kawin</option>
+                                    <option value="Kawin">Kawin</option>
+                                    <option value="Kawin Belum Tercatat">Kawin Belum Tercatat</option>
+                                    <option value="Cerai Hidup">Cerai Hidup</option>
+                                    <option value="Cerai Mati">Cerai Mati</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">SHDK</label>
+                                <select class="form-select" wire:model="status_keluarga">
+                                    <option value="">Pilih</option>
+                                    <option value="Kepala Keluarga">Kepala Keluarga</option>
+                                    <option value="Suami">Suami</option>
+                                    <option value="Istri">Istri</option>
+                                    <option value="Anak">Anak</option>
+                                    <option value="Menantu">Menantu</option>
+                                    <option value="Cucu">Cucu</option>
+                                    <option value="Orang Tua">Orang Tua</option>
+                                    <option value="Mertua">Mertua</option>
+                                    <option value="Famili Lain">Famili Lain</option>
+                                    <option value="Pembantu">Pembantu</option>
+                                    <option value="Lainnya">Lainnya</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">Penghasilan</label>
+                                <select class="form-select" wire:model="penghasilan">
+                                    <option value="">Pilih</option>
+                                    <option value="< Rp 1 Juta">< Rp 1 Juta</option>
+                                    <option value="Rp 1 Juta - 3 Juta">Rp 1 Juta - 3 Juta</option>
+                                    <option value="Rp 3 Juta - 5 Juta">Rp 3 Juta - 5 Juta</option>
+                                    <option value="> Rp 5 Juta">> Rp 5 Juta</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3 d-flex align-items-end">
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" wire:model="is_disabilitas" id="is_disabilitas">
+                                    <label class="form-check-label fw-semibold" for="is_disabilitas">Penyandang Disabilitas</label>
+                                </div>
+                            </div>
                             <div class="col-md-3 mb-3">
                                 <label class="form-label fw-semibold">Tempat Lahir</label>
                                 <input type="text" class="form-control" wire:model="tempat_lahir" placeholder="Kota">
@@ -284,61 +328,90 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-body p-0 table-responsive">
-                    <table class="table table-striped table-hover mb-0">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nama Lengkap</th>
-                                <th>NIK</th>
-                                <th>No KK</th>
-                                <th>Jenis Kelamin</th>
-                                <th>Status</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($wargas as $index => $warga)
-                            <tr>
-                                <td>{{ $index + 1 }}</td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        @if($warga->foto_path)
-                                            <img src="{{ Storage::url($warga->foto_path) }}" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
-                                        @else
-                                            <div class="bg-secondary rounded-circle d-flex justify-content-center align-items-center text-white me-2" style="width: 40px; height: 40px;">
-                                                {{ substr($warga->name, 0, 1) }}
+                <div class="card-body p-0">
+                    <div class="accordion accordion-flush" id="accordionWarga">
+                        @forelse($paginatedKks as $index => $kkGroup)
+                            @php
+                                $family = collect($groupedWargas[$kkGroup] ?? []);
+                                $kepala = $family->firstWhere('status_keluarga', 'Kepala Keluarga') ?? $family->first();
+                                $kkTitle = str_starts_with($kkGroup, 'tanpa_kk_') ? 'Tanpa KK' : 'No. KK: ' . $kkGroup;
+                                $kkId = 'kk_' . md5($kkGroup);
+                            @endphp
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="heading-{{ $kkId }}">
+                                    <button class="accordion-button collapsed bg-light border-bottom" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ $kkId }}" aria-expanded="false" aria-controls="collapse-{{ $kkId }}">
+                                        <div class="d-flex w-100 justify-content-between align-items-center me-3">
+                                            <div>
+                                                <strong class="text-primary"><i class="bi bi-people-fill me-2"></i>{{ $kkTitle }}</strong>
+                                                <br>
+                                                <span class="text-muted small">Kepala Keluarga: <strong>{{ $kepala->name ?? '-' }}</strong> | Total: {{ $family->count() }} Jiwa</span>
                                             </div>
-                                        @endif
-                                        <div class="fw-bold">{{ $warga->name }}</div>
+                                        </div>
+                                    </button>
+                                </h2>
+                                <div id="collapse-{{ $kkId }}" class="accordion-collapse collapse" aria-labelledby="heading-{{ $kkId }}" data-bs-parent="#accordionWarga" wire:ignore.self>
+                                    <div class="accordion-body p-0">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-hover mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>No</th>
+                                                        <th>Nama Lengkap</th>
+                                                        <th>NIK</th>
+                                                        <th>SHDK</th>
+                                                        <th>Umur</th>
+                                                        <th>Jenis Kelamin</th>
+                                                        <th>Status</th>
+                                                        <th>Aksi</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach($family as $i => $warga)
+                                                    <tr>
+                                                        <td>{{ $i + 1 }}</td>
+                                                        <td>
+                                                            <div class="d-flex align-items-center">
+                                                                @if($warga->foto_path)
+                                                                    <img src="{{ Storage::url($warga->foto_path) }}" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                                                @else
+                                                                    <div class="bg-secondary rounded-circle d-flex justify-content-center align-items-center text-white me-2" style="width: 40px; height: 40px;">
+                                                                        {{ substr($warga->name, 0, 1) }}
+                                                                    </div>
+                                                                @endif
+                                                                <div class="fw-bold">{{ $warga->name }}</div>
+                                                            </div>
+                                                        </td>
+                                                        <td>{{ $warga->nik ? substr($warga->nik, 0, 4) . '********' . substr($warga->nik, -4) : '-' }}</td>
+                                                        <td>{{ $warga->status_keluarga ?? '-' }}</td>
+                                                        <td>{{ $warga->umur ? $warga->umur . ' th' : '-' }}</td>
+                                                        <td>{{ $warga->jenis_kelamin ?? '-' }}</td>
+                                                        <td>
+                                                            @if($warga->status_domisili == 'Tetap')
+                                                                <span class="badge bg-success"><i class="bi bi-house-check"></i> Tetap</span>
+                                                            @else
+                                                                <span class="badge text-bg-warning"><i class="bi bi-house-dash"></i> Kontrak</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            <button wire:click="view({{ $warga->id }})" class="btn btn-sm btn-info text-white" title="Lihat Detail"><i class="bi bi-eye"></i></button>
+                                                            <button wire:click="edit({{ $warga->id }})" class="btn btn-sm btn-warning" title="Edit"><i class="bi bi-pencil"></i></button>
+                                                            <button wire:click="delete({{ $warga->id }})" class="btn btn-sm btn-danger" onclick="confirm('Yakin ingin menghapus warga ini?') || event.stopImmediatePropagation()" title="Hapus"><i class="bi bi-trash"></i></button>
+                                                        </td>
+                                                    </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
-                                </td>
-                                <td>{{ $warga->nik ? substr($warga->nik, 0, 4) . '********' . substr($warga->nik, -4) : '-' }}</td>
-                                <td>{{ $warga->no_kk ? substr($warga->no_kk, 0, 4) . '********' . substr($warga->no_kk, -4) : '-' }}</td>
-                                <td>{{ $warga->jenis_kelamin ?? '-' }}</td>
-                                <td>
-                                    @if($warga->status_domisili == 'Tetap')
-                                        <span class="badge bg-success"><i class="bi bi-house-check"></i> Tetap</span>
-                                    @else
-                                        <span class="badge text-bg-warning"><i class="bi bi-house-dash"></i> Kontrak</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <button wire:click="view({{ $warga->id }})" class="btn btn-sm btn-info text-white" title="Lihat Detail"><i class="bi bi-eye"></i></button>
-                                    <button wire:click="edit({{ $warga->id }})" class="btn btn-sm btn-warning" title="Edit"><i class="bi bi-pencil"></i></button>
-                                    <button wire:click="delete({{ $warga->id }})" class="btn btn-sm btn-danger" onclick="confirm('Yakin ingin menghapus warga ini?') || event.stopImmediatePropagation()" title="Hapus"><i class="bi bi-trash"></i></button>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="7" class="text-center py-4">Belum ada data warga terdaftar.</td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="text-center py-4 text-muted">Belum ada data warga terdaftar.</div>
+                        @endforelse
+                    </div>
                 </div>
                 <div class="card-footer">
-                    {{ $wargas->links() }}
+                    {{ $paginatedKks->links() }}
                 </div>
             </div>
 
@@ -377,8 +450,18 @@
                                 <tbody>
                                     <tr><th style="width: 35%;">NIK</th><td>{{ $viewWarga->nik ?? '-' }}</td></tr>
                                     <tr><th>No. Kartu Keluarga</th><td>{{ $viewWarga->no_kk ?? '-' }}</td></tr>
+                                    <tr><th>Status Perkawinan</th><td>{{ $viewWarga->status_perkawinan ?? '-' }}</td></tr>
+                                    <tr><th>SHDK</th><td>{{ $viewWarga->status_keluarga ?? '-' }}</td></tr>
                                     <tr><th>Jenis Kelamin</th><td>{{ $viewWarga->jenis_kelamin ?? '-' }}</td></tr>
-                                    <tr><th>Tempat, Tanggal Lahir</th><td>{{ $viewWarga->tempat_lahir ?? '-' }}, {{ $viewWarga->tanggal_lahir ? \Carbon\Carbon::parse($viewWarga->tanggal_lahir)->format('d-m-Y') : '-' }}</td></tr>
+                                    <tr><th>Tempat, Tanggal Lahir</th><td>{{ $viewWarga->tempat_lahir ?? '-' }}, {{ $viewWarga->tanggal_lahir ? \Carbon\Carbon::parse($viewWarga->tanggal_lahir)->format('d-m-Y') . ' (' . $viewWarga->umur . ' Tahun)' : '-' }}</td></tr>
+                                    <tr><th>Penghasilan</th><td>{{ $viewWarga->penghasilan ?? '-' }}</td></tr>
+                                    <tr><th>Penyandang Disabilitas</th><td>
+                                        @if($viewWarga->is_disabilitas)
+                                            <span class="badge bg-danger">Ya</span>
+                                        @else
+                                            Tidak
+                                        @endif
+                                    </td></tr>
                                     <tr><th>Alamat</th><td>{{ $viewWarga->alamat ?? '-' }}</td></tr>
                                     <tr>
                                         <th>Bantuan Sosial</th>

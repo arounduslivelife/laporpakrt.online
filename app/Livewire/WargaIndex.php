@@ -14,7 +14,7 @@ class WargaIndex extends Component
     use WithFileUploads;
     use DetectsMobile;
 
-    public $nik, $no_kk, $name, $alamat, $status_domisili = 'Tetap', $jenis_kelamin, $tempat_lahir, $tanggal_lahir;
+    public $nik, $no_kk, $name, $alamat, $status_domisili = 'Tetap', $jenis_kelamin, $tempat_lahir, $tanggal_lahir, $status_perkawinan, $status_keluarga, $penghasilan, $is_disabilitas = false;
     public $foto_wajah, $foto_ktp;
     public $foto_path, $ktp_path;
     public $selectedBantuans = [];
@@ -37,7 +37,7 @@ class WargaIndex extends Component
     public function edit($id)
     {
         $warga = Warga::with('bantuans')->where('rt_id', auth()->user()->rt_id)->findOrFail($id);
-        $this->fill($warga->only(['nik', 'no_kk', 'name', 'alamat', 'status_domisili', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 'foto_path', 'ktp_path']));
+        $this->fill($warga->only(['nik', 'no_kk', 'name', 'alamat', 'status_domisili', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 'foto_path', 'ktp_path', 'status_perkawinan', 'status_keluarga', 'penghasilan', 'is_disabilitas']));
         $this->selectedBantuans = $warga->bantuans->pluck('id')->map(fn($id) => (string)$id)->toArray();
         $this->editMode = true;
         $this->editId = $id;
@@ -63,7 +63,7 @@ class WargaIndex extends Component
 
     public function resetForm()
     {
-        $this->reset(['nik', 'no_kk', 'name', 'alamat', 'status_domisili', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 'editMode', 'editId', 'showForm', 'foto_wajah', 'foto_ktp', 'foto_path', 'ktp_path', 'forceSave', 'showDuplicateWarning', 'duplicateInfo', 'selectedBantuans']);
+        $this->reset(['nik', 'no_kk', 'name', 'alamat', 'status_domisili', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 'status_perkawinan', 'status_keluarga', 'penghasilan', 'is_disabilitas', 'editMode', 'editId', 'showForm', 'foto_wajah', 'foto_ktp', 'foto_path', 'ktp_path', 'forceSave', 'showDuplicateWarning', 'duplicateInfo', 'selectedBantuans']);
         $this->status_domisili = 'Tetap';
     }
 
@@ -134,6 +134,10 @@ class WargaIndex extends Component
             'tanggal_lahir' => 'nullable|date',
             'foto_wajah' => 'nullable|image|max:8192',
             'foto_ktp' => 'nullable|image|max:8192',
+            'status_perkawinan' => 'nullable|in:Belum Kawin,Kawin,Kawin Belum Tercatat,Cerai Hidup,Cerai Mati',
+            'status_keluarga' => 'nullable|in:Kepala Keluarga,Suami,Istri,Anak,Menantu,Cucu,Orang Tua,Mertua,Famili Lain,Pembantu,Lainnya',
+            'penghasilan' => 'nullable|string',
+            'is_disabilitas' => 'boolean',
         ]);
 
         if (!empty($this->nik) && !$this->forceSave) {
@@ -173,6 +177,10 @@ class WargaIndex extends Component
                 'jenis_kelamin' => $this->jenis_kelamin,
                 'tempat_lahir' => $this->tempat_lahir,
                 'tanggal_lahir' => $this->tanggal_lahir,
+                'status_perkawinan' => $this->status_perkawinan,
+                'status_keluarga' => $this->status_keluarga,
+                'penghasilan' => $this->penghasilan,
+                'is_disabilitas' => $this->is_disabilitas,
             ];
 
             if ($fotoPath) $updateData['foto_path'] = $fotoPath;
@@ -181,7 +189,7 @@ class WargaIndex extends Component
             $warga->update($updateData);
             $warga->bantuans()->sync($this->selectedBantuans);
         } else {
-            Warga::create([
+            $newWarga = Warga::create([
                 'rt_id' => auth()->user()->rt_id,
                 'nik' => $this->nik,
                 'no_kk' => $this->no_kk,
@@ -191,6 +199,10 @@ class WargaIndex extends Component
                 'jenis_kelamin' => $this->jenis_kelamin,
                 'tempat_lahir' => $this->tempat_lahir,
                 'tanggal_lahir' => $this->tanggal_lahir,
+                'status_perkawinan' => $this->status_perkawinan,
+                'status_keluarga' => $this->status_keluarga,
+                'penghasilan' => $this->penghasilan,
+                'is_disabilitas' => $this->is_disabilitas,
                 'foto_path' => $fotoPath,
                 'ktp_path' => $ktpPath,
             ]);
@@ -202,7 +214,7 @@ class WargaIndex extends Component
 
     public function render()
     {
-        $wargas = auth()->user()->rt->wargas()
+        $matched = auth()->user()->rt->wargas()
             ->when($this->search, fn($q) =>
                 $q->where(fn($q) =>
                     $q->where('name', 'like', "%{$this->search}%")
@@ -212,16 +224,43 @@ class WargaIndex extends Component
             ->when($this->filterDomisili, fn($q) =>
                 $q->where('status_domisili', $this->filterDomisili)
             )
-            ->paginate($this->perPage);
+            ->get();
+
+        $kkGroups = $matched->map(function($w) {
+            return !empty($w->no_kk) ? $w->no_kk : 'tanpa_kk_' . $w->id;
+        })->unique()->values();
+
+        $page = $this->getPage();
+        $perPage = $this->perPage;
+        
+        $paginatedKks = new \Illuminate\Pagination\LengthAwarePaginator(
+            $kkGroups->forPage($page, $perPage),
+            $kkGroups->count(),
+            $perPage,
+            $page,
+            ['path' => \Illuminate\Pagination\Paginator::resolveCurrentPath()]
+        );
+
+        $allWargas = auth()->user()->rt->wargas()->orderBy('id')->get();
+        
+        $groupedWargas = [];
+        foreach ($paginatedKks as $kk) {
+            if (str_starts_with($kk, 'tanpa_kk_')) {
+                $id = str_replace('tanpa_kk_', '', $kk);
+                $groupedWargas[$kk] = $allWargas->where('id', $id);
+            } else {
+                $groupedWargas[$kk] = $allWargas->where('no_kk', $kk);
+            }
+        }
 
         $bantuansList = \App\Models\Bantuan::all();
 
         if ($this->isMobile()) {
-            return view('livewire.mobile.warga-index', compact('wargas', 'bantuansList'))
+            return view('livewire.mobile.warga-index', compact('groupedWargas', 'paginatedKks', 'bantuansList'))
                 ->layout('layouts.mobile', ['title' => 'Warga']);
         }
 
-        return view('livewire.warga-index', compact('wargas', 'bantuansList'))
+        return view('livewire.warga-index', compact('groupedWargas', 'paginatedKks', 'bantuansList'))
             ->layout('layouts.app');
     }
 }

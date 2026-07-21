@@ -292,8 +292,12 @@
                     <li class="nav-item"><a class="nav-link" href="#harga">Harga</a></li>
                 </ul>
                 <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
-                    <a href="{{ route('login') }}" class="text-dark text-decoration-none fw-semibold">Masuk</a>
-                    <a href="{{ route('register') }}" class="btn btn-primary btn-sm px-4 py-2">Daftar</a>
+                    @auth
+                        <a href="{{ route('dashboard') }}" class="btn btn-primary btn-sm px-4 py-2">Ke Dashboard</a>
+                    @else
+                        <a href="{{ route('login') }}" class="text-dark text-decoration-none fw-semibold">Masuk</a>
+                        <a href="{{ route('register') }}" class="btn btn-primary btn-sm px-4 py-2">Daftar</a>
+                    @endauth
                 </div>
             </div>
         </div>
@@ -319,9 +323,15 @@
                     </p>
                     
                     <div class="d-flex flex-column flex-sm-row gap-3">
-                        <a href="{{ route('register') }}" class="btn btn-primary d-inline-flex align-items-center justify-content-center">
-                            Mulai Gunakan <i class="bi bi-arrow-right ms-2"></i>
-                        </a>
+                        @auth
+                            <a href="{{ route('dashboard') }}" class="btn btn-primary d-inline-flex align-items-center justify-content-center">
+                                Ke Dashboard <i class="bi bi-arrow-right ms-2"></i>
+                            </a>
+                        @else
+                            <a href="{{ route('register') }}" class="btn btn-primary d-inline-flex align-items-center justify-content-center">
+                                Mulai Gunakan <i class="bi bi-arrow-right ms-2"></i>
+                            </a>
+                        @endauth
                         <a href="#harga" class="btn btn-outline d-inline-flex align-items-center justify-content-center text-decoration-none">
                             Lihat Harga
                         </a>

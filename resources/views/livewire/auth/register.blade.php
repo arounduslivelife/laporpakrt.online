@@ -19,13 +19,19 @@
                 </div>
                 
                 <div class="row">
-                    <div class="col-6 mb-3">
+                    <div class="col-6 mb-3 position-relative">
                         <label>Password</label>
-                        <input type="password" class="form-control" wire:model="password">
+                        <input type="password" class="form-control" wire:model="password" id="regPasswordInput" style="padding-right: 40px;">
+                        <button type="button" class="btn btn-link position-absolute end-0 bottom-0 text-decoration-none text-muted p-2" onclick="togglePassword('regPasswordInput', 'eyeIconReg')" style="z-index: 10;">
+                            <i class="bi bi-eye-slash" id="eyeIconReg"></i>
+                        </button>
                     </div>
-                    <div class="col-6 mb-3">
+                    <div class="col-6 mb-3 position-relative">
                         <label>Ulangi Password</label>
-                        <input type="password" class="form-control" wire:model="password_confirmation">
+                        <input type="password" class="form-control" wire:model="password_confirmation" id="regPasswordConfInput" style="padding-right: 40px;">
+                        <button type="button" class="btn btn-link position-absolute end-0 bottom-0 text-decoration-none text-muted p-2" onclick="togglePassword('regPasswordConfInput', 'eyeIconRegConf')" style="z-index: 10;">
+                            <i class="bi bi-eye-slash" id="eyeIconRegConf"></i>
+                        </button>
                     </div>
                 </div>
                 @error('password') <span class="text-danger small d-block mb-2">{{ $message }}</span> @enderror
@@ -96,3 +102,21 @@
         </div>
     </div>
 </div>
+
+<script>
+    if (typeof togglePassword !== 'function') {
+        function togglePassword(inputId, iconId) {
+            var input = document.getElementById(inputId);
+            var icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            }
+        }
+    }
+</script>

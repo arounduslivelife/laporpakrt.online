@@ -11,8 +11,11 @@
                     <input type="email" class="form-control" wire:model="email" placeholder="Email">
                     @error('email') <span class="text-danger small">{{ $message }}</span> @enderror
                 </div>
-                <div class="mb-3">
-                    <input type="password" class="form-control" wire:model="password" placeholder="Password">
+                <div class="mb-3 position-relative">
+                    <input type="password" class="form-control" wire:model="password" placeholder="Password" id="passwordInput" style="padding-right: 40px;">
+                    <button type="button" class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted p-2" onclick="togglePassword('passwordInput', 'eyeIconLogin')" style="z-index: 10;">
+                        <i class="bi bi-eye-slash" id="eyeIconLogin"></i>
+                    </button>
                     @error('password') <span class="text-danger small">{{ $message }}</span> @enderror
                 </div>
                 <div class="row">
@@ -36,3 +39,19 @@
         </div>
     </div>
 </div>
+
+<script>
+    function togglePassword(inputId, iconId) {
+        var input = document.getElementById(inputId);
+        var icon = document.getElementById(iconId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('bi-eye-slash');
+            icon.classList.add('bi-eye');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('bi-eye');
+            icon.classList.add('bi-eye-slash');
+        }
+    }
+</script>
