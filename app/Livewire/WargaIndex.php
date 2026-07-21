@@ -267,15 +267,13 @@ class WargaIndex extends Component
             ['path' => \Illuminate\Pagination\Paginator::resolveCurrentPath()]
         );
 
-        $allWargas = auth()->user()->rt->wargas()->orderBy('id')->get();
-        
         $groupedWargas = [];
         foreach ($paginatedKks as $kk) {
             if (str_starts_with($kk, 'tanpa_kk_')) {
                 $id = str_replace('tanpa_kk_', '', $kk);
-                $groupedWargas[$kk] = $allWargas->where('id', $id);
+                $groupedWargas[$kk] = $matched->where('id', $id);
             } else {
-                $groupedWargas[$kk] = $allWargas->where('no_kk', $kk);
+                $groupedWargas[$kk] = $matched->where('no_kk', $kk);
             }
         }
 

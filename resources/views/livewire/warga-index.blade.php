@@ -324,10 +324,19 @@
                                 <option value="25">25 Per Halaman</option>
                                 <option value="50">50 Per Halaman</option>
                             </select>
-                        </div>
                         <div class="col-md-3 text-end d-flex gap-1 justify-content-md-end">
-                            <a href="{{ route('warga.export.excel') }}" class="btn btn-success btn-sm flex-fill flex-md-grow-0"><i class="bi bi-file-earmark-excel"></i> Excel</a>
-                            <a href="{{ route('warga.export.pdf') }}" class="btn btn-danger btn-sm flex-fill flex-md-grow-0" target="_blank"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
+                            @php
+                                $exportParams = [
+                                    'search' => $search,
+                                    'domisili' => $filterDomisili,
+                                    'penghasilan' => $filterPenghasilan,
+                                    'perkawinan' => $filterPerkawinan,
+                                    'bantuan' => $filterBantuan,
+                                    'disabilitas' => $filterDisabilitas
+                                ];
+                            @endphp
+                            <a href="{{ route('warga.export.excel', $exportParams) }}" class="btn btn-success btn-sm flex-fill flex-md-grow-0"><i class="bi bi-file-earmark-excel"></i> Excel</a>
+                            <a href="{{ route('warga.export.pdf', $exportParams) }}" class="btn btn-danger btn-sm flex-fill flex-md-grow-0" target="_blank"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
                         </div>
                     </div>
                     

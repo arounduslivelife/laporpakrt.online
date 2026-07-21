@@ -10,14 +10,14 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class WargaExportController extends Controller
 {
-    public function excel()
+    public function excel(Request $request)
     {
-        return Excel::download(new WargaExport, 'Data_Warga_RT_' . auth()->user()->rt->rt . '.xlsx');
+        return Excel::download(new WargaExport($request), 'Data_Warga_RT_' . auth()->user()->rt->rt . '.xlsx');
     }
 
-    public function pdf()
+    public function pdf(Request $request)
     {
-        $wargas = Warga::where('rt_id', auth()->user()->rt_id)->get();
+        $wargas = (new WargaExport($request))->query()->get();
         $pdf = Pdf::loadView('exports.warga-pdf', compact('wargas'));
         return $pdf->download('Data_Warga_RT_' . auth()->user()->rt->rt . '.pdf');
     }
