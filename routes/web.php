@@ -40,8 +40,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['check.subscription'])->group(function () {
         Route::get('/dashboard', \App\Livewire\Dashboard::class)->name('dashboard');
         Route::get('/warga', \App\Livewire\WargaIndex::class)->name('warga.index');
-        Route::get('/warga/export/excel', [\App\Http\Controllers\WargaExportController::class, 'excel'])->name('warga.export.excel');
-        Route::get('/warga/export/pdf', [\App\Http\Controllers\WargaExportController::class, 'pdf'])->name('warga.export.pdf');
+        Route::get('/warga/export/print', [\App\Http\Controllers\WargaExportController::class, 'print'])->name('warga.export.print');
         Route::get('/tamu', \App\Livewire\TamuIndex::class)->name('tamu.index');
         Route::get('/ocr-test', \App\Livewire\OcrTest::class)->name('ocr.test');
         Route::get('/surat', \App\Livewire\SuratIndex::class)->name('surat.index');

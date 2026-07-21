@@ -304,27 +304,26 @@
 
             <div class="card">
                 <div class="card-header">
-                    <div class="row g-2">
+                    <div class="row g-2 align-items-center">
                         <div class="col-md-5">
                             <input type="text" class="form-control" placeholder="Cari Nama / NIK..." wire:model.live.debounce.300ms="search">
                         </div>
-                        <div class="col-md-2 position-relative">
-                            <button class="btn btn-outline-secondary w-100" type="button" data-bs-toggle="collapse" data-bs-target="#advancedFilters" aria-expanded="false" aria-controls="advancedFilters">
-                                <i class="bi bi-funnel"></i> Filter Lanjutan
-                            </button>
-                            @if($filterDomisili || $filterPenghasilan || $filterPerkawinan || $filterBantuan || $filterDisabilitas !== '')
-                                <span class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle" style="margin-top: 10px; margin-left: -15px;">
-                                    <span class="visually-hidden">Filter Aktif</span>
-                                </span>
-                            @endif
-                        </div>
-                        <div class="col-md-2">
+                        <div class="col-md-3">
                             <select class="form-select" wire:model.live="perPage">
                                 <option value="10">10 Per Halaman</option>
                                 <option value="25">25 Per Halaman</option>
                                 <option value="50">50 Per Halaman</option>
                             </select>
-                        <div class="col-md-3 text-end d-flex gap-1 justify-content-md-end">
+                        </div>
+                        <div class="col-md-4 text-end d-flex gap-2 justify-content-md-end">
+                            <button class="btn btn-outline-secondary position-relative" type="button" data-bs-toggle="collapse" data-bs-target="#advancedFilters" aria-expanded="false" aria-controls="advancedFilters" title="Filter Lanjutan">
+                                <i class="bi bi-funnel"></i>
+                                @if($filterDomisili || $filterPenghasilan || $filterPerkawinan || $filterBantuan || $filterDisabilitas !== '')
+                                    <span class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle">
+                                        <span class="visually-hidden">Filter Aktif</span>
+                                    </span>
+                                @endif
+                            </button>
                             @php
                                 $exportParams = [
                                     'search' => $search,
@@ -335,8 +334,9 @@
                                     'disabilitas' => $filterDisabilitas
                                 ];
                             @endphp
-                            <a href="{{ route('warga.export.excel', $exportParams) }}" class="btn btn-success btn-sm flex-fill flex-md-grow-0"><i class="bi bi-file-earmark-excel"></i> Excel</a>
-                            <a href="{{ route('warga.export.pdf', $exportParams) }}" class="btn btn-danger btn-sm flex-fill flex-md-grow-0" target="_blank"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
+                            <a href="{{ route('warga.export.print', $exportParams) }}" class="btn btn-primary" target="_blank" title="Cetak Data">
+                                <i class="bi bi-printer"></i>
+                            </a>
                         </div>
                     </div>
                     
