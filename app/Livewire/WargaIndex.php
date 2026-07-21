@@ -29,10 +29,24 @@ class WargaIndex extends Component
 
     public $search = '';
     public $filterDomisili = '';
+    public $filterPenghasilan = '';
+    public $filterPerkawinan = '';
+    public $filterBantuan = '';
+    public $filterDisabilitas = '';
     public $perPage = 10;
 
     public function updatingSearch() { $this->resetPage(); }
     public function updatingFilterDomisili() { $this->resetPage(); }
+    public function updatingFilterPenghasilan() { $this->resetPage(); }
+    public function updatingFilterPerkawinan() { $this->resetPage(); }
+    public function updatingFilterBantuan() { $this->resetPage(); }
+    public function updatingFilterDisabilitas() { $this->resetPage(); }
+
+    public function resetFilters()
+    {
+        $this->reset(['search', 'filterDomisili', 'filterPenghasilan', 'filterPerkawinan', 'filterBantuan', 'filterDisabilitas']);
+        $this->resetPage();
+    }
 
     public function edit($id)
     {
@@ -223,6 +237,18 @@ class WargaIndex extends Component
             )
             ->when($this->filterDomisili, fn($q) =>
                 $q->where('status_domisili', $this->filterDomisili)
+            )
+            ->when($this->filterPenghasilan, fn($q) =>
+                $q->where('penghasilan', $this->filterPenghasilan)
+            )
+            ->when($this->filterPerkawinan, fn($q) =>
+                $q->where('status_perkawinan', $this->filterPerkawinan)
+            )
+            ->when($this->filterDisabilitas !== '', fn($q) =>
+                $q->where('is_disabilitas', $this->filterDisabilitas)
+            )
+            ->when($this->filterBantuan, fn($q) =>
+                $q->whereHas('bantuans', fn($q2) => $q2->where('bantuan_id', $this->filterBantuan))
             )
             ->get();
 

@@ -305,15 +305,18 @@
             <div class="card">
                 <div class="card-header">
                     <div class="row g-2">
-                        <div class="col-md-4">
+                        <div class="col-md-5">
                             <input type="text" class="form-control" placeholder="Cari Nama / NIK..." wire:model.live.debounce.300ms="search">
                         </div>
-                        <div class="col-md-3">
-                            <select class="form-select" wire:model.live="filterDomisili">
-                                <option value="">Semua Status</option>
-                                <option value="Tetap">Tetap</option>
-                                <option value="Kontrak">Kontrak/Kos</option>
-                            </select>
+                        <div class="col-md-2 position-relative">
+                            <button class="btn btn-outline-secondary w-100" type="button" data-bs-toggle="collapse" data-bs-target="#advancedFilters" aria-expanded="false" aria-controls="advancedFilters">
+                                <i class="bi bi-funnel"></i> Filter Lanjutan
+                            </button>
+                            @if($filterDomisili || $filterPenghasilan || $filterPerkawinan || $filterBantuan || $filterDisabilitas !== '')
+                                <span class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle" style="margin-top: 10px; margin-left: -15px;">
+                                    <span class="visually-hidden">Filter Aktif</span>
+                                </span>
+                            @endif
                         </div>
                         <div class="col-md-2">
                             <select class="form-select" wire:model.live="perPage">
@@ -325,6 +328,64 @@
                         <div class="col-md-3 text-end d-flex gap-1 justify-content-md-end">
                             <a href="{{ route('warga.export.excel') }}" class="btn btn-success btn-sm flex-fill flex-md-grow-0"><i class="bi bi-file-earmark-excel"></i> Excel</a>
                             <a href="{{ route('warga.export.pdf') }}" class="btn btn-danger btn-sm flex-fill flex-md-grow-0" target="_blank"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
+                        </div>
+                    </div>
+                    
+                    <div class="collapse mt-3" id="advancedFilters">
+                        <div class="card card-body bg-light border-0 shadow-sm">
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold text-muted mb-1">Status Domisili</label>
+                                    <select class="form-select form-select-sm" wire:model.live="filterDomisili">
+                                        <option value="">Semua</option>
+                                        <option value="Tetap">Tetap</option>
+                                        <option value="Kontrak">Kontrak/Kos</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold text-muted mb-1">Penghasilan</label>
+                                    <select class="form-select form-select-sm" wire:model.live="filterPenghasilan">
+                                        <option value="">Semua</option>
+                                        <option value="< Rp 1 Juta">< Rp 1 Juta</option>
+                                        <option value="Rp 1 Juta - 3 Juta">Rp 1 Juta - 3 Juta</option>
+                                        <option value="Rp 3 Juta - 5 Juta">Rp 3 Juta - 5 Juta</option>
+                                        <option value="> Rp 5 Juta">> Rp 5 Juta</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold text-muted mb-1">Status Perkawinan</label>
+                                    <select class="form-select form-select-sm" wire:model.live="filterPerkawinan">
+                                        <option value="">Semua</option>
+                                        <option value="Belum Kawin">Belum Kawin</option>
+                                        <option value="Kawin Tercatat">Kawin Tercatat</option>
+                                        <option value="Kawin Belum Tercatat">Kawin Belum Tercatat</option>
+                                        <option value="Cerai Hidup">Cerai Hidup</option>
+                                        <option value="Cerai Mati">Cerai Mati</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold text-muted mb-1">Bantuan Sosial</label>
+                                    <select class="form-select form-select-sm" wire:model.live="filterBantuan">
+                                        <option value="">Semua Bantuan</option>
+                                        @foreach($bantuansList as $b)
+                                            <option value="{{ $b->id }}">{{ $b->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold text-muted mb-1">Disabilitas</label>
+                                    <select class="form-select form-select-sm" wire:model.live="filterDisabilitas">
+                                        <option value="">Semua</option>
+                                        <option value="1">Penyandang Disabilitas</option>
+                                        <option value="0">Bukan Disabilitas</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-9 d-flex align-items-end justify-content-end">
+                                    <button class="btn btn-sm btn-outline-danger" wire:click="resetFilters">
+                                        <i class="bi bi-x-circle me-1"></i> Reset Filter
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

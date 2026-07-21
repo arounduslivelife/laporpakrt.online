@@ -65,9 +65,73 @@
             <span class="badge bg-primary rounded-pill px-3 py-2">{{ $paginatedKks->total() }} KK</span>
         </div>
 
-        <div class="search-box">
-            <i class="bi bi-search text-muted ms-2"></i>
-            <input type="text" class="form-control" placeholder="Cari nama atau NIK..." wire:model.live.debounce.300ms="search">
+        <div class="d-flex gap-2 mb-3">
+            <div class="search-box flex-grow-1 mb-0">
+                <i class="bi bi-search text-muted ms-2"></i>
+                <input type="text" class="form-control" placeholder="Cari nama atau NIK..." wire:model.live.debounce.300ms="search">
+            </div>
+            <button class="btn btn-primary px-3 position-relative shadow-sm" type="button" data-bs-toggle="collapse" data-bs-target="#mobileFilters" style="border-radius: 16px !important;">
+                <i class="bi bi-funnel"></i>
+                @if($filterDomisili || $filterPenghasilan || $filterPerkawinan || $filterBantuan || $filterDisabilitas !== '')
+                    <span class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle"></span>
+                @endif
+            </button>
+        </div>
+
+        <div class="collapse mb-3" id="mobileFilters">
+            <div class="soft-card p-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold m-0"><i class="bi bi-funnel-fill text-primary me-2"></i>Filter Lanjutan</h6>
+                    <button class="btn btn-sm btn-outline-danger py-0 px-2" wire:click="resetFilters" style="border-radius: 8px;">Reset</button>
+                </div>
+                
+                <div class="mb-2">
+                    <label class="form-label small text-muted fw-bold mb-1">Status Domisili</label>
+                    <select class="form-select form-select-sm bg-light border-0" style="border-radius: 8px;" wire:model.live="filterDomisili">
+                        <option value="">Semua</option>
+                        <option value="Tetap">Tetap</option>
+                        <option value="Kontrak">Kontrak/Kos</option>
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label small text-muted fw-bold mb-1">Penghasilan</label>
+                    <select class="form-select form-select-sm bg-light border-0" style="border-radius: 8px;" wire:model.live="filterPenghasilan">
+                        <option value="">Semua</option>
+                        <option value="< Rp 1 Juta">< Rp 1 Juta</option>
+                        <option value="Rp 1 Juta - 3 Juta">Rp 1 Juta - 3 Juta</option>
+                        <option value="Rp 3 Juta - 5 Juta">Rp 3 Juta - 5 Juta</option>
+                        <option value="> Rp 5 Juta">> Rp 5 Juta</option>
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label small text-muted fw-bold mb-1">Status Perkawinan</label>
+                    <select class="form-select form-select-sm bg-light border-0" style="border-radius: 8px;" wire:model.live="filterPerkawinan">
+                        <option value="">Semua</option>
+                        <option value="Belum Kawin">Belum Kawin</option>
+                        <option value="Kawin Tercatat">Kawin Tercatat</option>
+                        <option value="Kawin Belum Tercatat">Kawin Belum Tercatat</option>
+                        <option value="Cerai Hidup">Cerai Hidup</option>
+                        <option value="Cerai Mati">Cerai Mati</option>
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label small text-muted fw-bold mb-1">Bantuan Sosial</label>
+                    <select class="form-select form-select-sm bg-light border-0" style="border-radius: 8px;" wire:model.live="filterBantuan">
+                        <option value="">Semua Bantuan</option>
+                        @foreach($bantuansList as $b)
+                            <option value="{{ $b->id }}">{{ $b->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label small text-muted fw-bold mb-1">Disabilitas</label>
+                    <select class="form-select form-select-sm bg-light border-0" style="border-radius: 8px;" wire:model.live="filterDisabilitas">
+                        <option value="">Semua</option>
+                        <option value="1">Penyandang Disabilitas</option>
+                        <option value="0">Bukan Disabilitas</option>
+                    </select>
+                </div>
+            </div>
         </div>
 
         <div>
