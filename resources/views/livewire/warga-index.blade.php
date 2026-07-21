@@ -174,7 +174,7 @@
                                 <select class="form-select" wire:model="status_perkawinan">
                                     <option value="">Pilih</option>
                                     <option value="Belum Kawin">Belum Kawin</option>
-                                    <option value="Kawin">Kawin</option>
+                                    <option value="Kawin Tercatat">Kawin Tercatat</option>
                                     <option value="Kawin Belum Tercatat">Kawin Belum Tercatat</option>
                                     <option value="Cerai Hidup">Cerai Hidup</option>
                                     <option value="Cerai Mati">Cerai Mati</option>
@@ -186,7 +186,7 @@
                                     <option value="">Pilih</option>
                                     <option value="Kepala Keluarga">Kepala Keluarga</option>
                                     <option value="Suami">Suami</option>
-                                    <option value="Istri">Istri</option>
+                                    <option value="Isteri">Isteri</option>
                                     <option value="Anak">Anak</option>
                                     <option value="Menantu">Menantu</option>
                                     <option value="Cucu">Cucu</option>

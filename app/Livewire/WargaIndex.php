@@ -134,8 +134,8 @@ class WargaIndex extends Component
             'tanggal_lahir' => 'nullable|date',
             'foto_wajah' => 'nullable|image|max:8192',
             'foto_ktp' => 'nullable|image|max:8192',
-            'status_perkawinan' => 'nullable|in:Belum Kawin,Kawin,Kawin Belum Tercatat,Cerai Hidup,Cerai Mati',
-            'status_keluarga' => 'nullable|in:Kepala Keluarga,Suami,Istri,Anak,Menantu,Cucu,Orang Tua,Mertua,Famili Lain,Pembantu,Lainnya',
+            'status_perkawinan' => 'nullable|in:Belum Kawin,Kawin Tercatat,Kawin Belum Tercatat,Cerai Hidup,Cerai Mati',
+            'status_keluarga' => 'nullable|in:Kepala Keluarga,Suami,Isteri,Anak,Menantu,Cucu,Orang Tua,Mertua,Famili Lain,Pembantu,Lainnya',
             'penghasilan' => 'nullable|string',
             'is_disabilitas' => 'boolean',
         ]);
